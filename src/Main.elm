@@ -93,9 +93,6 @@ update msg model =
             let
                 page =
                     Route.toPage url
-
-                _ =
-                    Debug.log "UrlChanged" (Route.toMetaTags url)
             in
             ( { model | page = page }
             , sendMetaTags (Route.toMetaTags url)
