@@ -1,0 +1,25 @@
+button {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-osx-appearance: none;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    color: currentColor;
+    background: transparent;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.button {
+    padding: .5em 2em;
+    margin: .875em 0 1em;
+    border: 1px solid currentColor;
+    border-radius: $borderRadius;
+    font-family: $fontSecondary;
+    font-size: 1.25em;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: lowercase;
+    color: $redBrown;
+}

@@ -1,0 +1,149 @@
+html {
+    height: 100%;
+    box-sizing: border-box;
+    font-family: $fontPrimary;
+    font-size: 100%;
+    color: $black;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    min-height: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: $white;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: $fontSecondary;
+}
+
+p {
+    line-height: 1.5;
+}
+
+ul,
+ol {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+a {
+    font-family: $fontSecondary;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    @include hover {
+        text-decoration: underline;
+    }
+}
+
+.header {
+    gap: 1rem;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    color: $black;
+    background-color: $white;
+
+    @include breakpoint($small) {
+        padding: 1rem 4rem;
+    }
+}
+
+.logo {
+    width: 5rem;
+    height: 5rem;
+    flex-shrink: 0;
+}
+
+.nav {
+    ul {
+        gap: 1rem;
+        display: flex;
+    }
+}
+
+.main {
+    width: 90%;
+    margin: 1rem auto;
+}
+
+.home-intro {
+    display: flex;
+    color: $sealBrown;
+    color: $redBrown;
+}
+
+.home-intro__left {
+    padding: 1rem 2rem;
+    position: relative;
+    border: 1px solid currentColor;
+    border-radius: $borderRadius;
+    color: $resedaGreen;
+    background: $cosmicLatte;
+
+    &:before {
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 1rem;
+        left: -1rem;
+        border-radius: inherit;
+        background: currentColor;
+        z-index: -1;
+    }
+}
+
+.home-intro__title {
+    font-size: 3rem;
+}
+
+.home-intro__text {
+    font-size: 1.5rem;
+}
+
+.home-intro__left,
+.home-intro__right {
+    flex: 0 0 50%;
+}
+
+.home-intro__right {
+    position: relative;
+}
+
+.home-intro__right__img {
+    aspect-ratio: 1 / 1;
+    width: calc(100% - 6rem);
+    position: absolute;
+    top: 0;
+    left: 6rem;
+    border-radius: $borderRadius;
+    box-shadow: $shadow-elevation-high;
+    object-fit: cover;
+}
+
+.home-intro__right__img--front {
+    aspect-ratio: 3 / 4;
+    --shadow-color: 0deg 0% 0%;
+    width: calc(70% - 6rem);
+    top: 2.5rem;
+    left: 1rem;
+    box-shadow: $shadow-elevation-medium;
+}

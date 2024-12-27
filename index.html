@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html lang="nl">
+
+<head>
+    <title>Kleihaven</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Kleihaven">
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <link rel="stylesheet" href="/style.css">
+    <script src="/main.js"></script>
+</head>
+
+<body>
+    <div id="elm"></div>
+    <script>
+        var app = Elm.Main.init({
+            node: document.getElementById('elm')
+        });
+
+        function updateMetaTag(property, content) {
+            var existingMetaTag = document.querySelector('meta[property="' + property + '"]');
+            if (existingMetaTag) {
+                existingMetaTag.content = content;
+            } else {
+                var metaTag = document.createElement('meta');
+                metaTag.setAttribute("property", property);
+                metaTag.content = content;
+                document.head.appendChild(metaTag);
+            }
+        }
+
+        if (app.ports && app.ports.sendMetaTags) {
+            app.ports.sendMetaTags.subscribe(function (metaTags) {
+                if (metaTags.title) {
+                    updateMetaTag("og:title", metaTags.title);
+                }
+
+                if (metaTags.description) {
+                    updateMetaTag("og:description", metaTags.description);
+                }
+
+                if (metaTags.image) {
+                    updateMetaTag("og:image", metaTags.image);
+                }
+
+                if (metaTags.url) {
+                    var fullUrl = window.location.origin + metaTags.url;
+                    updateMetaTag("og:url", fullUrl);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
