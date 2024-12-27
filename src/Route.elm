@@ -75,21 +75,21 @@ toMetaTags : Url -> MetaTags
 toMetaTags url =
     case toPage url of
         Home ->
-            { title = "Kleihaven"
+            { title = "Kleihaven | Keramiekcursussen"
             , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
             , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
             , url = toUrl Home
             }
 
         Kleihaven ->
-            { title = "Kleihaven"
+            { title = "Kleihaven | Cursussen"
             , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
             , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
             , url = toUrl Kleihaven
             }
 
         NotFound ->
-            { title = "Studio 1931"
+            { title = "Studio 1931 | Kleihaven"
             , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
             , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
             , url = toUrl Home
