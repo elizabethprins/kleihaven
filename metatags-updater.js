@@ -23,9 +23,11 @@ async function updateMetaTags(url) {
     }
 }
 
-// Listen to changes from Elm
-if (app && app.ports && app.ports.urlChanged) {
-    app.ports.urlChanged.subscribe((newUrl) => {
-        updateMetaTags(newUrl);
-    });
-}
+document.addEventListener("DOMContentLoaded", function () {
+    // Listen to changes from Elm
+    if (window.app && window.app.ports && window.app.ports.urlChanged) {
+        window.app.ports.urlChanged.subscribe((newUrl) => {
+            updateMetaTags(newUrl);
+        });
+    }
+});
