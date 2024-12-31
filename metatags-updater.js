@@ -16,7 +16,7 @@ async function updateMetaTags(url) {
 
         setMetaTag('og:title', data.og_title || 'Kleihaven');
         setMetaTag('og:description', data.og_description || 'Keramiekcursussen en workshops in Den Oever');
-        setMetaTag('og:image', data.og_image_path || '/assets/ceramic_hand_small.jpg');
+        setMetaTag('og:image', `${window.location.origin}${data.og_image_path || '/assets/ceramic_classroom.jpeg'}`);
         setMetaTag('og:url', `${window.location.origin}${url}`);
     } catch (error) {
         console.error('Error updating meta tags:', error);

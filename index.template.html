@@ -12,6 +12,8 @@
     <meta property="og:title" content="{{ og_title }}" />
     <meta property="og:description" content="{{ og_description }}" />
     <meta property="og:image" content="{{ base_url }}{{ og_image_path }}" />
+    <meta property="og:image:width" content="680" />
+    <meta property="og:image:height" content="680" />
     <meta property="og:url" content="{{ base_url }}{{ og_url_path }}" />
     <link rel="stylesheet" href="/style.css">
     <script src="/main.js"></script>
@@ -24,40 +26,6 @@
         var app = Elm.Main.init({
             node: document.getElementById('elm')
         });
-
-
-        async function updateMetaTags(url) {
-            try {
-                const response = await fetch('/metatags.json');
-                const metaTags = await response.json();
-                const data = metaTags[url] || metaTags["/"] || {};
-
-                const setMetaTag = (property, content) => {
-                    let tag = document.querySelector(`meta[property="${property}"]`);
-                    if (!tag) {
-                        tag = document.createElement('meta');
-                        tag.setAttribute('property', property);
-                        document.head.appendChild(tag);
-                    }
-                    tag.setAttribute('content', content);
-                };
-
-                setMetaTag('og:title', data.og_title || 'Kleihaven');
-                setMetaTag('og:description', data.og_description || 'Keramiekcursussen en workshops in Den Oever');
-                setMetaTag('og:image', data.og_image_path || '/assets/ceramic_hand_small.jpg');
-                setMetaTag('og:url', `${window.location.origin}${url}`);
-            } catch (error) {
-                console.error('Error updating meta tags:', error);
-            }
-        }
-
-        // Listen to changes from Elm
-        if (app && app.ports && app.ports.urlChanged) {
-            app.ports.urlChanged.subscribe((newUrl) => {
-                console.log('URL changed:', newUrl);
-                updateMetaTags(newUrl);
-            });
-        }
     </script>
 </body>
 
