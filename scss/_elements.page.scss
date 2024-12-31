@@ -85,38 +85,39 @@ a {
 }
 
 .home-intro {
+    gap: 3rem;
     display: flex;
-    color: $sealBrown;
-    color: $redBrown;
-}
+    flex-direction: column;
 
-.home-intro__left {
-    padding: 1rem 2rem;
-    position: relative;
-    border: 1px solid currentColor;
-    border-radius: $borderRadius;
-    color: $resedaGreen;
-    background: $cosmicLatte;
-
-    &:before {
-        content: "";
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 1rem;
-        left: -1rem;
-        border-radius: inherit;
-        background: currentColor;
-        z-index: -1;
+    @include breakpoint($small) {
+        gap: 1rem;
+        flex-direction: row;
     }
 }
 
 .home-intro__title {
-    font-size: 3rem;
+    margin: .25em 0;
+    font-size: 19vw;
+    text-shadow: -2px 2px $sageGreen;
+
+    @include breakpoint($small) {
+        font-size: 4rem;
+    }
+}
+
+.home-intro__subtitle {
+    margin: .25em 0;
+    font-size: 1.75rem;
+
+    @include breakpoint($small) {
+        font-size: 2.5rem;
+    }
 }
 
 .home-intro__text {
-    font-size: 1.5rem;
+    @include breakpoint($small) {
+        font-size: 1.5rem;
+    }
 }
 
 .home-intro__left,

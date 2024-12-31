@@ -160,13 +160,12 @@ viewNavigation =
 viewHomeIntro : Html Msg
 viewHomeIntro =
     section [ class "home-intro" ]
-        [ div [ class "home-intro__left" ]
+        [ div [ class "home-intro__left card card--green" ]
             [ h1 [ class "home-intro__title" ]
-                [ text
-                    """
-            Kleihaven, het toevluchtsoord en de vertrekplek voor keramiek
-            """
+                [ text "Kleihaven"
                 ]
+            , h2 [ class "home-intro__subtitle" ]
+                [ text "het toevluchtsoord en de vertrekplek voor keramiek" ]
             , p [ class "home-intro__text" ]
                 [ text
                     """
