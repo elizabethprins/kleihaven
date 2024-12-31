@@ -30,7 +30,7 @@ main =
         }
 
 
-port sendMetaTags : Route.MetaTags -> Cmd msg
+port urlChanged : String -> Cmd msg
 
 
 
@@ -57,7 +57,7 @@ init _ url key =
     ( { navKey = key
       , page = Route.toPage url
       }
-    , sendMetaTags (Route.toMetaTags url)
+    , urlChanged (Route.toUrl <| Route.toPage url)
     )
 
 
@@ -95,7 +95,7 @@ update msg model =
                     Route.toPage url
             in
             ( { model | page = page }
-            , sendMetaTags (Route.toMetaTags url)
+            , urlChanged (Route.toUrl <| Route.toPage url)
             )
 
 
@@ -135,7 +135,7 @@ viewLogo : Html Msg
 viewLogo =
     a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
         [ img
-            [ src "/assets/1-logostudio1931-medium.png"
+            [ src "/assets/logostudio1931-small.png"
             , class "logo"
             , alt "Studio 1931"
             ]
@@ -186,7 +186,7 @@ viewHomeIntro =
                 ]
                 []
             , img
-                [ src "/assets/1-IMG_3543-crop.jpeg"
+                [ src "/assets/ceramic_classroom.jpeg"
                 , class "home-intro__right__img"
                 , class "home-intro__right__img--front"
                 ]

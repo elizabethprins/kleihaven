@@ -1,9 +1,7 @@
 module Route exposing
-    ( MetaTags
-    , Page(..)
+    ( Page(..)
     , allPages
     , parser
-    , toMetaTags
     , toPage
     , toUrl
     )
@@ -57,40 +55,3 @@ toUrl page =
 
         NotFound ->
             Url.Builder.absolute [ "notfound" ] []
-
-
-
--- META TAGS
-
-
-type alias MetaTags =
-    { title : String
-    , description : String
-    , image : String
-    , url : String
-    }
-
-
-toMetaTags : Url -> MetaTags
-toMetaTags url =
-    case toPage url of
-        Home ->
-            { title = "Kleihaven | Keramiekcursussen"
-            , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
-            , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
-            , url = toUrl Home
-            }
-
-        Kleihaven ->
-            { title = "Kleihaven | Cursussen"
-            , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
-            , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
-            , url = toUrl Kleihaven
-            }
-
-        NotFound ->
-            { title = "Studio 1931 | Kleihaven"
-            , description = "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken."
-            , image = Url.Builder.absolute [ "assets", "1-IMG_3548.jpeg" ] []
-            , url = toUrl Home
-            }

@@ -1,0 +1,14 @@
+{
+    "/": {
+        "og_title": "Kleihaven | Home",
+        "og_description": "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken.",
+        "og_image_path": "/assets/ceramic_hand_small.jpg",
+        "og_url_path": "/"
+    },
+    "/kleihaven": {
+        "og_title": "Kleihaven | Cursussen",
+        "og_description": "Welkom bij de Kleihaven! Wij bieden keramiekcursussen van enkele dagen tot twee volle weken.",
+        "og_image_path": "/assets/ceramic_hand_small.jpg",
+        "og_url_path": "/kleihaven"
+    }
+}

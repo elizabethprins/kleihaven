@@ -9,16 +9,23 @@ NPM_PATH := ./node_modules/.bin
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 DIST_DIR := ./dist
 SCSS_FILES = $(shell find scss -name '*.scss')
+URLS = /kleihaven /
+DIST_URLS = $(foreach url, $(URLS), $(DIST_DIR)$(url)/index.html)
+BASE_URL ?= http://localhost:3000
 
 export PATH := $(NPM_PATH):$(PATH)
 
-all: elm styles assets
+all: elm styles assets generate_html
 
 assets:
 	@mkdir -p ${DIST_DIR}/assets/ && cp -R ./assets ${DIST_DIR}
-	@cp index.html ${DIST_DIR}
+	@cp metatags.json ${DIST_DIR}
+	@cp metatags-updater.js ${DIST_DIR}
 
-build: deps elmoptimized styles minify assets
+build: deps elmoptimized styles minify assets generate_html
+
+production:
+	@$(MAKE) build BASE_URL=https://kleihaven.netlify.app
 
 clean:
 	@rm -Rf dist/*
@@ -73,3 +80,13 @@ watch:
 	browser-sync start --single --server ${DIST_DIR} --files ["${DIST_DIR}/*.css", "${DIST_DIR}/*.js"] & \
 	find scss -name '*.scss' | entr make styles & \
 	find src -name '*.elm' | entr make all
+
+generate_html: ensure_script_permissions
+	@for url in $(URLS); do \
+		mkdir -p $(DIST_DIR)$$url && \
+		BASE_URL=$(BASE_URL) ./generate_html.sh index.template.html $(DIST_DIR)$$url/index.html $$url; \
+		echo "Generated: $(DIST_DIR)$$url/index.html"; \
+	done
+
+ensure_script_permissions:
+	@chmod +x generate_html.sh
