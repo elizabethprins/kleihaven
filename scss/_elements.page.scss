@@ -39,20 +39,9 @@ ol {
     list-style: none;
 }
 
-a {
-    font-family: $fontSecondary;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-
-    @include hover {
-        text-decoration: underline;
-    }
-}
-
 .header {
     gap: 1rem;
-    padding: 0 1rem;
+    padding: .25rem 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -60,9 +49,23 @@ a {
     top: 0;
     color: $black;
     background-color: $white;
+    z-index: 1;
 
     @include breakpoint($small) {
         padding: 1rem 4rem;
+    }
+
+    @supports (animation-timeline: scroll()) {
+        animation-timeline: scroll();
+        animation-range: 0px 150px;
+        animation-fill-mode: both;
+        animation-name: add-shadow;
+
+        @keyframes add-shadow {
+            100% {
+                box-shadow: $shadow-elevation-medium;
+            }
+        }
     }
 }
 
@@ -97,7 +100,7 @@ a {
 
 .home-intro__title {
     margin: .25em 0;
-    font-size: 19vw;
+    font-size: 15vw;
     text-shadow: -2px 2px $sageGreen;
 
     @include breakpoint($small) {

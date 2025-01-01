@@ -2,6 +2,7 @@ module Route exposing
     ( Page(..)
     , allPages
     , parser
+    , toLabel
     , toPage
     , toUrl
     )
@@ -25,7 +26,6 @@ allPages : List Page
 allPages =
     [ Home
     , Kleihaven
-    , NotFound
     ]
 
 
@@ -55,3 +55,16 @@ toUrl page =
 
         NotFound ->
             Url.Builder.absolute [ "notfound" ] []
+
+
+toLabel : Page -> String
+toLabel page =
+    case page of
+        Home ->
+            "Home"
+
+        Kleihaven ->
+            "Kleihaven"
+
+        NotFound ->
+            "Not Found"

@@ -11,6 +11,7 @@ import Process
 import Route
 import Set exposing (Set)
 import Task
+import Ui.Button
 import Url exposing (Url)
 
 
@@ -109,52 +110,67 @@ view model =
     , body =
         [ viewNavigation
         , main_ [ class "main" ]
-            [ case model.page of
-                Route.Kleihaven ->
-                    div [ class "main" ]
-                        [ h1 [] [ text "Kleihaven" ]
-                        , p [] [ text "Kleihaven is een toevluchtsoord en vertrekplek voor keramiek." ]
-                        ]
+            [ div [ class "main" ] <|
+                case model.page of
+                    Route.Kleihaven ->
+                        viewPageKleihaven
 
-                Route.Home ->
-                    div [ class "home" ]
-                        [ viewHomeIntro
-                        ]
+                    Route.Home ->
+                        viewPageHome
 
-                Route.NotFound ->
-                    div [ class "not-found" ]
-                        [ h1 [] [ text "Pagina niet gevonden" ]
-                        , p [] [ text "De pagina die je zoekt bestaat niet." ]
-                        ]
+                    Route.NotFound ->
+                        viewPageNotFound
             ]
         ]
     }
 
 
-viewLogo : Html Msg
-viewLogo =
-    a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
-        [ img
-            [ src "/assets/logostudio1931-small.png"
-            , class "logo"
-            , alt "Studio 1931"
-            ]
-            []
-        ]
-
-
 viewNavigation : Html Msg
 viewNavigation =
+    let
+        viewLogo =
+            a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
+                [ img
+                    [ src "/assets/logostudio1931-small.png"
+                    , class "logo"
+                    , alt "Studio 1931"
+                    ]
+                    []
+                ]
+
+        viewMenuItem page =
+            li []
+                [ Ui.Button.newLink
+                    { label = Route.toLabel page
+                    , action = Ui.Button.ToPage page
+                    }
+                    |> Ui.Button.view
+                ]
+    in
     header [ class "header" ]
         [ viewLogo
         , nav [ class "nav" ]
             [ ul []
-                [ li [] [ a [ href (Route.toUrl Route.Kleihaven) ] [ text "Kleihaven" ] ]
-                , li [] [ a [ href (Route.toUrl Route.Home) ] [ text "Home" ] ]
-                , li [] [ a [ href "/notfound" ] [ text "NotFound!" ] ]
-                ]
+                (List.map viewMenuItem Route.allPages)
             ]
         ]
+
+
+
+-- VIEW PAGES
+
+
+viewPageNotFound : List (Html Msg)
+viewPageNotFound =
+    [ h1 [] [ text "Pagina niet gevonden" ]
+    , p [] [ text "De pagina die je zoekt bestaat niet." ]
+    ]
+
+
+viewPageHome : List (Html Msg)
+viewPageHome =
+    [ viewHomeIntro
+    ]
 
 
 viewHomeIntro : Html Msg
@@ -174,8 +190,11 @@ viewHomeIntro =
             Wij bieden keramiekcursussen van enkele dagen tot twee volle weken.
                     """
                 ]
-            , button [ class "button" ]
-                [ text "Bekijk alle cursussen" ]
+            , Ui.Button.newPrimary
+                { label = "Bekijk alle cursussen"
+                , action = Ui.Button.ToPage Route.Kleihaven
+                }
+                |> Ui.Button.view
             ]
         , div [ class "home-intro__right" ]
             [ img
@@ -192,3 +211,10 @@ viewHomeIntro =
                 []
             ]
         ]
+
+
+viewPageKleihaven : List (Html Msg)
+viewPageKleihaven =
+    [ h1 [] [ text "Kleihaven" ]
+    , p [] [ text "Welkom bij de Kleihaven! We werken aan de website." ]
+    ]

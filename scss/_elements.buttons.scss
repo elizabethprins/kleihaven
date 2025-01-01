@@ -5,15 +5,31 @@ button {
     padding: 0;
     border: none;
     border-radius: 0;
+    text-decoration: none;
     color: currentColor;
     background: transparent;
     overflow: visible;
     cursor: pointer;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.link {
+    font-family: $fontSecondary;
+
+    @include hover {
+        text-decoration: underline;
+    }
+}
+
 .button {
     padding: .5em 2em;
     margin: .875em 0 1em;
+    display: inline-block;
     border: 1px solid currentColor;
     border-radius: $borderRadius;
     font-family: $fontSecondary;
@@ -21,5 +37,23 @@ button {
     font-weight: 700;
     text-decoration: none;
     text-transform: lowercase;
+    transition: all .2s ease-in-out;
+
+    @include hover {
+        text-decoration: none;
+    }
+
+    @include hoverOnly {
+        box-shadow: -2px 3px 0 0 currentColor;
+        transform: translate(2px, -3px);
+    }
+
+    @include active {
+        box-shadow: none;
+        transform: translate(0, 0);
+    }
+}
+
+.button--primary {
     color: $redBrown;
 }

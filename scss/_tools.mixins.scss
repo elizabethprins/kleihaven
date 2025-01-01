@@ -6,7 +6,26 @@
 
 @mixin hover {
     @media not all and (pointer:coarse) {
-        &:hover, &:active, &:focus, &:focus:active {
+        &:hover,
+        &:active,
+        &:focus,
+        &:focus:active {
+            @content;
+        }
+    }
+}
+
+@mixin hoverOnly {
+    @media not all and (pointer:coarse) {
+        &:hover {
+            @content;
+        }
+    }
+}
+
+@mixin active {
+    @media not all and (pointer:coarse) {
+        &:active {
             @content;
         }
     }
