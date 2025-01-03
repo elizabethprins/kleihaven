@@ -1,23 +1,71 @@
 .card {
+    @include cardBefore($resedaGreen, true);
     padding: 1rem 2rem;
-    position: relative;
     border: 1px solid currentColor;
     border-radius: $borderRadius;
+}
 
-    &:before {
-        content: "";
-        width: calc(100% - 1rem);
-        height: calc(100% - 1rem);
-        position: absolute;
-        top: 2rem;
-        left: -1rem;
-        border-radius: calc($borderRadius + 1rem);
-        background: currentColor;
-        z-index: -1;
+.card-text {
+    @include cardBefore(inherit, false);
+    padding: 1rem 2rem;
+    border: 1px solid currentColor;
+    border-radius: $borderRadius;
+    background-color: $white;
+
+    p {
+        line-height: 1.75;
     }
 }
 
 .card--green {
     color: $resedaGreen;
     background: $cosmicLatte;
+}
+
+.card-img {
+    @include cardBefore(inherit, false);
+
+    img,
+    video {
+        width: 100%;
+        height: 100%;
+        border-radius: $borderRadius;
+        object-fit: cover;
+    }
+}
+
+.card-text-img {
+    @include cardBefore(inherit, false);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid currentColor;
+    border-radius: $borderRadius;
+    background-color: $cosmicLatte;
+
+    img {
+        width: 100%;
+        height: 100%;
+        border-radius: $borderRadius 0 0 $borderRadius;
+        object-fit: cover;
+    }
+
+    .card-text-img__content {
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        p {
+            font-size: 1.15rem;
+        }
+    }
+
+    &.-clickable {
+        cursor: pointer;
+
+        @include hover {
+            @include cardBefore(inherit, true);
+            background-color: darken($cosmicLatte, 5%);
+        }
+    }
 }

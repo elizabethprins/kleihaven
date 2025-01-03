@@ -18,6 +18,11 @@ a {
     cursor: pointer;
 }
 
+.link-secret {
+    inset: 0 0 0 0;
+    position: absolute;
+}
+
 .link {
     font-family: $fontSecondary;
 
@@ -33,7 +38,7 @@ a {
     border: 1px solid currentColor;
     border-radius: $borderRadius;
     font-family: $fontSecondary;
-    font-size: 1.25em;
+    font-size: 1em;
     font-weight: 700;
     text-decoration: none;
     text-transform: lowercase;
@@ -51,6 +56,10 @@ a {
     @include active {
         box-shadow: none;
         transform: translate(0, 0);
+    }
+
+    @include breakpoint($small) {
+        font-size: 1.25em;
     }
 }
 

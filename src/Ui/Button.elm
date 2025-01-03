@@ -1,4 +1,4 @@
-module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, view)
+module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -25,6 +25,7 @@ type Style
     = Primary
     | Secondary
     | Link
+    | SecretLink
 
 
 new : Style -> { label : String, action : Action msg } -> Config msg
@@ -52,6 +53,11 @@ newLink { label, action } =
     new Link { label = label, action = action }
 
 
+secretLink : { label : String, action : Action msg } -> Config msg
+secretLink { label, action } =
+    new SecretLink { label = label, action = action }
+
+
 withDisabledIf : Bool -> Config msg -> Config msg
 withDisabledIf condition (Config config) =
     Config { config | isDisabled = condition }
@@ -63,7 +69,16 @@ withDisabledIf condition (Config config) =
 
 view : Config msg -> Html msg
 view (Config config) =
-    toHtmlNode (Config config) [ text config.label ]
+    let
+        content =
+            case config.style of
+                SecretLink ->
+                    [ span [ class "visually-hidden" ] [ text config.label ] ]
+
+                _ ->
+                    [ text config.label ]
+    in
+    toHtmlNode (Config config) content
 
 
 
@@ -107,9 +122,10 @@ toHtmlNode (Config config) =
 toClassList : Config msg -> Attribute msg
 toClassList (Config config) =
     classList
-        [ ( "button", config.style /= Link )
+        [ ( "button", config.style /= Link && config.style /= SecretLink )
         , ( "link", config.style == Link )
         , ( "button--primary", config.style == Primary )
         , ( "button--secondary", config.style == Secondary )
         , ( "-is-disabled", config.isDisabled )
+        , ( "link-secret", config.style == SecretLink )
         ]

@@ -19,13 +19,18 @@ import Url.Parser as Parser exposing ((</>), s)
 type Page
     = Home
     | Kleihaven
+    | Cursussen
+    | OverOns
+    | AIR
     | NotFound
 
 
 allPages : List Page
 allPages =
-    [ Home
-    , Kleihaven
+    [ Kleihaven
+    , Cursussen
+    , AIR
+    , OverOns
     ]
 
 
@@ -41,6 +46,9 @@ parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
         , Parser.map Kleihaven (Parser.s "kleihaven")
+        , Parser.map Cursussen (Parser.s "cursussen")
+        , Parser.map OverOns (Parser.s "over-ons")
+        , Parser.map AIR (Parser.s "air")
         ]
 
 
@@ -56,6 +64,15 @@ toUrl page =
         NotFound ->
             Url.Builder.absolute [ "notfound" ] []
 
+        Cursussen ->
+            Url.Builder.absolute [ "cursussen" ] []
+
+        OverOns ->
+            Url.Builder.absolute [ "over-ons" ] []
+
+        AIR ->
+            Url.Builder.absolute [ "air" ] []
+
 
 toLabel : Page -> String
 toLabel page =
@@ -67,4 +84,13 @@ toLabel page =
             "Kleihaven"
 
         NotFound ->
-            "Not Found"
+            ""
+
+        Cursussen ->
+            "Cursussen"
+
+        OverOns ->
+            "Over Ons"
+
+        AIR ->
+            "AIR Programma's"

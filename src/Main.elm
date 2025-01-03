@@ -109,18 +109,19 @@ view model =
     { title = "Kleihaven"
     , body =
         [ viewNavigation
-        , main_ [ class "main" ]
-            [ div [ class "main" ] <|
-                case model.page of
-                    Route.Kleihaven ->
-                        viewPageKleihaven
+        , main_ [ class "main" ] <|
+            case model.page of
+                Route.Kleihaven ->
+                    viewPageKleihaven
 
-                    Route.Home ->
-                        viewPageHome
+                Route.Home ->
+                    viewPageHome
 
-                    Route.NotFound ->
-                        viewPageNotFound
-            ]
+                Route.NotFound ->
+                    viewPageNotFound
+
+                _ ->
+                    [ h1 [] [ text "Pagina in ontwikkeling" ] ]
         ]
     }
 
@@ -175,14 +176,76 @@ viewPageHome =
 
 viewHomeIntro : Html Msg
 viewHomeIntro =
-    section [ class "home-intro" ]
-        [ div [ class "home-intro__left card card--green" ]
-            [ h1 [ class "home-intro__title" ]
-                [ text "Kleihaven"
+    section [ class "intro" ]
+        [ -- div [ class "intro__extra" ]
+          -- [ div [ class "card-img" ]
+          --     [ img
+          --         [ src "/assets/wadden.jpg"
+          --         , class "intro__right__img"
+          --         ]
+          --         []
+          --     ]
+          -- ],
+          div [ class "intro__left card card--green" ]
+            [ h1 [ class "intro__title" ]
+                [ text "Studio 1931" ]
+            , h2 [ class "intro__subtitle" ]
+                [ text "ontdekken, beleven en creëren op een bijzondere locatie" ]
+            , p [ class "intro__text" ]
+                [ text
+                    """
+            Gevestigd in een voormalige basisschool aan de Waddenzee, biedt Studio 1931
+            keramiekcursussen, een artist-in-residence programma en gastenverblijf in
+            een inspirerende omgeving.
+                    """
                 ]
-            , h2 [ class "home-intro__subtitle" ]
+            , Ui.Button.newPrimary
+                { label = "Direct naar de cursussen"
+                , action = Ui.Button.ToPage Route.Cursussen
+                }
+                |> Ui.Button.view
+            ]
+        , div [ class "intro__right" ]
+            [ div [ class "card-img" ]
+                [ img
+                    [ src "/assets/9x16/huis-tuin.jpg"
+                    , class "intro__right__img"
+                    ]
+                    []
+                ]
+            , div [ class "card-img" ]
+                [ img
+                    [ src "/assets/9x16/keramiek-lokaal.jpg"
+                    , class "intro__right__img"
+                    ]
+                    []
+                ]
+            ]
+        ]
+
+
+
+-- KLEIHAVEN
+
+
+viewPageKleihaven : List (Html Msg)
+viewPageKleihaven =
+    [ viewKleihavenIntro
+    , viewDivider
+    , viewKleihavenBlock
+    , viewKleihavenBlockTwo
+    ]
+
+
+viewKleihavenIntro : Html Msg
+viewKleihavenIntro =
+    section [ class "intro" ]
+        [ div [ class "intro__left card card--green" ]
+            [ h1 [ class "intro__title" ]
+                [ text "Kleihaven" ]
+            , h2 [ class "intro__subtitle" ]
                 [ text "het toevluchtsoord en de vertrekplek voor keramiek" ]
-            , p [ class "home-intro__text" ]
+            , p [ class "intro__text" ]
                 [ text
                     """
             Wil je keramist worden? Jouw creativiteit een boost geven? 
@@ -192,29 +255,150 @@ viewHomeIntro =
                 ]
             , Ui.Button.newPrimary
                 { label = "Bekijk alle cursussen"
-                , action = Ui.Button.ToPage Route.Kleihaven
+                , action = Ui.Button.ToPage Route.Cursussen
                 }
                 |> Ui.Button.view
             ]
-        , div [ class "home-intro__right" ]
-            [ img
-                [ src "/assets/house-garden.jpg"
-                , class "home-intro__right__img"
-                , class "home-intro__right__img--back"
+        , div [ class "intro__right" ]
+            [ div [ class "card-img" ]
+                [ img
+                    [ src "/assets/9x16/klei-barbara.jpg"
+                    , class "intro__right__img"
+                    ]
+                    []
                 ]
-                []
-            , img
-                [ src "/assets/ceramic_classroom.jpeg"
-                , class "home-intro__right__img"
-                , class "home-intro__right__img--front"
+            , div [ class "card-img" ]
+                [ img
+                    [ src "/assets/9x16/potten-van-boven.jpg"
+                    , class "intro__right__img"
+                    ]
+                    []
                 ]
-                []
             ]
         ]
 
 
-viewPageKleihaven : List (Html Msg)
-viewPageKleihaven =
-    [ h1 [] [ text "Kleihaven" ]
-    , p [] [ text "Welkom bij de Kleihaven! We werken aan de website." ]
-    ]
+viewDivider : Html msg
+viewDivider =
+    img [ src "/assets/trimmingtool.svg", class "divider-img" ] []
+
+
+viewKleihavenBlock : Html Msg
+viewKleihavenBlock =
+    section [ class "block" ]
+        [ h2 [ class "centered" ] [ text "Ontdek, creëer en geniet!" ]
+        , p [ class "centered" ] [ text "Bij Kleihaven ligt de wereld van keramiek in jouw handen" ]
+        , div [ class "block__cards" ]
+            [ div [ class "card-text-img -clickable" ]
+                [ img
+                    [ src "/assets/6x8/potje.jpg"
+                    ]
+                    []
+                , div [ class "card-text-img__content" ]
+                    [ p []
+                        [ text
+                            """
+                Voor beginners en gevorderden – leer van beeldend kunstenaars en bevlogen docenten
+                        """
+                        ]
+                    , p [ class "centered" ] [ text "☆" ]
+                    , Ui.Button.secretLink
+                        { label = "Bekijk onze cursussen"
+                        , action = Ui.Button.ToPage Route.AIR
+                        }
+                        |> Ui.Button.view
+                    ]
+                ]
+            , div [ class "card-text-img -clickable" ]
+                [ img
+                    [ src "/assets/6x8/mensen.jpg"
+                    ]
+                    []
+                , div [ class "card-text-img__content" ]
+                    [ p []
+                        [ text
+                            """
+                Werk aan technische vaardigheden en ontdek jouw creatieve mogelijkheden
+                        """
+                        ]
+                    , p [ class "centered" ] [ text "☆" ]
+                    , Ui.Button.secretLink
+                        { label = "Bekijk onze cursussen"
+                        , action = Ui.Button.ToPage Route.AIR
+                        }
+                        |> Ui.Button.view
+                    ]
+                ]
+            , div
+                [ class "card-text-img -clickable" ]
+                [ img
+                    [ src "/assets/6x8/wieringen.jpg"
+                    ]
+                    []
+                , div [ class "card-text-img__content" ]
+                    [ p []
+                        [ text
+                            """
+                Beleef voormalig eiland Wieringen, omringd door de Waddenzee en het IJsselmeer
+                        """
+                        ]
+                    , p [ class "centered" ] [ text "☆" ]
+                    , Ui.Button.secretLink
+                        { label = "Bekijk onze cursussen"
+                        , action = Ui.Button.ToPage Route.AIR
+                        }
+                        |> Ui.Button.view
+                    ]
+                ]
+            ]
+        ]
+
+
+viewKleihavenBlockTwo : Html Msg
+viewKleihavenBlockTwo =
+    section [ class "block" ]
+        [ h2 [ class "centered" ] [ text "Over de Kleihaven" ]
+        , p [ class "centered" ]
+            [ text
+                """
+        Kleihaven is gevestigd in Studio 1931, de oude school van Den Oever. 
+        Het is een plek om te wonen, werken en verblijven in en tussen de kunsten – dat delen we graag met jou!
+        """
+            ]
+        , div [ class "block__cards" ]
+            [ div [ class "card-text" ]
+                [ h3 [] [ text "Van binnen..." ]
+                , p [] [ text """
+                
+        Eén van de lokalen is ingericht als volledig uitgeruste keramiekwerkplaats. 
+        Hier staan acht splinternieuwe draaischijven, een grote kleiwals, strengenpers 
+        en andere materialen voor je klaar. 
+                """ ]
+                , p [] [ text """Er zijn ovens in verschillende maten, en we hebben
+        alles klaarstaan voor rakustook.""" ]
+                , p [] [ text """
+            Kortom – stap binnen en begin! 
+            """ ]
+                ]
+            , div [ class "card-img" ]
+                [ video [ autoplay True, attribute "muted" "true", loop True, attribute "playsinline" "true" ]
+                    [ source [ src "/assets/raku.mov", type_ "video/mp4" ] []
+                    ]
+                ]
+            , div [ class "card-text" ]
+                [ h3 [] [ text "Naar buiten!" ]
+                , p [] [ text """      
+        Ook buiten is het genieten. Het oorspronkelijke schoolplein is een bloeiende 
+        tuin geworden.
+                """ ]
+                , p [] [ text """      
+        Zodra het weer het toelaat, werken we graag in de buitenlucht. 
+        Denk aan grote tafels om samen aan te werken, of een rustig plekje met een kleibok 
+        tussen de rozen en de eeuwenoude lindenbomen.
+                """ ]
+                , p [] [ text """
+            Klinkt goed, toch? 
+            """ ]
+                ]
+            ]
+        ]

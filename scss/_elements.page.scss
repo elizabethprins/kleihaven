@@ -39,6 +39,28 @@ ol {
     list-style: none;
 }
 
+.visually-hidden {
+    width: 1px;
+    height: 1px;
+    position: absolute !important;
+    left: -9999px;
+    clip: rect(1px,1px,1px,1px);
+    word-wrap: normal;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.centered {
+    text-align: center;
+}
+
+.main {
+    width: 90%;
+    max-width: 1400px;
+    padding-bottom: 6rem;
+    margin: 1rem auto 6rem;
+}
+
 .header {
     gap: 1rem;
     padding: .25rem 1rem;
@@ -77,38 +99,41 @@ ol {
 
 .nav {
     ul {
-        gap: 1rem;
+        gap: 2rem;
         display: flex;
+        flex-direction: column;
     }
-}
-
-.main {
-    width: 90%;
-    margin: 1rem auto;
-}
-
-.home-intro {
-    gap: 3rem;
-    display: flex;
-    flex-direction: column;
 
     @include breakpoint($small) {
-        gap: 1rem;
-        flex-direction: row;
+        ul {
+            flex-direction: row;
+        }
     }
 }
 
-.home-intro__title {
+.intro {
+    gap: 3rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    color: $resedaGreen;
+
+    @include breakpoint($small) {
+        gap: 1.5rem;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.intro__title {
     margin: .25em 0;
     font-size: 15vw;
-    text-shadow: -2px 2px $sageGreen;
+    text-shadow: -2px 2px $eggShell;
 
     @include breakpoint($small) {
         font-size: 4rem;
     }
 }
 
-.home-intro__subtitle {
+.intro__subtitle {
     margin: .25em 0;
     font-size: 1.75rem;
 
@@ -117,37 +142,56 @@ ol {
     }
 }
 
-.home-intro__text {
+.intro__text {
     @include breakpoint($small) {
         font-size: 1.5rem;
     }
 }
 
-.home-intro__left,
-.home-intro__right {
-    flex: 0 0 50%;
+.intro__right {
+    gap: .75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
-.home-intro__right {
-    position: relative;
+.divider-img {
+    width: 90%;
+    max-width: 600px;
+    margin: 5rem auto 3rem;
+    display: block;
 }
 
-.home-intro__right__img {
-    aspect-ratio: 1 / 1;
-    width: calc(100% - 6rem);
-    position: absolute;
-    top: 0;
-    left: 6rem;
-    border-radius: $borderRadius;
-    box-shadow: $shadow-elevation-high;
-    object-fit: cover;
+.block {
+    width: 100%;
+    margin: 3rem 0;
+    color: $drabBrown;
+
+    h2 {
+        margin: .25em 0;
+        font-size: 2.5rem;
+    }
+
+    > p {
+        max-width: 700px;
+        margin: 0 auto;
+        margin-top: 0;
+        font-size: 1.5rem;
+        font-style: italic;
+    }
+
+    + .block {
+        margin-top: 6rem;
+    }
 }
 
-.home-intro__right__img--front {
-    aspect-ratio: 3 / 4;
-    --shadow-color: 0deg 0% 0%;
-    width: calc(70% - 6rem);
-    top: 2.5rem;
-    left: 1rem;
-    box-shadow: $shadow-elevation-medium;
+.block__cards {
+    gap: 1.5rem;
+    margin: 3rem 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    color: inherit;
+
+    @include breakpoint($small) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
 }
