@@ -7,6 +7,7 @@ import Copy exposing (copy)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (on)
 import Json.Decode as Decode
 import Process
 import Route
@@ -51,6 +52,7 @@ subscriptions model =
 type alias Model =
     { navKey : Navigation.Key
     , page : Route.Page
+    , loadedImages : Set String
     }
 
 
@@ -58,6 +60,7 @@ init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url key =
     ( { navKey = key
       , page = Route.toPage url
+      , loadedImages = Set.empty
       }
     , urlChanged (Route.toUrl <| Route.toPage url)
     )
@@ -71,6 +74,7 @@ type Msg
     = NoOp
     | ClickedLink Browser.UrlRequest
     | UrlChanged Url
+    | ImageLoaded String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -100,6 +104,11 @@ update msg model =
             , urlChanged (Route.toUrl <| Route.toPage url)
             )
 
+        ImageLoaded src ->
+            ( { model | loadedImages = Set.insert src model.loadedImages }
+            , Cmd.none
+            )
+
 
 
 -- VIEW
@@ -113,10 +122,10 @@ view model =
         , main_ [ class "main" ] <|
             case model.page of
                 Route.Kleihaven ->
-                    viewPageKleihaven
+                    viewPageKleihaven model
 
                 Route.Home ->
-                    viewPageHome
+                    viewPageHome model
 
                 Route.NotFound ->
                     viewPageNotFound
@@ -162,8 +171,12 @@ viewNavigation =
 -- PAGE HELPERS
 
 
-viewIntro : { title : String, subtitle : String, intro : String, coursesButton : String } -> List String -> Html Msg
-viewIntro content imgSrcs =
+viewIntro :
+    Model
+    -> { title : String, subtitle : String, intro : String, coursesButton : String }
+    -> List ImgProps
+    -> Html Msg
+viewIntro model content imgProps =
     section [ class "intro" ]
         [ div [ class "intro__left card" ]
             [ h1 [ class "intro__title" ]
@@ -179,19 +192,42 @@ viewIntro content imgSrcs =
                 |> Ui.Button.view
             ]
         , div [ class "intro__right" ] <|
-            List.map viewImageCard imgSrcs
+            List.map (viewImageCard model.loadedImages) imgProps
         ]
 
 
-viewImageCard : String -> Html msg
-viewImageCard imgSrc =
+viewImageCard : Set String -> ImgProps -> Html Msg
+viewImageCard loadedImages imgProps =
     div [ class "card-img" ]
-        [ img
-            [ src imgSrc
-            , alt ""
-            ]
-            []
-        ]
+        [ viewImage loadedImages imgProps ]
+
+
+type alias ImgProps =
+    { imgSrc : String
+    , imgAlt : String
+    , lazy : Bool
+    }
+
+
+viewImage : Set String -> ImgProps -> Html Msg
+viewImage loadedImages { imgSrc, imgAlt, lazy } =
+    let
+        lazyAttr =
+            if lazy then
+                [ attribute "loading" "lazy" ]
+
+            else
+                []
+    in
+    img
+        ([ src imgSrc
+         , alt imgAlt
+         , classList [ ( "loading", not (Set.member imgSrc loadedImages) ) ]
+         , on "load" (Decode.succeed (ImageLoaded imgSrc))
+         ]
+            ++ lazyAttr
+        )
+        []
 
 
 
@@ -209,48 +245,60 @@ viewPageNotFound =
 -- HOMEPAGE
 
 
-viewPageHome : List (Html Msg)
-viewPageHome =
-    [ viewHomeIntro
+viewPageHome : Model -> List (Html Msg)
+viewPageHome model =
+    [ viewHomeIntro model
     ]
 
 
-viewHomeIntro : Html Msg
-viewHomeIntro =
-    viewIntro
+viewHomeIntro : Model -> Html Msg
+viewHomeIntro model =
+    viewIntro model
         { title = copy.home.title
         , subtitle = copy.home.subtitle
         , intro = copy.home.intro
         , coursesButton = copy.home.coursesButton
         }
-        [ "/assets/9x16/huis-tuin.jpg"
-        , "/assets/9x16/keramiek-lokaal.jpg"
+        [ { imgSrc = "/assets/9x16/huis-tuin.jpg"
+          , imgAlt = "Huis en bloeiende tuin van Studio 1931"
+          , lazy = False
+          }
+        , { imgSrc = "/assets/9x16/keramiek-lokaal.jpg"
+          , imgAlt = "Keramiekwerkplaats met draaischijven"
+          , lazy = False
+          }
         ]
 
 
 
--- KLEIHAVEN
+-- KLEIHAVEN PAGE
 
 
-viewPageKleihaven : List (Html Msg)
-viewPageKleihaven =
-    [ viewKleihavenIntro
+viewPageKleihaven : Model -> List (Html Msg)
+viewPageKleihaven model =
+    [ viewKleihavenIntro model
     , viewDivider
-    , viewKleihavenBlock
+    , viewKleihavenBlock model
     , viewKleihavenBlockTwo
     ]
 
 
-viewKleihavenIntro : Html Msg
-viewKleihavenIntro =
-    viewIntro
+viewKleihavenIntro : Model -> Html Msg
+viewKleihavenIntro model =
+    viewIntro model
         { title = copy.kleihaven.title
         , subtitle = copy.kleihaven.subtitle
         , intro = copy.kleihaven.intro
         , coursesButton = copy.kleihaven.coursesButton
         }
-        [ "/assets/9x16/klei-barbara.jpg"
-        , "/assets/9x16/potten-van-boven.jpg"
+        [ { imgSrc = "/assets/9x16/klei-barbara.jpg"
+          , imgAlt = "Cursist aan het werk in de keramiekwerkplaats"
+          , lazy = False
+          }
+        , { imgSrc = "/assets/9x16/potten-van-boven.jpg"
+          , imgAlt = "Keramiekwerken van cursisten"
+          , lazy = False
+          }
         ]
 
 
@@ -259,16 +307,16 @@ viewDivider =
     img [ src "/assets/trimmingtool.svg", class "divider-img" ] []
 
 
-viewKleihavenBlock : Html Msg
-viewKleihavenBlock =
+viewKleihavenBlock : Model -> Html Msg
+viewKleihavenBlock model =
     let
         viewCard content =
             div [ class "card-text-img -clickable" ]
-                [ img
-                    [ src content.imgSrc
-                    , alt ""
-                    ]
-                    []
+                [ viewImage model.loadedImages
+                    { imgSrc = content.imgSrc
+                    , imgAlt = content.imgAlt
+                    , lazy = True
+                    }
                 , div [ class "card-text-img__content" ]
                     [ p []
                         [ text content.text ]
