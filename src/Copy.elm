@@ -70,7 +70,7 @@ copy =
                 , text3 = "Kortom – stap binnen en begin!"
                 }
             , outside =
-                { title = "Naar buiten!"
+                { title = "...naar buiten!"
                 , text1 = """      
                     Ook buiten is het genieten. Het oorspronkelijke schoolplein is een bloeiende 
                     tuin geworden.
