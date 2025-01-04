@@ -8,6 +8,7 @@ import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on)
+import Html.Keyed
 import Json.Decode as Decode
 import Process
 import Route
@@ -198,8 +199,12 @@ viewIntro model content imgProps =
 
 viewImageCard : Set String -> ImgProps -> Html Msg
 viewImageCard loadedImages imgProps =
-    div [ class "card-img" ]
-        [ viewImage loadedImages imgProps ]
+    Html.Keyed.node "div"
+        [ class "card-img" ]
+        [ ( imgProps.imgSrc
+          , viewImage loadedImages imgProps
+          )
+        ]
 
 
 type alias ImgProps =
