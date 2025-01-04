@@ -7,7 +7,7 @@ import Copy exposing (copy)
 import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on)
+import Html.Events exposing (on, onClick)
 import Html.Keyed
 import Json.Decode as Decode
 import Process
@@ -54,6 +54,7 @@ type alias Model =
     { navKey : Navigation.Key
     , page : Route.Page
     , loadedImages : Set String
+    , mobileMenuOpen : Bool
     }
 
 
@@ -62,6 +63,7 @@ init _ url key =
     ( { navKey = key
       , page = Route.toPage url
       , loadedImages = Set.empty
+      , mobileMenuOpen = False
       }
     , urlChanged (Route.toUrl <| Route.toPage url)
     )
@@ -76,6 +78,7 @@ type Msg
     | ClickedLink Browser.UrlRequest
     | UrlChanged Url
     | ImageLoaded String
+    | ToggleMobileMenu
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -101,7 +104,10 @@ update msg model =
                 page =
                     Route.toPage url
             in
-            ( { model | page = page }
+            ( { model
+                | page = page
+                , mobileMenuOpen = False
+              }
             , urlChanged (Route.toUrl <| Route.toPage url)
             )
 
@@ -109,6 +115,9 @@ update msg model =
             ( { model | loadedImages = Set.insert src model.loadedImages }
             , Cmd.none
             )
+
+        ToggleMobileMenu ->
+            ( { model | mobileMenuOpen = not model.mobileMenuOpen }, Cmd.none )
 
 
 
@@ -119,7 +128,7 @@ view : Model -> Browser.Document Msg
 view model =
     { title = copy.title
     , body =
-        [ viewNavigation
+        [ viewNavigation model
         , main_ [ class "main" ] <|
             case model.page of
                 Route.Kleihaven ->
@@ -137,8 +146,8 @@ view model =
     }
 
 
-viewNavigation : Html Msg
-viewNavigation =
+viewNavigation : Model -> Html Msg
+viewNavigation model =
     let
         viewLogo =
             a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
@@ -158,9 +167,25 @@ viewNavigation =
                     }
                     |> Ui.Button.view
                 ]
+
+        hamburgerButton =
+            button
+                [ class "hamburger"
+                , onClick ToggleMobileMenu
+                ]
+                [ span [ class "hamburger-line" ] []
+                , span [ class "hamburger-line" ] []
+                , span [ class "hamburger-line" ] []
+                ]
     in
-    header [ class "header" ]
+    header
+        [ classList
+            [ ( "header", True )
+            , ( "nav--open", model.mobileMenuOpen )
+            ]
+        ]
         [ viewLogo
+        , hamburgerButton
         , nav [ class "nav" ]
             [ ul []
                 (List.map viewMenuItem Route.allPages)
