@@ -1,36 +1,3 @@
-button {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-osx-appearance: none;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    text-decoration: none;
-    color: currentColor;
-    background: transparent;
-    overflow: visible;
-    cursor: pointer;
-}
-
-a {
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-}
-
-.link-secret {
-    inset: 0 0 0 0;
-    position: absolute;
-}
-
-.link {
-    font-family: $fontSecondary;
-
-    @include hover {
-        text-decoration: underline;
-    }
-}
-
 .button {
     padding: .5em 2em;
     margin: .875em 0 1em;
@@ -65,4 +32,17 @@ a {
 
 .button--primary {
     color: $redBrown;
+}
+
+.link-secret {
+    inset: 0 0 0 0;
+    position: absolute;
+}
+
+.link {
+    font-family: $fontSecondary;
+
+    @include hover {
+        text-decoration: underline;
+    }
 }

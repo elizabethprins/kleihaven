@@ -1,0 +1,93 @@
+.intro {
+    gap: 3rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    color: $resedaGreen;
+
+    @include breakpoint($small) {
+        gap: 1.5rem;
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.intro__title {
+    margin: .25em 0;
+    font-size: 15vw;
+    text-shadow: -2px 2px $eggShell;
+
+    @include breakpoint($small) {
+        font-size: 4rem;
+    }
+}
+
+.intro__subtitle {
+    margin: .25em 0;
+    font-size: 1.75rem;
+
+    @include breakpoint($small) {
+        font-size: 2.5rem;
+    }
+}
+
+.intro__text {
+    @include breakpoint($small) {
+        font-size: 1.5rem;
+    }
+}
+
+.intro__right {
+    gap: .75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    @include breakpoint($small) {
+        gap: 1.5rem;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+
+        .card-img img {
+            position: absolute;
+        }
+    }
+
+    @include breakpoint($large) {
+        gap: .75rem;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+    }
+}
+
+.block {
+    width: 100%;
+    margin: 3rem 0;
+    color: $drabBrown;
+
+    h2 {
+        margin: .25em 0;
+        font-size: 2.5rem;
+    }
+
+    > p {
+        max-width: 700px;
+        margin: 0 auto;
+        margin-top: 0;
+        font-size: 1.5rem;
+        font-style: italic;
+    }
+
+    + .block {
+        margin-top: 6rem;
+    }
+}
+
+.block__cards {
+    gap: 1.5rem;
+    margin: 3rem 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    color: inherit;
+
+    @include breakpoint($small) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}

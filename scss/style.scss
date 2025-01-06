@@ -1,15 +1,27 @@
-// SETTINGS
+/* SETTINGS – Base variables and configurations */
 
 @import "settings.variables";
 
 
-// TOOLS
+/* TOOLS – Mixins, functions, and other helpers */
 
 @import "tools.mixins";
 
 
-// ELEMENTS
+/* ELEMENTS – Base HTML element styles */
 
 @import "elements.page";
-@import "elements.buttons";
-@import "elements.cards";
+
+
+/* COMPONENTS – Class-based UI component styles */
+
+@import "components.general";
+@import "components.buttons";
+@import "components.cards";
+@import "components.header";
+@import "components.sections";
+
+
+/* UTILITIES – Override any styles that go before */
+
+@import "utilities.helpers";
