@@ -1,27 +1,27 @@
-/* SETTINGS – Base variables and configurations */
+/*  Config modules are loaded in indivual stylesheets by @use rule:
+    - SETTINGS: Base variables and configurations
+    - TOOLS: Mixins, functions, and other helpers
 
-@import "settings.variables";
-
-
-/* TOOLS – Mixins, functions, and other helpers */
-
-@import "tools.mixins";
+    Example:
+    @use "settings.variables";
+    @use "tools.mixins";
+*/
 
 
 /* ELEMENTS – Base HTML element styles */
 
-@import "elements.page";
+@use "elements.page";
 
 
 /* COMPONENTS – Class-based UI component styles */
 
-@import "components.general";
-@import "components.buttons";
-@import "components.cards";
-@import "components.header";
-@import "components.sections";
+@use "components.general";
+@use "components.buttons" as components2;
+@use "components.cards" as components3;
+@use "components.header" as components4;
+@use "components.sections" as components5;
 
 
 /* UTILITIES – Override any styles that go before */
 
-@import "utilities.helpers";
+@use "utilities.helpers";

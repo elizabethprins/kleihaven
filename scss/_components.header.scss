@@ -1,3 +1,6 @@
+@use "settings.variables";
+@use "tools.mixins";
+
 .header {
     gap: 1rem;
     padding: .25rem 1rem;
@@ -6,11 +9,11 @@
     justify-content: space-between;
     position: sticky;
     top: 0;
-    color: $black;
-    background-color: $white;
+    color: settings.$black;
+    background-color: settings.$white;
     z-index: 1;
 
-    @include breakpoint($small) {
+    @include tools.breakpoint(settings.$small) {
         padding: 1rem 4rem;
     }
 
@@ -22,7 +25,7 @@
 
         @keyframes add-shadow {
             100% {
-                box-shadow: $shadow-elevation-medium;
+                box-shadow: settings.$shadow-elevation-medium;
             }
         }
     }
@@ -40,8 +43,8 @@
     top: 100%;
     right: 0;
     left: 0;
-    box-shadow: $shadow-elevation-medium;
-    background: $white;
+    box-shadow: settings.$shadow-elevation-medium;
+    background: settings.$white;
     overflow: hidden;
 
     .nav--open & {
@@ -61,7 +64,7 @@
         transition: opacity .1s .2s;
     }
 
-    @include breakpoint($small) {
+    @include tools.breakpoint(settings.$small) {
         height: auto;
         position: static;
         box-shadow: none;
@@ -84,11 +87,11 @@
     flex-direction: column;
     justify-content: space-around;
     border: none;
-    color: $resedaGreen;
+    color: settings.$resedaGreen;
     background: transparent;
     cursor: pointer;
 
-    @include breakpoint($small) {
+    @include tools.breakpoint(settings.$small) {
         display: none;
     }
 }

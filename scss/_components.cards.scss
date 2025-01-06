@@ -1,17 +1,21 @@
+@use "sass:color";
+@use "settings.variables";
+@use "tools.mixins";
+
 .card {
-    @include cardBefore($resedaGreen, true);
+    @include tools.cardBefore(settings.$resedaGreen, true);
     padding: 1rem 2rem;
     border: 1px solid currentColor;
-    border-radius: $borderRadius;
-    background-color: $cosmicLatte;
+    border-radius: settings.$borderRadius;
+    background-color: settings.$cosmicLatte;
 }
 
 .card-text {
-    @include cardBefore(inherit, false);
+    @include tools.cardBefore(inherit, false);
     padding: 1rem 2rem;
     border: 1px solid currentColor;
-    border-radius: $borderRadius;
-    background-color: $white;
+    border-radius: settings.$borderRadius;
+    background-color: settings.$white;
 
     p {
         line-height: 1.75;
@@ -19,19 +23,19 @@
 }
 
 .card-img {
-    @include cardBefore(inherit, false);
+    @include tools.cardBefore(inherit, false);
 
     img,
     video {
         width: 100%;
         height: 100%;
-        border-radius: $borderRadius;
+        border-radius: settings.$borderRadius;
         object-fit: cover;
     }
 
     img {
         display: flex;
-        background-color: $cosmicLatte;
+        background-color: settings.$cosmicLatte;
         transition: opacity .2s;
 
         &.loading {
@@ -41,20 +45,20 @@
 }
 
 .card-text-img {
-    @include cardBefore(inherit, false);
+    @include tools.cardBefore(inherit, false);
     display: grid;
     grid-template-columns: 1fr 1fr;
     border: 1px solid currentColor;
-    border-radius: $borderRadius;
-    background-color: $cosmicLatte;
+    border-radius: settings.$borderRadius;
+    background-color: settings.$cosmicLatte;
 
     img {
         width: 100%;
         height: 100%;
         display: flex;
-        border-radius: $borderRadius 0 0 $borderRadius;
+        border-radius: settings.$borderRadius 0 0 settings.$borderRadius;
         box-shadow: -1px 0px 0 0 currentColor;
-        background-color: $cosmicLatte;
+        background-color: settings.$cosmicLatte;
         object-fit: cover;
         transition: opacity .2s;
 
@@ -77,9 +81,9 @@
     &.-clickable {
         cursor: pointer;
 
-        @include hover {
-            @include cardBefore(inherit, true);
-            background-color: adjust-color($cosmicLatte, $lightness: -3%);
+        @include tools.hover {
+            @include tools.cardBefore(inherit, true);
+            background-color: color.adjust(settings.$cosmicLatte, $lightness: -3%);
         }
     }
 }

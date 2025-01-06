@@ -1,37 +1,40 @@
+@use "settings.variables";
+@use "tools.mixins";
+
 .button {
     padding: .5em 2em;
     margin: .875em 0 1em;
     display: inline-block;
     border: 1px solid currentColor;
-    border-radius: $borderRadius;
-    font-family: $fontSecondary;
+    border-radius: settings.$borderRadius;
+    font-family: settings.$fontSecondary;
     font-size: 1em;
     font-weight: 700;
     text-decoration: none;
     text-transform: lowercase;
     transition: all .2s ease-in-out;
 
-    @include hover {
+    @include tools.hover {
         text-decoration: none;
     }
 
-    @include hoverOnly {
+    @include tools.hoverOnly {
         box-shadow: -2px 3px 0 0 currentColor;
         transform: translate(2px, -3px);
     }
 
-    @include active {
+    @include tools.active {
         box-shadow: none;
         transform: translate(0, 0);
     }
 
-    @include breakpoint($small) {
+    @include tools.breakpoint(settings.$small) {
         font-size: 1.25em;
     }
 }
 
 .button--primary {
-    color: $redBrown;
+    color: settings.$redBrown;
 }
 
 .link-secret {
@@ -40,9 +43,9 @@
 }
 
 .link {
-    font-family: $fontSecondary;
+    font-family: settings.$fontSecondary;
 
-    @include hover {
+    @include tools.hover {
         text-decoration: underline;
     }
 }
