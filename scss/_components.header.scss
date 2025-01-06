@@ -38,7 +38,7 @@
 }
 
 .nav {
-    height: 0;
+    max-height: 0;
     position: absolute;
     top: 100%;
     right: 0;
@@ -46,14 +46,7 @@
     box-shadow: settings.$shadow-elevation-medium;
     background: settings.$white;
     overflow: hidden;
-
-    .nav--open & {
-        height: auto;
-
-        ul {
-            opacity: 1;
-        }
-    }
+    transition: max-height .3s;
 
     ul {
         gap: 2rem;
@@ -61,7 +54,17 @@
         opacity: 0;
         display: flex;
         flex-direction: column;
-        transition: opacity .1s .2s;
+        transform: translateY(-20px);
+        transition: all .3s;
+    }
+
+    .nav--open & {
+        max-height: 100vh;
+
+        ul {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @include tools.breakpoint(settings.$small) {
@@ -75,6 +78,7 @@
             margin: 0;
             opacity: 1;
             flex-direction: row;
+            transform: translateY(0);
         }
     }
 }
@@ -103,7 +107,7 @@
     border-radius: 10px;
     background: currentColor;
     transform-origin: 1px;
-    transition: all .25s ease-in-out;
+    transition: all .3s;
 
     .nav--open & {
         &:nth-child(1) {
