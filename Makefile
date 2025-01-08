@@ -12,6 +12,12 @@ SCSS_FILES = $(shell find scss -name '*.scss')
 URLS = /kleihaven /
 DIST_URLS = $(foreach url, $(URLS), $(DIST_DIR)$(url)/index.html)
 BASE_URL ?= http://localhost:3000
+ASSETS_DIR = assets
+OUTPUT_WEBP_DIR = assets/webp
+OUTPUT_AVIF_DIR = assets/avif
+WEBP_QUALITY = 80
+AVIF_QUALITY = 30
+JPG_FILES = $(shell find $(ASSETS_DIR) -type f -iname "*.jpg")
 
 export PATH := $(NPM_PATH):$(PATH)
 
@@ -90,3 +96,46 @@ generate_html: ensure_script_permissions
 
 ensure_script_permissions:
 	@chmod +x generate_html.sh
+
+convert-webp:
+	@echo "Converting JPG to WebP..."
+	@for file in $(JPG_FILES); do \
+		dir=$$(dirname $$file); \
+		rel_dir=$$(echo $$dir | sed 's|^$(ASSETS_DIR)/||; s|^$(ASSETS_DIR)$$||'); \
+		file_name=$$(basename $$file .jpg); \
+		if [ -z "$$rel_dir" ]; then \
+			output_dir=$(OUTPUT_WEBP_DIR); \
+		else \
+			output_dir=$(OUTPUT_WEBP_DIR)/$$rel_dir; \
+		fi; \
+		mkdir -p $$output_dir; \
+		ffmpeg -i $$file -c:v libwebp -q:v $(WEBP_QUALITY) -preset default -pix_fmt yuv420p $$output_dir/$$file_name.webp; \
+	done
+	@echo "Conversion to WebP completed."
+
+convert-avif:
+	@echo "Converting JPG to AVIF..."
+	@for file in $(JPG_FILES); do \
+		dir=$$(dirname $$file); \
+		rel_dir=$$(echo $$dir | sed 's|^$(ASSETS_DIR)/||; s|^$(ASSETS_DIR)$$||'); \
+		file_name=$$(basename $$file .jpg); \
+		if [ -z "$$rel_dir" ]; then \
+			output_dir=$(OUTPUT_AVIF_DIR); \
+		else \
+			output_dir=$(OUTPUT_AVIF_DIR)/$$rel_dir; \
+		fi; \
+		mkdir -p $$output_dir; \
+		ffmpeg -i $$file -c:v libaom-av1 -crf $(AVIF_QUALITY) -b:v 0 -pix_fmt yuv420p $$output_dir/$$file_name.avif; \
+	done
+	@echo "Conversion to AVIF completed."
+
+# Default target (converts both WebP and AVIF)
+convert-images:
+	@mkdir -p $(OUTPUT_WEBP_DIR) $(OUTPUT_AVIF_DIR)
+	@$(MAKE) convert-webp convert-avif
+
+# Clean up generated images (optional)
+clean-images:
+	@echo "Cleaning up generated images..."
+	rm -rf $(OUTPUT_WEBP_DIR) $(OUTPUT_AVIF_DIR)
+	@echo "Clean up completed."

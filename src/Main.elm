@@ -233,10 +233,18 @@ viewImageCard loadedImages imgProps =
 
 
 type alias ImgProps =
-    { imgSrc : String
+    { -- the relative path of the image in the /assets folder, without the extension
+      -- example: 9x16/keramiek-lokaal
+      imgSrc : String
     , imgAlt : String
     , lazy : Bool
     }
+
+
+type ImageFormat
+    = JPG
+    | AVIF
+    | WEBP
 
 
 viewImage : Set String -> ImgProps -> Html Msg
@@ -248,16 +256,32 @@ viewImage loadedImages { imgSrc, imgAlt, lazy } =
 
             else
                 []
+
+        toSrc format src =
+            case format of
+                JPG ->
+                    "/assets/" ++ src ++ ".jpg"
+
+                AVIF ->
+                    "/assets/avif/" ++ src ++ ".avif"
+
+                WEBP ->
+                    "/assets/webp/" ++ src ++ ".webp"
     in
-    img
-        ([ src imgSrc
-         , alt imgAlt
-         , classList [ ( "loading", not (Set.member imgSrc loadedImages) ) ]
-         , on "load" (Decode.succeed (ImageLoaded imgSrc))
-         ]
-            ++ lazyAttr
-        )
+    Html.node "picture"
         []
+        [ source [ attribute "srcSet" (toSrc AVIF imgSrc), type_ "image/avif" ] []
+        , source [ attribute "srcSet" (toSrc WEBP imgSrc), type_ "image/webp" ] []
+        , img
+            ([ src (toSrc JPG imgSrc)
+             , alt imgAlt
+             , classList [ ( "loading", not (Set.member imgSrc loadedImages) ) ]
+             , on "load" (Decode.succeed (ImageLoaded imgSrc))
+             ]
+                ++ lazyAttr
+            )
+            []
+        ]
 
 
 
@@ -289,11 +313,11 @@ viewHomeIntro model =
         , intro = copy.home.intro
         , coursesButton = copy.home.coursesButton
         }
-        [ { imgSrc = "/assets/9x16/huis-tuin.jpg"
+        [ { imgSrc = "9x16/huis-tuin"
           , imgAlt = "Huis en bloeiende tuin van Studio 1931"
           , lazy = False
           }
-        , { imgSrc = "/assets/9x16/keramiek-lokaal.jpg"
+        , { imgSrc = "9x16/keramiek-lokaal"
           , imgAlt = "Keramiekwerkplaats met draaischijven"
           , lazy = False
           }
@@ -321,11 +345,11 @@ viewKleihavenIntro model =
         , intro = copy.kleihaven.intro
         , coursesButton = copy.kleihaven.coursesButton
         }
-        [ { imgSrc = "/assets/9x16/klei-barbara.jpg"
+        [ { imgSrc = "9x16/klei-barbara"
           , imgAlt = "Cursist aan het werk in de keramiekwerkplaats"
           , lazy = False
           }
-        , { imgSrc = "/assets/9x16/potten-van-boven.jpg"
+        , { imgSrc = "9x16/potten-van-boven"
           , imgAlt = "Keramiekwerken van cursisten"
           , lazy = False
           }

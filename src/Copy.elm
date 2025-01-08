@@ -31,19 +31,19 @@ copy =
             { title = "Ontdek, creëer en geniet!"
             , subtitle = "Bij Kleihaven ligt de wereld van keramiek in jouw handen"
             , cards =
-                [ { imgSrc = "/assets/6x8/potje.jpg"
+                [ { imgSrc = "6x8/potje"
                   , imgAlt = "Keramieken potje in een paar handen"
                   , text = """
                     Voor beginners en gevorderden – leer van beeldend kunstenaars en bevlogen docenten
                     """
                   }
-                , { imgSrc = "/assets/6x8/mensen.jpg"
+                , { imgSrc = "6x8/mensen"
                   , imgAlt = "Groep cursisten aan het werk in de tuin keramiekwerkplaats"
                   , text = """
                     Werk aan technische vaardigheden en ontdek jouw creatieve mogelijkheden
                     """
                   }
-                , { imgSrc = "/assets/6x8/wieringen.jpg"
+                , { imgSrc = "6x8/wieringen"
                   , imgAlt = "Foto de Waddenzee vanaf voormalig eiland Wieringen"
                   , text = """
                     Beleef voormalig eiland Wieringen, omringd door de Waddenzee en het IJsselmeer
