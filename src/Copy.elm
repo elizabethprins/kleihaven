@@ -9,7 +9,7 @@ copy =
         , description = "De pagina die je zoekt bestaat niet."
         }
     , home =
-        { title = "Studio 1931"
+        { title = "Studio1931"
         , subtitle = "ontdekken, beleven en creëren op een bijzondere locatie"
         , intro = """
             Gevestigd in een voormalige basisschool aan de Waddenzee, biedt Studio 1931
@@ -22,7 +22,7 @@ copy =
         { title = "Kleihaven"
         , subtitle = "het toevluchtsoord en de vertrekplek voor keramiek"
         , intro = """
-            Wil je keramist worden? Jouw creativiteit een boost geven? 
+            Wil je keramist worden? Of je vaardigheden juist verder ontwikkelen? Jouw creativiteit een boost geven? 
             Experimenteren met klei? Welkom bij de Kleihaven! 
             Wij bieden keramiekcursussen van enkele dagen tot twee volle weken.
             """

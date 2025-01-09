@@ -302,6 +302,7 @@ viewPageNotFound =
 viewPageHome : Model -> List (Html Msg)
 viewPageHome model =
     [ viewHomeIntro model
+    , viewHomeBlock model
     ]
 
 
@@ -321,6 +322,39 @@ viewHomeIntro model =
           , imgAlt = "Keramiekwerkplaats met draaischijven"
           , lazy = False
           }
+        ]
+
+
+viewHomeBlock : Model -> Html Msg
+viewHomeBlock { loadedImages } =
+    section [ class "block" ]
+        [ div [ class "card-bg-img" ]
+            [ div []
+                [ h2 [] [ text "Studio1931 presenteert: Kleihaven" ]
+                , p [] [ text """
+            Bij Kleihaven draait alles om leren en creëren. 
+            Onder de inspirerende leiding van bevlogen kunstenaars en docenten bieden we 
+            een gevarieerd cursusprogramma in keramiek, van enkele dagen tot twee weken. 
+            Van draaitechnieken en handvormen tot glazuren en stooktechnieken – bij ons 
+            kun je zowel je technische vaardigheden als je creatieve ideeën verder ontwikkelen.
+            """ ]
+                , p []
+                    [ text """
+            Onze cursussen zijn geschikt voor zowel enthousiaste amateurs als doorgewinterde 
+            professionals. En wil je het meeste uit je ervaring halen? Blijf dan logeren in ons 
+            gastenverblijf en dompel je volledig onder in de creatieve sfeer.
+            """
+                    ]
+                , p [] [ text """
+            Kleihaven is dé plek om jouw keramisch avontuur te starten of verder te ontwikkelen.
+            """ ]
+                ]
+            , viewImage loadedImages
+                { imgSrc = "den-helder-smaller"
+                , imgAlt = "Uitzicht over de waddenzee"
+                , lazy = True
+                }
+            ]
         ]
 
 
