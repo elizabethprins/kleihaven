@@ -17,6 +17,70 @@ copy =
             een inspirerende omgeving.
             """
         , coursesButton = "Direct naar de cursussen"
+        , block =
+            { title = "Programma's en activiteiten"
+            , description = """
+                Studio1931 is een broedplaats met artistieke programma's en activiteiten. 
+                Bij ons vind je alle ruimte om je ideeën tot leven te brengen.
+                """
+            }
+        , blockKleihaven =
+            { title = "Studio1931 presenteert: Kleihaven"
+            , description1 = """
+                Bij Kleihaven draait alles om leren en creëren.
+                Onder de inspirerende leiding van bevlogen kunstenaars en docenten bieden we
+                diverse keramiekcursussen, variërend van enkele dagen tot twee weken.
+                Van draaitechnieken en handvormen tot glazuren en stooktechnieken – bij ons
+                kun je zowel je technische vaardigheden als je creatieve ideeën verder ontwikkelen.
+                """
+            , description2 = """
+                Onze cursussen zijn geschikt voor zowel enthousiaste amateurs als doorgewinterde
+                professionals. En wil je het meeste uit je ervaring halen? Blijf dan logeren in ons
+                gastenverblijf en dompel je volledig onder in de creatieve sfeer.
+                """
+            , description3 = """
+                Een bijzondere leerervaring voor je handen en je hoofd! Kleihaven biedt voor iedereen
+                iets unieks.
+                """
+            , readMore = "Lees meer"
+            }
+        , blockAIR =
+            { title = "Artist in Residence programma's"
+            , description1 = """
+                Ben jij beeldend kunstenaar en toe aan een plek waar frisse zeewind nieuwe 
+                energie aan je werk geeft? Of je nu ruimte zoekt om bestaande plannen uit 
+                te werken, of inspiratie op te doen voor nieuwe projecten, Studio1931 biedt een ruime 
+                werkplek en tijd om je te focussen. 
+                """
+            , description2 = """
+                We bieden werkperiodes van 4 à 6 weken voor individuele kunstenaars of duo's.
+                Ook hebben we onze TUSSEN ZOET EN ZOUT week: 
+                een jaarlijks terugkerende projectweek waarin meerdere kunstenaars (samen)werken.
+                """
+            , description3 = """
+                Laat je meevoeren door de rust, wind 
+                en bijzondere omgeving - dé ingrediënten om jouw proces en werk te laten bruisen. 
+                """
+            , readMore = "Lees meer"
+            }
+        , blockOverOns =
+            { title = "Over Studio1931"
+            , description1 = """
+                Studio1931 heeft als doel om makers, publiek, kunst en omgeving met elkaar te verbinden.
+                """
+            , description2 = """
+                We zijn gevestigd in de oude basisschool van Den Oever, 
+                op het voormalige Zuiderzee-eiland Wieringen.
+                Het is een prachtige plek om zowel te wonen als te werken in 
+                en tussen de kunsten.
+                """
+            , description3 = """
+                Met werelderfgoed de Waddenzee in de achtertuin 
+                en het IJsselmeer op loopafstand zit Studio1931 op een bijzondere 
+                locatie waar de zeewind alle artistieke plannen en creatieve ideeën aanwakkert.
+                """
+            , readMore = "Lees meer"
+            }
         }
     , kleihaven =
         { title = "Kleihaven"

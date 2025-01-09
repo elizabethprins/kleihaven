@@ -2,16 +2,13 @@ port module Main exposing (main)
 
 import Browser
 import Browser.Dom
-import Browser.Events
 import Browser.Navigation as Navigation
 import Copy exposing (copy)
-import Dict exposing (Dict)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Keyed
 import Json.Decode as Decode
-import Process
 import Route
 import Set exposing (Set)
 import Task
@@ -43,7 +40,7 @@ port urlChanged : String -> Cmd msg
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.none
 
 
@@ -307,8 +304,8 @@ viewPageNotFound =
 viewPageHome : Model -> List (Html Msg)
 viewPageHome model =
     [ viewHomeIntro model
-    , viewHomeBlock model
-    , viewHomeBlockKleihaven model
+    , viewHomeBlock
+    , viewHomeBlockKleihaven
     , viewHomeBlockAIR model
     , viewHomeBlockOverOns model
     ]
@@ -333,21 +330,18 @@ viewHomeIntro model =
         ]
 
 
-viewHomeBlock : Model -> Html Msg
-viewHomeBlock { loadedImages } =
-    section [ class "block" ]
+viewHomeBlock : Html Msg
+viewHomeBlock =
+    section [ class "block -extra-margin-top" ]
         [ h2 [ class "centered" ]
-            [ text "Programma's en activiteiten" ]
+            [ text copy.home.block.title ]
         , p [ class "centered" ]
-            [ text """
-        Studio1931 is een broedplaats met artistieke programma's en activiteiten. 
-        Bij ons vind je alle ruimte om je ideeën tot leven te brengen.
-        """ ]
+            [ text copy.home.block.description ]
         ]
 
 
-viewHomeBlockKleihaven : Model -> Html Msg
-viewHomeBlockKleihaven { loadedImages } =
+viewHomeBlockKleihaven : Html Msg
+viewHomeBlockKleihaven =
     section [ class "block" ]
         [ div [ class "block__cards -centerpiece" ]
             [ img
@@ -357,26 +351,12 @@ viewHomeBlockKleihaven { loadedImages } =
                 []
             , div [ class "card-text" ]
                 [ div []
-                    [ h2 [] [ text "Studio1931 presenteert: Kleihaven" ]
-                    , p [] [ text """
-          Bij Kleihaven draait alles om leren en creëren.
-          Onder de inspirerende leiding van bevlogen kunstenaars en docenten bieden we
-          diverse keramiekcursussen, variërend van enkele dagen tot twee weken.
-          Van draaitechnieken en handvormen tot glazuren en stooktechnieken – bij ons
-          kun je zowel je technische vaardigheden als je creatieve ideeën verder ontwikkelen.
-          """ ]
-                    , p []
-                        [ text """
-          Onze cursussen zijn geschikt voor zowel enthousiaste amateurs als doorgewinterde
-          professionals. En wil je het meeste uit je ervaring halen? Blijf dan logeren in ons
-          gastenverblijf en dompel je volledig onder in de creatieve sfeer.
-          """
-                        ]
-                    , p [] [ text """
-          Kleihaven biedt voor elk wat wils, een bijzondere leerervaring voor je handen en je hoofd.
-          """ ]
+                    [ h2 [] [ text copy.home.blockKleihaven.title ]
+                    , p [] [ text copy.home.blockKleihaven.description1 ]
+                    , p [] [ text copy.home.blockKleihaven.description2 ]
+                    , p [] [ text copy.home.blockKleihaven.description3 ]
                     , Ui.Button.newSecondary
-                        { label = "Lees meer"
+                        { label = copy.home.blockKleihaven.readMore
                         , action = Ui.Button.ToPage Route.Kleihaven
                         }
                         |> Ui.Button.view
@@ -396,24 +376,12 @@ viewHomeBlockAIR model =
     section [ class "block" ]
         [ div [ class "block__cards -two-cards" ]
             [ div [ class "card-text" ]
-                [ h2 [] [ text "Artist in Residence programma's" ]
-                , p [] [ text """
-                Ben jij beeldend kunstenaar en toe aan een plek waar frisse zeewind nieuwe 
-                energie aan je werk geeft? Of je nu ruimte zoekt om bestaande plannen uit 
-                te werken, of inspiratie op te doen voor nieuwe projecten, Studio1931 biedt een ruime 
-                werkplek en tijd om je te focussen. 
-                """ ]
-                , p [] [ text """
-            We bieden werkperiodes van 4 à 6 weken voor individuele kunstenaars of duo's.
-            Ook hebben we onze Tussen Zoet en Zout week: 
-            een jaarlijks terugkerende projectweek waar meerdere kunstenaars (samen)werken.
-            """ ]
-                , p [] [ text """
-            Laat je meevoeren door de rust, wind 
-                en bijzondere omgeving - dé ingrediënten om jouw proces en werk te laten bruisen. 
-            """ ]
+                [ h2 [] [ text copy.home.blockAIR.title ]
+                , p [] [ text copy.home.blockAIR.description1 ]
+                , p [] [ text copy.home.blockAIR.description2 ]
+                , p [] [ text copy.home.blockAIR.description3 ]
                 , Ui.Button.newSecondary
-                    { label = "Lees meer"
+                    { label = copy.home.blockAIR.readMore
                     , action = Ui.Button.ToPage Route.AIR
                     }
                     |> Ui.Button.view
@@ -430,32 +398,19 @@ viewHomeBlockAIR model =
 viewHomeBlockOverOns : Model -> Html Msg
 viewHomeBlockOverOns model =
     section [ class "block" ]
-        [ div [ class "block__cards -two-cards" ]
+        [ div [ class "block__cards -two-cards -img-left" ]
             [ viewImageCard model.loadedImages
                 { imgSrc = "wieringen"
                 , imgAlt = "Uitzicht over de Waddenzee vanaf voormalig eiland Wieringen"
                 , lazy = True
                 }
             , div [ class "card-text" ]
-                [ h2 []
-                    [ text "Over Studio1931" ]
-                , p []
-                    [ text """
-                Studio1931 heeft als doel om makers, publiek, kunst en omgeving met elkaar te verbinden.
-                 """ ]
-                , p [] [ text """
-                We zijn gevestigd in de oude basisschool van Den Oever, 
-                op het voormalige Zuiderzee-eiland Wieringen.
-                Het is een prachtige plek om zowel te wonen als te werken in 
-                en tussen de kunsten.
-                """ ]
-                , p [] [ text """
-                Met werelderfgoed de Waddenzee in de achtertuin 
-                en het IJsselmeer op loopafstand zit Studio1931 op een bijzondere 
-                locatie waar de zeewind alle artistieke plannen en creatieve ideeën aanwakkert.
-                """ ]
+                [ h2 [] [ text copy.home.blockOverOns.title ]
+                , p [] [ text copy.home.blockOverOns.description1 ]
+                , p [] [ text copy.home.blockOverOns.description2 ]
+                , p [] [ text copy.home.blockOverOns.description3 ]
                 , Ui.Button.newSecondary
-                    { label = "Lees meer"
+                    { label = copy.home.blockOverOns.readMore
                     , action = Ui.Button.ToPage Route.OverOns
                     }
                     |> Ui.Button.view

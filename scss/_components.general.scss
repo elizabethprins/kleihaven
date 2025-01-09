@@ -10,4 +10,8 @@
     max-width: 600px;
     margin: 5rem auto 3rem;
     display: block;
+
+    + .block {
+        margin-top: 0;
+    }
 }

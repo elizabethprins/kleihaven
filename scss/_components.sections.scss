@@ -62,13 +62,8 @@
 
 .block {
     width: 100%;
-    margin: 3rem 0;
+    margin: 5rem 0;
     color: settings.$drabBrown;
-
-    h2 {
-        margin: .25em 0;
-        font-size: 2.5rem;
-    }
 
     > p {
         max-width: settings.$max-text-width;
@@ -78,8 +73,8 @@
         font-style: italic;
     }
 
-    + .block {
-        margin-top: 6rem;
+    @include tools.breakpoint(settings.$small) {
+        margin: 6rem 0;
     }
 }
 
@@ -96,11 +91,13 @@
 }
 
 .block__cards.-centerpiece {
+    gap: 3rem;
     align-items: center;
     justify-items: center;
 
     @include tools.breakpoint(settings.$small) {
-        grid-template-columns: 1fr 5fr 1fr;
+        gap: 1.5rem;
+        grid-template-columns: 1fr 4fr 1fr;
 
         img {
             width: 100%;
@@ -114,11 +111,40 @@
 }
 
 .block__cards.-two-cards {
+    .card-img {
+        padding-top: 80%;
+
+        img {
+            position: absolute;
+            top: 0;
+        }
+    }
+
     @include tools.breakpoint(settings.$small) {
+        grid-template-columns: 1fr;
+
+        .card-img {
+            padding-top: 60%;
+        }
+    }
+
+    @include tools.breakpoint(settings.$medium) {
         grid-template-columns: 1fr 1fr;
 
         img {
             position: absolute;
+        }
+    }
+}
+
+.block__cards.-two-cards.-img-left {
+    .card-img {
+        order: 2;
+    }
+
+    @include tools.breakpoint(settings.$medium) {
+        .card-img {
+            order: 0;
         }
     }
 }

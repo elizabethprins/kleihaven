@@ -1,7 +1,6 @@
 module Route exposing
     ( Page(..)
     , allPages
-    , parser
     , toLabel
     , toPage
     , toUrl
@@ -9,7 +8,7 @@ module Route exposing
 
 import Url exposing (Url)
 import Url.Builder
-import Url.Parser as Parser exposing ((</>), s)
+import Url.Parser as Parser
 
 
 
