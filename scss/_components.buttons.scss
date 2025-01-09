@@ -2,9 +2,10 @@
 @use "tools.mixins";
 
 .button {
+    width: fit-content;
     padding: .5em 2em;
-    margin: .875em 0 1em;
-    display: inline-block;
+    margin: 1.25em 0 1em;
+    display: block;
     border: 1px solid currentColor;
     border-radius: settings.$borderRadius;
     font-family: settings.$fontSecondary;

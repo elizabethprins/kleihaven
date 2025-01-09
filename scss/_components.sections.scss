@@ -71,7 +71,7 @@
     }
 
     > p {
-        max-width: 700px;
+        max-width: settings.$max-text-width;
         margin: 0 auto;
         margin-top: 0;
         font-size: 1.5rem;
@@ -92,5 +92,33 @@
 
     @include tools.breakpoint(settings.$small) {
         grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.block__cards.-centerpiece {
+    align-items: center;
+    justify-items: center;
+
+    @include tools.breakpoint(settings.$small) {
+        grid-template-columns: 1fr 5fr 1fr;
+
+        img {
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    @include tools.breakpoint(settings.$medium) {
+        grid-template-columns: 1fr 3fr 1fr;
+    }
+}
+
+.block__cards.-two-cards {
+    @include tools.breakpoint(settings.$small) {
+        grid-template-columns: 1fr 1fr;
+
+        img {
+            position: absolute;
+        }
     }
 }
