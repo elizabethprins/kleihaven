@@ -69,6 +69,7 @@
 
     @include tools.breakpoint(settings.$small) {
         height: auto;
+        display: contents;
         position: static;
         box-shadow: none;
         background: none;
