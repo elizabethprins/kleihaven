@@ -147,5 +147,6 @@ copy =
                 , text3 = "Klinkt goed, toch?"
                 }
             }
+        , mobileCoursesButton = "Boek nu een cursus!"
         }
     }

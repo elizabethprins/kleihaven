@@ -38,7 +38,7 @@
 
 @supports not (animation-timeline: scroll()) {
     .header {
-        --headerHeight: 88px;
+        --headerHeight: 72px;
         height: calc(var(--headerHeight) + 1rem);
         top: -1rem;
 
@@ -80,9 +80,14 @@
 }
 
 .logo {
-    width: 5rem;
-    height: 5rem;
+    width: 4rem;
+    height: 4rem;
     flex-shrink: 0;
+
+    @include tools.breakpoint(settings.$small) {
+        width: 5rem;
+        height: 5rem;
+    }
 }
 
 .nav {

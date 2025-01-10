@@ -431,6 +431,7 @@ viewPageKleihaven model =
     , viewDivider
     , viewKleihavenBlock model
     , viewKleihavenBlockTwo
+    , viewMobileCoursesButton
     ]
 
 
@@ -515,3 +516,13 @@ viewKleihavenBlockTwo =
                 ]
             ]
         ]
+
+
+viewMobileCoursesButton : Html Msg
+viewMobileCoursesButton =
+    Ui.Button.newPrimary
+        { label = copy.kleihaven.mobileCoursesButton
+        , action = Ui.Button.ToPage Route.Cursussen
+        }
+        |> Ui.Button.withMobileOnly
+        |> Ui.Button.view

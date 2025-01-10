@@ -1,4 +1,4 @@
-module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view)
+module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -12,6 +12,7 @@ type Config msg
         , action : Action msg
         , style : Style
         , isDisabled : Bool
+        , isMobileOnly : Bool
         }
 
 
@@ -35,6 +36,7 @@ new style { label, action } =
         , action = action
         , style = style
         , isDisabled = False
+        , isMobileOnly = False
         }
 
 
@@ -61,6 +63,11 @@ secretLink { label, action } =
 withDisabledIf : Bool -> Config msg -> Config msg
 withDisabledIf condition (Config config) =
     Config { config | isDisabled = condition }
+
+
+withMobileOnly : Config msg -> Config msg
+withMobileOnly (Config config) =
+    Config { config | isMobileOnly = True }
 
 
 
@@ -127,5 +134,6 @@ toClassList (Config config) =
         , ( "button--primary", config.style == Primary )
         , ( "button--secondary", config.style == Secondary )
         , ( "-is-disabled", config.isDisabled )
+        , ( "-is-mobile-only", config.isMobileOnly )
         , ( "link-secret", config.style == SecretLink )
         ]

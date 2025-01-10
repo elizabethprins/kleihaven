@@ -8,6 +8,7 @@
     display: block;
     border: 1px solid currentColor;
     border-radius: settings.$borderRadius;
+    box-shadow: -1px 2px 0 0 currentColor;
     font-family: settings.$fontSecondary;
     font-size: 1em;
     font-weight: 700;
@@ -20,8 +21,8 @@
     }
 
     @include tools.hoverOnly {
-        box-shadow: -2px 3px 0 0 currentColor;
-        transform: translate(2px, -3px);
+        box-shadow: -2px 4px 0 0 currentColor;
+        transform: translate(1px, -2px);
     }
 
     @include tools.active {
@@ -36,6 +37,15 @@
 
 .button--primary {
     color: settings.$redBrown;
+}
+
+.button.-is-mobile-only {
+    margin: -2rem auto 0;
+    font-size: 1.25em;
+
+    @include tools.breakpoint(settings.$small) {
+        display: none;
+    }
 }
 
 .link-secret {
