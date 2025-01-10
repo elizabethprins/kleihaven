@@ -186,11 +186,13 @@ viewNavigation model =
             , ( "nav--open", model.mobileMenuOpen )
             ]
         ]
-        [ viewLogo
-        , hamburgerButton
-        , nav [ class "nav" ]
-            [ ul []
-                (List.map viewMenuItem Route.allPages)
+        [ div [ class "header__inner" ]
+            [ viewLogo
+            , hamburgerButton
+            , nav [ class "nav" ]
+                [ ul []
+                    (List.map viewMenuItem Route.allPages)
+                ]
             ]
         ]
 

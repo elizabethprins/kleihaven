@@ -15,7 +15,7 @@
 
 .intro__title {
     margin: .25em 0;
-    font-size: 15vw;
+    font-size: 3.25rem;
     text-shadow: -2px 2px settings.$eggShell;
 
     @include tools.breakpoint(settings.$small) {
