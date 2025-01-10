@@ -31,6 +31,15 @@ h6 {
     font-family: settings.$fontSecondary;
 }
 
+h1 {
+    margin: .25em 0;
+    font-size: 3.25rem;
+
+    @include tools.breakpoint(settings.$small) {
+        font-size: 4rem;
+    }
+}
+
 h2 {
     @include tools.breakpoint(settings.$small) {
         margin: .25em 0;

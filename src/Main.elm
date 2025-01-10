@@ -133,17 +133,23 @@ view model =
         [ viewNavigation model
         , main_ [ class "main" ] <|
             case model.page of
-                Route.Kleihaven ->
-                    viewPageKleihaven model
-
                 Route.Home ->
                     viewPageHome model
 
+                Route.Kleihaven ->
+                    viewPageKleihaven model
+
+                Route.Cursussen ->
+                    viewPageCursussen
+
+                Route.AIR ->
+                    viewPageAIR model
+
+                Route.OverOns ->
+                    viewPageOverOns
+
                 Route.NotFound ->
                     viewPageNotFound
-
-                _ ->
-                    [ h1 [] [ text copy.pageInDevelopment ] ]
         ]
     }
 
@@ -199,6 +205,11 @@ viewNavigation model =
 
 
 -- PAGE HELPERS
+
+
+toContentPage : List (Html Msg) -> List (Html Msg)
+toContentPage content =
+    [ article [ class "content" ] content ]
 
 
 viewIntro :
@@ -290,16 +301,6 @@ viewImage loadedImages { imgSrc, imgAlt, lazy } =
 
 
 -- VIEW PAGES
-
-
-viewPageNotFound : List (Html Msg)
-viewPageNotFound =
-    [ h1 [] [ text copy.notFound.title ]
-    , p [] [ text copy.notFound.description ]
-    ]
-
-
-
 -- HOMEPAGE
 
 
@@ -526,3 +527,75 @@ viewMobileCoursesButton =
         }
         |> Ui.Button.withMobileOnly
         |> Ui.Button.view
+
+
+
+-- AIR
+
+
+viewPageAIR : Model -> List (Html Msg)
+viewPageAIR model =
+    toContentPage
+        ([ h1 [] [ text "Artist in Residence" ]
+         ]
+            ++ lorem
+            ++ [ viewImage model.loadedImages
+                    { imgSrc = "air"
+                    , imgAlt = "Kunstenaars aan het werk in de studio"
+                    , lazy = True
+                    }
+               , h3 [] [ text copy.loremTitle ]
+               , p [] [ text copy.loremTwo ]
+               ]
+        )
+
+
+
+-- OverOns
+
+
+viewPageOverOns : List (Html Msg)
+viewPageOverOns =
+    toContentPage
+        ([ h1 [] [ text "Over ons" ]
+         ]
+            ++ lorem
+        )
+
+
+lorem : List (Html Msg)
+lorem =
+    [ p [ class "content__intro" ] [ text copy.lorem ]
+    , h2 [] [ text copy.loremTitle ]
+    , p [] [ text copy.lorem ]
+    , h3 [] [ text copy.loremTitle ]
+    , p [] [ text copy.loremTwo ]
+    , h3 [] [ text copy.loremTitle ]
+    , p [] [ text copy.loremTwo ]
+    ]
+
+
+
+-- Cursussen
+
+
+viewPageCursussen : List (Html Msg)
+viewPageCursussen =
+    [ div [ class "centered" ]
+        [ h1 [] [ text "Cursusaanbod" ]
+        , h2 [] [ text "Keramiekcursussen voor elk niveau" ]
+        , p [] [ text copy.pageInDevelopment ]
+        ]
+    ]
+
+
+
+-- NOT FOUND
+
+
+viewPageNotFound : List (Html Msg)
+viewPageNotFound =
+    toContentPage
+        [ h1 [] [ text copy.notFound.title ]
+        , p [] [ text copy.notFound.description ]
+        ]
