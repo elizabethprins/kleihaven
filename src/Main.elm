@@ -344,7 +344,7 @@ viewHomeBlock =
 
 viewHomeBlockKleihaven : Html Msg
 viewHomeBlockKleihaven =
-    section [ class "block" ]
+    section [ class "block -reduce-margin-mobile" ]
         [ div [ class "block__cards -centerpiece" ]
             [ img
                 [ src "/assets/klei-potje.png"
