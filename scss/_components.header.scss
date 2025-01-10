@@ -22,15 +22,47 @@
 }
 
 @supports (animation-timeline: scroll()) {
-    header {
+    header,
+    .header__inner,
+    .logo {
         animation-timeline: scroll();
         animation-range: 0px 150px;
         animation-fill-mode: both;
+    }
+
+    header {
         animation-name: add-shadow;
 
         @keyframes add-shadow {
             100% {
                 box-shadow: settings.$shadow-elevation-medium;
+            }
+        }
+    }
+
+    @include tools.breakpoint(settings.$small) {
+        header {
+            .header__inner {
+                animation-name: reduce-padding;
+
+                @keyframes reduce-padding {
+                    100% {
+                        padding: .25rem 4rem;
+                    }
+                }
+            }
+
+            .logo {
+                width: 6rem;
+                height: 6rem;
+                animation-name: shrink;
+
+                @keyframes shrink {
+                    100% {
+                        width: 4rem;
+                        height: 4rem;
+                    }
+                }
             }
         }
     }
@@ -83,6 +115,11 @@
     width: 4rem;
     height: 4rem;
     flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
 
     @include tools.breakpoint(settings.$small) {
         width: 5rem;

@@ -161,7 +161,6 @@ viewNavigation model =
             a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
                 [ img
                     [ src "/assets/logostudio1931-small.png"
-                    , class "logo"
                     , alt "Studio 1931"
                     ]
                     []
