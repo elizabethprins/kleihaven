@@ -4,6 +4,20 @@ async function updateMetaTags(url) {
         const metaTags = await response.json();
         const data = metaTags[url] || metaTags["/"] || {};
 
+        const setTitle = (title) => {
+            document.title = title;
+        };
+
+        const setDescription = (description) => {
+            let tag = document.querySelector('meta[name="description"]');
+            if (!tag) {
+                tag = document.createElement('meta');
+                tag.setAttribute('name', 'description');
+                document.head.appendChild(tag);
+            }
+            tag.setAttribute('content', description);
+        };
+
         const setMetaTag = (property, content) => {
             let tag = document.querySelector(`meta[property="${property}"]`);
             if (!tag) {
@@ -14,8 +28,10 @@ async function updateMetaTags(url) {
             tag.setAttribute('content', content);
         };
 
+        setTitle(data.og_title || 'Studio1931 | Kleihaven');
+        setDescription(data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
         setMetaTag('og:title', data.og_title || 'Kleihaven');
-        setMetaTag('og:description', data.og_description || 'Keramiekcursussen en workshops in Den Oever');
+        setMetaTag('og:description', data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
         setMetaTag('og:image', `${window.location.origin}${data.og_image_path || '/assets/ceramic_classroom.jpeg'}`);
         setMetaTag('og:image:alt', data.og_image_alt || 'Keramieklokaal');
         setMetaTag('og:image:width', data.og_image_width || '680');
