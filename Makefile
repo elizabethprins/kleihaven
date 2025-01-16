@@ -9,7 +9,7 @@ NPM_PATH := ./node_modules/.bin
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 DIST_DIR := ./dist
 SCSS_FILES = $(shell find scss -name '*.scss')
-URLS = /kleihaven /cursussen /over-ons /air /
+URLS = /kleihaven/ /cursussen/ /over-ons/ /air/ /
 DIST_URLS = $(foreach url, $(URLS), $(DIST_DIR)$(url)/index.html)
 BASE_URL ?= http://localhost:3000
 ASSETS_DIR = assets
@@ -64,6 +64,8 @@ help:
 	@echo "  assets                 Copy assets to dist folder"
 	@echo "  build                  Install deps and compile for production"
 	@echo "  clean                  Remove 'dist' folder"
+	@echo "  clean-images           Remove generated avif and webp images"
+	@echo "  convert-images         Convert all jpg files in the assets dir to avif and webp. Requires ffmpeg."
 	@echo "  deps                   Install build dependencies"
 	@echo "  distclean              Remove build dependencies"
 	@echo "  elm                    Compile Elm files"
@@ -129,12 +131,10 @@ convert-avif:
 	done
 	@echo "Conversion to AVIF completed."
 
-# Default target (converts both WebP and AVIF)
 convert-images:
 	@mkdir -p $(OUTPUT_WEBP_DIR) $(OUTPUT_AVIF_DIR)
 	@$(MAKE) convert-webp convert-avif
 
-# Clean up generated images (optional)
 clean-images:
 	@echo "Cleaning up generated images..."
 	rm -rf $(OUTPUT_WEBP_DIR) $(OUTPUT_AVIF_DIR)

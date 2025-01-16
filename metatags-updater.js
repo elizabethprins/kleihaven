@@ -28,6 +28,18 @@ async function updateMetaTags(url) {
             tag.setAttribute('content', content);
         };
 
+        const setCanonicalLink = (url) => {
+            let link = document.querySelector('link[rel="canonical"]');
+            if (!link) {
+                link = document.createElement('link');
+                link.rel = 'canonical';
+                document.head.appendChild(link);
+            }
+            link.href = url;
+        };
+
+        const fullUrl = `${window.env?.BASE_URL || window.location.origin}${url}`;
+
         setTitle(data.og_title || 'Studio1931 | Kleihaven');
         setDescription(data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
         setMetaTag('og:title', data.og_title || 'Kleihaven');
@@ -36,7 +48,8 @@ async function updateMetaTags(url) {
         setMetaTag('og:image:alt', data.og_image_alt || 'Keramieklokaal');
         setMetaTag('og:image:width', data.og_image_width || '680');
         setMetaTag('og:image:height', data.og_image_height || '680');
-        setMetaTag('og:url', `${window.location.origin}${url}`);
+        setMetaTag('og:url', fullUrl);
+        setCanonicalLink(fullUrl);
     } catch (error) {
         console.error('Error updating meta tags:', error);
     }

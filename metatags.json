@@ -5,43 +5,38 @@
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
-        "og_image_width": "680",
-        "og_url_path": "/"
+        "og_image_width": "680"
     },
-    "/kleihaven": {
+    "/kleihaven/": {
         "og_title": "Kleihaven | Keramiekcursussen voor elk niveau",
         "og_description": "Van draaitechnieken en handvormen tot glazuren en stooktechnieken: leer alles over keramiek in ons uitgebreide cursusaanbod!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
-        "og_image_width": "680",
-        "og_url_path": "/kleihaven"
+        "og_image_width": "680"
     },
-    "/cursussen": {
+    "/cursussen/": {
         "og_title": "Kleihaven | Cursussen voor elk niveau",
         "og_description": "Wij bieden keramiekcursussen van enkele dagen tot twee volle weken. Ontdek, creeër en geniet op een bijzondere locatie aan de Waddenzee!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
-        "og_image_width": "680",
-        "og_url_path": "/kleihaven"
+        "og_image_width": "680"
     },
-    "/air": {
+    "/air/": {
         "og_title": "Studio1931 | Artist in Residence programma's",
         "og_description": "Voor individuele kunstenaars of duo's. Ruim uitgerust werkatelier, studio met kookgelegenheid en badkamer.",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
-        "og_image_width": "680",
-        "og_url_path": "/kleihaven"
+        "og_image_width": "680"
     },
-    "/over-ons": {
+    "/over-ons/": {
         "og_title": "Studio1931 | Kleihaven | Over Ons",
         "og_description": "Welkom! Studio1931 is gevestigd de oude school van Den Oever. We wonen en werken in en tussen de kunsten, en delen dat graag met jou!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
-        "og_image_width": "680",
-        "og_url_path": "/kleihaven"
+        "og_image_width": "680"
     }
 }

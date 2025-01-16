@@ -55,22 +55,22 @@ toUrl : Page -> String
 toUrl page =
     case page of
         Home ->
-            Url.Builder.absolute [] []
+            Url.Builder.absolute [ "" ] []
 
         Kleihaven ->
-            Url.Builder.absolute [ "kleihaven" ] []
+            Url.Builder.absolute [ "kleihaven", "" ] []
 
         NotFound ->
-            Url.Builder.absolute [ "notfound" ] []
+            Url.Builder.absolute [ "notfound", "" ] []
 
         Cursussen ->
-            Url.Builder.absolute [ "cursussen" ] []
+            Url.Builder.absolute [ "cursussen", "" ] []
 
         OverOns ->
-            Url.Builder.absolute [ "over-ons" ] []
+            Url.Builder.absolute [ "over-ons", "" ] []
 
         AIR ->
-            Url.Builder.absolute [ "air" ] []
+            Url.Builder.absolute [ "air", "" ] []
 
 
 toLabel : Page -> String

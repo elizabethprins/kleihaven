@@ -14,7 +14,6 @@ OG_IMAGE_PATH=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']
 OG_IMAGE_ALT=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']['og_image_alt'])" < metatags.json)
 OG_IMAGE_WIDTH=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']['og_image_width'])" < metatags.json)
 OG_IMAGE_HEIGHT=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']['og_image_height'])" < metatags.json)
-OG_URL_PATH=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']['og_url_path'])" < metatags.json)
 
 # Escape special characters for sed
 escape_sed() {
@@ -28,7 +27,7 @@ OG_IMAGE_PATH_ESCAPED=$(escape_sed "$OG_IMAGE_PATH")
 OG_IMAGE_ALT_ESCAPED=$(escape_sed "$OG_IMAGE_ALT")
 OG_IMAGE_WIDTH_ESCAPED=$(escape_sed "$OG_IMAGE_WIDTH")
 OG_IMAGE_HEIGHT_ESCAPED=$(escape_sed "$OG_IMAGE_HEIGHT")
-OG_URL_PATH_ESCAPED=$(escape_sed "$OG_URL_PATH")
+OG_URL_PATH_ESCAPED=$(escape_sed "$URL")
 
 # Replace placeholders in the template
 cat $TEMPLATE_FILE \
