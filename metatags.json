@@ -1,6 +1,6 @@
 {
     "/": {
-        "og_title": "Studio1931 | Keramiekcursussen en Artist-in-Residence",
+        "og_title": "Studio1931 | Keramiekcursussen en Artist-in-residence",
         "og_description": "Studio1931 is een broedplaats met artistieke programma's en activiteiten, op een bijzondere locatie aan de Waddenzee.",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
@@ -8,31 +8,31 @@
         "og_image_width": "680"
     },
     "/kleihaven/": {
-        "og_title": "Kleihaven | Keramiekcursussen voor elk niveau",
-        "og_description": "Van draaitechnieken en handvormen tot glazuren en stooktechnieken: leer alles over keramiek in ons uitgebreide cursusaanbod!",
+        "og_title": "Studio1931 presenteert Kleihaven: cursussen voor elk niveau",
+        "og_description": "Wij bieden keramiekcursussen van enkele dagen tot twee volle weken. Ontdek, creëer en geniet van klei op een bijzondere locatie aan de Waddenzee!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
         "og_image_width": "680"
     },
     "/cursussen/": {
-        "og_title": "Kleihaven | Cursussen voor elk niveau",
-        "og_description": "Wij bieden keramiekcursussen van enkele dagen tot twee volle weken. Ontdek, creeër en geniet op een bijzondere locatie aan de Waddenzee!",
+        "og_title": "Keramiekcursussen voor elk niveau – Studio1931 // Kleihaven",
+        "og_description": "Van draaitechnieken en handvormen tot glazuren en stooktechnieken: leer alles over klei en keramiek in ons uitgebreide cursusaanbod!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
         "og_image_width": "680"
     },
     "/air/": {
-        "og_title": "Studio1931 | Artist in Residence programma's",
-        "og_description": "Voor individuele kunstenaars of duo's. Ruim uitgerust werkatelier, studio met kookgelegenheid en badkamer.",
+        "og_title": "Artist-in-residence programma's | Studio1931",
+        "og_description": "Voor individuele kunstenaars of duo's. Kom onderzoek doen en experimenteer in diverse disciplines, zoals keramiek, grafiek, schilderen. Ruim uitgerust atelier op prachtige locatie Den Oever, verblijf in moderne studio.",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
         "og_image_height": "680",
         "og_image_width": "680"
     },
     "/over-ons/": {
-        "og_title": "Studio1931 | Kleihaven | Over Ons",
+        "og_title": "Over ons – Studio1931 // Kleihaven",
         "og_description": "Welkom! Studio1931 is gevestigd de oude school van Den Oever. We wonen en werken in en tussen de kunsten, en delen dat graag met jou!",
         "og_image_path": "/assets/ceramic_hand_small.jpg",
         "og_image_alt": "Kunstwerk van klei",
