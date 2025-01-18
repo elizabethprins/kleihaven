@@ -38,16 +38,17 @@ async function updateMetaTags(url) {
             link.href = url;
         };
 
-        const fullUrl = `${window.env?.BASE_URL || window.location.origin}${url}`;
+        const baseUrl = window.env?.BASE_URL || window.location.origin;
+        const fullUrl = new URL(url, baseUrl).toString();
 
         setTitle(data.og_title || 'Studio1931 | Kleihaven');
         setDescription(data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
-        setMetaTag('og:title', data.og_title || 'Kleihaven');
+        setMetaTag('og:title', data.og_title || 'Studio1931 | Kleihaven');
         setMetaTag('og:description', data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
-        setMetaTag('og:image', `${window.location.origin}${data.og_image_path || '/assets/ceramic_classroom.jpeg'}`);
-        setMetaTag('og:image:alt', data.og_image_alt || 'Keramieklokaal');
-        setMetaTag('og:image:width', data.og_image_width || '680');
-        setMetaTag('og:image:height', data.og_image_height || '680');
+        setMetaTag('og:image', `${baseUrl}${data.og_image_path || '/assets/og-images/buitencursus.jpg'}`);
+        setMetaTag('og:image:alt', data.og_image_alt || 'Cursisten aan het werk in de tuin van de school');
+        setMetaTag('og:image:width', data.og_image_width || '1200');
+        setMetaTag('og:image:height', data.og_image_height || '630');
         setMetaTag('og:url', fullUrl);
         setCanonicalLink(fullUrl);
     } catch (error) {
