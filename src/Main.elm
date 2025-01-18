@@ -535,18 +535,43 @@ viewMobileCoursesButton =
 viewPageAIR : Model -> List (Html Msg)
 viewPageAIR model =
     toContentPage
-        ([ h1 [] [ text "Artist in Residence" ]
-         ]
-            ++ lorem
-            ++ [ viewImage model.loadedImages
-                    { imgSrc = "air"
-                    , imgAlt = "Kunstenaars aan het werk in de studio"
-                    , lazy = True
-                    }
-               , h3 [] [ text copy.loremTitle ]
-               , p [] [ text copy.loremTwo ]
-               ]
-        )
+        [ h1 [] [ text "Artist in Residence" ]
+        , p [ class "content__intro" ]
+            [ text """
+            Op zoek naar een inspirerende werkomgeving? Welkom bij Studio1931!
+            """ ]
+        , h2 [] [ text "Ondertitel!" ]
+        , p [] [ text """
+        Studio1931 stelt een van haar karakteristieke klaslokalen ter beschikking voor kunstenaars.
+        Het atelier van circa 7 x 6 meter biedt volop ruimte en wordt soms gedeeld met andere makers.
+        Met een hoog plafond en een grote raampartij heb je prachtig natuurlijk licht. Daarnaast is
+        er een uitgebreide uitrusting aanwezig: een drukpers voor linoleum, droge naald en meer,
+        evenals draaischijven, een kleiwals en keramiekovens.
+        Alles wat je nodig hebt om jouw ideeën vorm te geven!
+        """ ]
+        , h3 [] [ text "Tussenkop!" ]
+        , p [] [ text """
+        Kunstenaars kunnen bij ons een artist-in-residence periode volgen, met werkperiodes
+        variërend van twee tot acht weken. In overleg is veel mogelijk, zodat de periode
+        volledig aansluit bij jouw wensen. Daarnaast bieden we de mogelijkheid om te verblijven
+        in een volledig uitgeruste en gloednieuwe studio.
+        """ ]
+        , viewImage model.loadedImages
+            { imgSrc = "air"
+            , imgAlt = "Kunstenaars aan het werk in de studio"
+            , lazy = True
+            }
+        , h3 [] [ text "Tussenkop" ]
+        , p [] [ text """
+        Interesse?
+        Dat begrijpen we helemaal! Aanmelden kan op twee manieren:
+        Via een Open Call - (link naar Open Call pagina) waarbij je reageert op een werkperiode
+        met een specifiek onderwerp of thema, eventueel (deels) ondersteund door subsidie.
+        Via jouw eigen werkplan of idee. We bekijken graag samen hoe dit in te passen is.
+        Subsidie kun je, indien nodig, zelf aanvragen via de gebruiken kanalen.
+        Meld je hier voor meer informatie en kosten!
+        """ ]
+        ]
 
 
 
@@ -578,6 +603,17 @@ lorem =
 -- Cursussen
 
 
+{-|
+
+        2025
+        - draaien voor beginners (pasen, 4 dagen)
+        - draaien en handvormen (meivakantie, 1week: 28 april - 4 mei)
+        - draaien voor gevorderden (hemelvaart, 4 dagen)
+        - decoratie en stooktechnieken (pinksteren, 3 dagen)
+        - zomerschool: aan tafel! ( 2 weken in de zomer , start 21 juni, eind 5 juli)
+        - zomerschool: vrij/creatief ( 2 weken in de zomer, start 13 juli, eind 25 julie)
+
+-}
 viewPageCursussen : List (Html Msg)
 viewPageCursussen =
     [ div [ class "centered" ]
