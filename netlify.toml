@@ -1,0 +1,10 @@
+[build]
+  publish = "dist"
+  command = "make production"
+
+[dev]
+  framework = "#static"
+  publish = "dist"
+  port = 8888
+  command = "make dev"
+  autoLaunch = true

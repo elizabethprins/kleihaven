@@ -8,11 +8,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick)
 import Html.Keyed
+import Http
 import Json.Decode as Decode
+import Json.Decode.Pipeline as Pipeline
 import Route
 import Set exposing (Set)
 import Task
 import Ui.Button
+import Ui.Date
 import Url exposing (Url)
 
 
@@ -53,17 +56,49 @@ type alias Model =
     , page : Route.Page
     , loadedImages : Set String
     , mobileMenuOpen : Bool
+    , courses : List Course
+    , loadingCourses : Bool
+    , error : Maybe Http.Error
+    }
+
+
+type alias Course =
+    { title : String
+    , description : String
+    , imageUrl : String
+    , price : Float
+    , periods : List CoursePeriod
+    }
+
+
+type alias CoursePeriod =
+    { id : String
+    , startDate : String
+    , endDate : String
+    , timeInfo : Maybe String
+    , availableSpots : Int
     }
 
 
 init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
 init _ url key =
+    let
+        initialPage =
+            Route.toPage url
+    in
     ( { navKey = key
-      , page = Route.toPage url
+      , page = initialPage
       , loadedImages = Set.empty
       , mobileMenuOpen = False
+      , courses = []
+      , loadingCourses = initialPage == Route.Cursussen
+      , error = Nothing
       }
-    , urlChanged (Route.toUrl <| Route.toPage url)
+    , if initialPage == Route.Cursussen then
+        fetchCourses
+
+      else
+        Cmd.none
     )
 
 
@@ -77,6 +112,7 @@ type Msg
     | UrlChanged Url
     | ImageLoaded String
     | ToggleMobileMenu
+    | GotCourses (Result Http.Error (List Course))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -121,6 +157,24 @@ update msg model =
         ToggleMobileMenu ->
             ( { model | mobileMenuOpen = not model.mobileMenuOpen }, Cmd.none )
 
+        GotCourses result ->
+            case result of
+                Ok courses ->
+                    ( { model
+                        | courses = courses
+                        , loadingCourses = False
+                      }
+                    , Cmd.none
+                    )
+
+                Err error ->
+                    ( { model
+                        | loadingCourses = False
+                        , error = Just error
+                      }
+                    , Cmd.none
+                    )
+
 
 
 -- VIEW
@@ -140,7 +194,7 @@ view model =
                     viewPageKleihaven model
 
                 Route.Cursussen ->
-                    viewPageCursussen
+                    viewPageCursussen model
 
                 Route.AIR ->
                     viewPageAIR model
@@ -243,6 +297,14 @@ viewImageCard loadedImages imgProps =
         [ ( imgProps.imgSrc
           , viewImage loadedImages imgProps
           )
+        ]
+
+
+viewTextImageCard : Set String -> ImgProps -> { content : List (Html Msg), extraClass : String } -> Html Msg
+viewTextImageCard loadedImages imgProps content =
+    div [ class ("card-text-img " ++ content.extraClass) ]
+        [ viewImage loadedImages imgProps
+        , div [ class "card-text-img__content" ] content.content
         ]
 
 
@@ -463,13 +525,12 @@ viewKleihavenBlock : Model -> Html Msg
 viewKleihavenBlock model =
     let
         viewCard content =
-            div [ class "card-text-img -clickable" ]
-                [ viewImage model.loadedImages
-                    { imgSrc = content.imgSrc
-                    , imgAlt = content.imgAlt
-                    , lazy = True
-                    }
-                , div [ class "card-text-img__content" ]
+            viewTextImageCard model.loadedImages
+                { imgSrc = content.imgSrc
+                , imgAlt = content.imgAlt
+                , lazy = True
+                }
+                { content =
                     [ p []
                         [ text content.text ]
                     , p [ class "centered" ] [ text "☆" ]
@@ -479,7 +540,8 @@ viewKleihavenBlock model =
                         }
                         |> Ui.Button.view
                     ]
-                ]
+                , extraClass = "-clickable"
+                }
     in
     section [ class "block" ]
         [ h2 [ class "centered" ] [ text copy.kleihaven.blockOne.title ]
@@ -614,14 +676,81 @@ lorem =
         - zomerschool: vrij/creatief ( 2 weken in de zomer, start 13 juli, eind 25 julie)
 
 -}
-viewPageCursussen : List (Html Msg)
-viewPageCursussen =
-    [ div [ class "centered" ]
-        [ h1 [] [ text "Cursusaanbod" ]
-        , h2 [] [ text "Keramiekcursussen voor elk niveau" ]
-        , p [] [ text copy.pageInDevelopment ]
-        ]
+viewPageCursussen : Model -> List (Html Msg)
+viewPageCursussen model =
+    [ h1 [ class "centered" ] [ text "Cursusaanbod" ]
+    , h2 [ class "centered" ] [ text "Keramiekcursussen voor elk niveau" ]
+    , if model.loadingCourses then
+        div [ class "centered" ]
+            [ text "Cursussen worden geladen..." ]
+
+      else
+        case model.error of
+            Just err ->
+                div [ class "centered" ]
+                    [ text "Sorry, er is iets misgegaan bij het laden van de cursussen" ]
+
+            Nothing ->
+                div [ class "courses-grid" ]
+                    (List.map (viewCourse model.loadedImages) model.courses)
     ]
+
+
+viewCourse : Set String -> Course -> Html Msg
+viewCourse loadedImages course =
+    viewTextImageCard loadedImages
+        { imgSrc = course.imageUrl
+        , imgAlt = course.title
+        , lazy = True
+        }
+        { content =
+            [ h3 [] [ text course.title ]
+            , p [] [ text course.description ]
+            , p [ class "course-card__price" ]
+                [ text "Kosten per persoon: € "
+                , text (String.fromFloat course.price)
+                ]
+            , div [ class "course-card__periods" ]
+                (List.map viewCoursePeriod course.periods)
+            ]
+        , extraClass = "course-card -vertical"
+        }
+
+
+viewCoursePeriod : CoursePeriod -> Html Msg
+viewCoursePeriod period =
+    div [ class "course-period" ]
+        [ div []
+            [ p [ class "course-period__dates" ]
+                [ Ui.Date.periodString
+                    { start = period.startDate
+                    , end = period.endDate
+                    }
+                    |> text
+                ]
+            , viewTimeInfo period.timeInfo
+            , p [ class "course-period__spots" ]
+                [ text (String.fromInt period.availableSpots)
+                , text " plekken beschikbaar"
+                ]
+            ]
+        , Ui.Button.newPrimary
+            { label = "Inschrijven"
+            , action = Ui.Button.Msg NoOp
+            }
+            |> Ui.Button.view
+        ]
+
+
+viewTimeInfo : Maybe String -> Html Msg
+viewTimeInfo timeInfo =
+    case timeInfo of
+        Just info ->
+            p [ class "course-period__time-info" ]
+                [ text info ]
+
+        Nothing ->
+            text ""
 
 
 
@@ -634,3 +763,51 @@ viewPageNotFound =
         [ h1 [] [ text copy.notFound.title ]
         , p [] [ text copy.notFound.description ]
         ]
+
+
+
+-- HTTP
+
+
+fetchCourses : Cmd Msg
+fetchCourses =
+    Http.get
+        { url = "/.netlify/functions/fetchCourses"
+        , expect = Http.expectJson GotCourses coursesDecoder
+        }
+
+
+coursesDecoder : Decode.Decoder (List Course)
+coursesDecoder =
+    Decode.field "data"
+        (Decode.field "data"
+            (Decode.list courseDecoder)
+        )
+
+
+courseDecoder : Decode.Decoder Course
+courseDecoder =
+    Decode.succeed Course
+        |> Pipeline.required "title" Decode.string
+        |> Pipeline.required "description" Decode.string
+        |> Pipeline.required "imageUrl" Decode.string
+        |> Pipeline.required "price"
+            (Decode.string
+                |> Decode.map String.toFloat
+                |> Decode.map (Maybe.withDefault 0)
+            )
+        |> Pipeline.required "periods" (Decode.list coursePeriodDecoder)
+
+
+coursePeriodDecoder : Decode.Decoder CoursePeriod
+coursePeriodDecoder =
+    Decode.succeed CoursePeriod
+        |> Pipeline.required "id" Decode.string
+        |> Pipeline.required "startDate" Decode.string
+        |> Pipeline.required "endDate" Decode.string
+        |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
+        |> Pipeline.custom
+            (Decode.map2 (\total booked -> total - booked)
+                (Decode.field "totalSpots" Decode.int)
+                (Decode.field "bookedSpots" Decode.int)
+            )

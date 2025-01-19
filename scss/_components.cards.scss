@@ -69,24 +69,97 @@
             opacity: 0;
         }
     }
+}
+
+.card-text-img__content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    p {
+        font-size: 1.15rem;
+    }
+}
+
+.card-text-img.-clickable {
+    cursor: pointer;
+
+    @include tools.hover {
+        @include tools.cardBefore(inherit, true);
+        background-color: color.adjust(settings.$cosmicLatte, $lightness: -3%);
+    }
+}
+
+.card-text-img.-vertical {
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content;
+    justify-content: start;
+
+    img {
+        height: 15rem;
+        border-radius: settings.$borderRadius settings.$borderRadius 0 0;
+    }
+
+    h3 {
+        margin: .5rem 0 .25rem;
+        font-size: 1.5rem;
+    }
 
     .card-text-img__content {
-        padding: 1rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        justify-content: start;
+    }
+}
 
-        p {
-            font-size: 1.15rem;
-        }
+
+// courses
+
+.courses-grid {
+    gap: 2rem;
+    padding: 2rem 0;
+    display: grid;
+    grid-template-columns: 1fr;
+
+    @include tools.breakpoint(settings.$medium) {
+        grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+    }
+}
+
+.course-card__price {
+    margin: .5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.course-card__periods {
+    gap: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-period {
+    gap: .75rem;
+    margin-top: .75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    align-items: flex-end;
+
+    p {
+        margin: 0;
+        font-size: 1rem;
     }
 
-    &.-clickable {
-        cursor: pointer;
-
-        @include tools.hover {
-            @include tools.cardBefore(inherit, true);
-            background-color: color.adjust(settings.$cosmicLatte, $lightness: -3%);
-        }
+    button {
+        margin: 0;
     }
+}
+
+.course-period__dates {
+    font-weight: 500;
+}
+
+.course-period__spots,
+.course-period__time-info {
+    font-style: italic;
 }

@@ -27,6 +27,7 @@ assets:
 	@mkdir -p ${DIST_DIR}/assets/ && cp -R ./assets ${DIST_DIR}
 	@cp metatags.json ${DIST_DIR}
 	@cp metatags-updater.js ${DIST_DIR}
+	@cp -R netlify ${DIST_DIR}
 
 build: deps elmoptimized styles minify assets generate_html
 
@@ -85,7 +86,12 @@ styles: $(SCSS_FILES)
 	@sass --style=compressed scss/style.scss dist/style.css
 
 watch:
-	browser-sync start --single --server ${DIST_DIR} --files ["${DIST_DIR}/*.css", "${DIST_DIR}/*.js"] & \
+	browser-sync start --single --server ${DIST_DIR} --files ["${DIST_DIR}/*.css", "${DIST_DIR}/*.js"] --port 3001 & \
+	find scss -name '*.scss' | entr make styles & \
+	find src -name '*.elm' | entr make all
+
+# Used by netlify when running 'netlify dev'
+dev:
 	find scss -name '*.scss' | entr make styles & \
 	find src -name '*.elm' | entr make all
 
