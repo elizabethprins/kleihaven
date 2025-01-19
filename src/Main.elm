@@ -145,8 +145,16 @@ update msg model =
             ( { model
                 | page = page
                 , mobileMenuOpen = False
+                , loadingCourses = page == Route.Cursussen
               }
-            , urlChanged (Route.toUrl <| Route.toPage url)
+            , Cmd.batch
+                [ urlChanged (Route.toUrl <| Route.toPage url)
+                , if page == Route.Cursussen then
+                    fetchCourses
+
+                  else
+                    Cmd.none
+                ]
             )
 
         ImageLoaded src ->
