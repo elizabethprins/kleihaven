@@ -1,6 +1,6 @@
 const { createMollieClient } = require('@mollie/api-client');
-const faunadb = require('faunadb');
-const q = faunadb.query;
+const fauna = require('fauna');
+const q = fauna.query;
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -9,11 +9,11 @@ exports.handler = async (event) => {
 
     const { id } = event.body;
     const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
-    const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY });
+    const client = new fauna.Client({ secret: process.env.FAUNA_SECRET_KEY });
 
     try {
         const payment = await mollieClient.payments.get(id);
-        
+
         if (payment.isPaid()) {
             // Create booking in FaunaDB
             await client.query(

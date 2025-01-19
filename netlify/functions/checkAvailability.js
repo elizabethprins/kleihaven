@@ -1,5 +1,5 @@
-const faunadb = require('faunadb');
-const q = faunadb.query;
+const fauna = require('fauna');
+const q = fauna.query;
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -7,7 +7,7 @@ exports.handler = async (event) => {
     }
 
     const { courseId } = JSON.parse(event.body);
-    const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY });
+    const client = new fauna.Client({ secret: process.env.FAUNA_SECRET_KEY });
 
     try {
         const response = await client.query(

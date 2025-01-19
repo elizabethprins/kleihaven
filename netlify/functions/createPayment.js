@@ -1,6 +1,6 @@
 const { createMollieClient } = require('@mollie/api-client');
-const faunadb = require('faunadb');
-const q = faunadb.query;
+const fauna = require('fauna');
+const q = fauna.query;
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -9,13 +9,13 @@ exports.handler = async (event) => {
 
     const { courseId, email, name } = JSON.parse(event.body);
     const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
-    const client = new faunadb.Client({ secret: process.env.FAUNA_SECRET_KEY });
+    const client = new fauna.Client({ secret: process.env.FAUNA_SECRET_KEY });
 
     try {
         const course = await client.query(
             q.Get(q.Ref(q.Collection('Courses'), courseId))
         );
-        
+
         const payment = await mollieClient.payments.create({
             amount: {
                 currency: 'EUR',
