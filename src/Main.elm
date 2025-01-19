@@ -141,22 +141,30 @@ update msg model =
             let
                 page =
                     Route.toPage url
-            in
-            ( { model
-                | page = page
-                , loadedImages = Set.empty
-                , mobileMenuOpen = False
-                , loadingCourses = page == Route.Cursussen
-              }
-            , Cmd.batch
-                [ urlChanged (Route.toUrl <| Route.toPage url)
-                , if page == Route.Cursussen then
-                    fetchCourses
 
-                  else
-                    Cmd.none
-                ]
-            )
+                newModel =
+                    { model
+                        | page = page
+                        , mobileMenuOpen = False
+                    }
+            in
+            if page == model.page then
+                ( newModel, Cmd.none )
+
+            else
+                ( { newModel
+                    | loadingCourses = page == Route.Cursussen
+                    , loadedImages = Set.empty
+                  }
+                , Cmd.batch
+                    [ urlChanged (Route.toUrl <| Route.toPage url)
+                    , if page == Route.Cursussen then
+                        fetchCourses
+
+                      else
+                        Cmd.none
+                    ]
+                )
 
         ImageLoaded src ->
             ( { model | loadedImages = Set.insert src model.loadedImages }
