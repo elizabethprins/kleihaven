@@ -144,6 +144,7 @@ update msg model =
             in
             ( { model
                 | page = page
+                , loadedImages = Set.empty
                 , mobileMenuOpen = False
                 , loadingCourses = page == Route.Cursussen
               }
