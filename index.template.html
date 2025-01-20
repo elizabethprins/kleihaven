@@ -29,7 +29,8 @@
     <script src="/main.js"></script>
     <script>
         window.env = {
-            BASE_URL: "{{ base_url }}"
+            BASE_URL: "{{ base_url }}",
+            API_BASE_URL: "{{ api_base_url }}"
         };
     </script>
     <script src="/metatags-updater.js" defer></script>
@@ -41,7 +42,10 @@
     <div id="elm"></div>
     <script>
         var app = Elm.Main.init({
-            node: document.getElementById('elm')
+            node: document.getElementById('elm'),
+            flags: {
+                apiBaseUrl: window.env.API_BASE_URL || ""
+            }
         });
     </script>
 </body>

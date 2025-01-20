@@ -86,14 +86,12 @@ styles: $(SCSS_FILES)
 	@sass --style=compressed scss/style.scss dist/style.css
 
 watch:
-	browser-sync start --single --server ${DIST_DIR} --files ["${DIST_DIR}/*.css", "${DIST_DIR}/*.js"] --port 3001 & \
+	browser-sync start --single --server ${DIST_DIR} --files ["${DIST_DIR}/*.css", "${DIST_DIR}/*.js"]  --ignore ".netlify/**/*" & \
 	find scss -name '*.scss' | entr make styles & \
 	find src -name '*.elm' | entr make all
 
-# Used by netlify when running 'netlify dev'
-dev:
-	find scss -name '*.scss' | entr make styles & \
-	find src -name '*.elm' | entr make all
+serve:
+	@concurrently "make watch" "netlify functions:serve --port 8888"
 
 generate_html: ensure_script_permissions
 	@for url in $(URLS); do \
@@ -117,7 +115,11 @@ convert-webp:
 			output_dir=$(OUTPUT_WEBP_DIR)/$$rel_dir; \
 		fi; \
 		mkdir -p $$output_dir; \
-		ffmpeg -i $$file -c:v libwebp -q:v $(WEBP_QUALITY) -preset default -pix_fmt yuv420p $$output_dir/$$file_name.webp; \
+		if [ ! -f $$output_dir/$$file_name.webp ]; then \
+			ffmpeg -i $$file -c:v libwebp -q:v $(WEBP_QUALITY) -preset default -pix_fmt yuv420p $$output_dir/$$file_name.webp; \
+		else \
+			echo "Skipping $$file_name.webp, already exists."; \
+		fi; \
 	done
 	@echo "Conversion to WebP completed."
 
@@ -133,7 +135,11 @@ convert-avif:
 			output_dir=$(OUTPUT_AVIF_DIR)/$$rel_dir; \
 		fi; \
 		mkdir -p $$output_dir; \
-		ffmpeg -i $$file -c:v libaom-av1 -crf $(AVIF_QUALITY) -b:v 0 -pix_fmt yuv420p $$output_dir/$$file_name.avif; \
+		if [ ! -f $$output_dir/$$file_name.avif ]; then \
+			ffmpeg -i $$file -c:v libaom-av1 -crf $(AVIF_QUALITY) -b:v 0 -pix_fmt yuv420p $$output_dir/$$file_name.avif; \
+		else \
+			echo "Skipping $$file_name.avif, already exists."; \
+		fi; \
 	done
 	@echo "Conversion to AVIF completed."
 

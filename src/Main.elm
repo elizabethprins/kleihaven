@@ -23,7 +23,7 @@ import Url exposing (Url)
 -- MAIN
 
 
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { init = init
@@ -51,8 +51,13 @@ subscriptions _ =
 -- MODEL
 
 
+type alias Flags =
+    { apiBaseUrl : String }
+
+
 type alias Model =
     { navKey : Navigation.Key
+    , apiBaseUrl : String
     , page : Route.Page
     , loadedImages : Set String
     , mobileMenuOpen : Bool
@@ -80,13 +85,14 @@ type alias CoursePeriod =
     }
 
 
-init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
-init _ url key =
+init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
+init flags url key =
     let
         initialPage =
             Route.toPage url
     in
     ( { navKey = key
+      , apiBaseUrl = flags.apiBaseUrl
       , page = initialPage
       , loadedImages = Set.empty
       , mobileMenuOpen = False
@@ -95,7 +101,7 @@ init _ url key =
       , error = Nothing
       }
     , if initialPage == Route.Cursussen then
-        fetchCourses
+        fetchCourses flags.apiBaseUrl
 
       else
         Cmd.none
@@ -159,7 +165,7 @@ update msg model =
                 , Cmd.batch
                     [ urlChanged (Route.toUrl <| Route.toPage url)
                     , if page == Route.Cursussen then
-                        fetchCourses
+                        fetchCourses model.apiBaseUrl
 
                       else
                         Cmd.none
@@ -786,10 +792,10 @@ viewPageNotFound =
 -- HTTP
 
 
-fetchCourses : Cmd Msg
-fetchCourses =
+fetchCourses : String -> Cmd Msg
+fetchCourses apiBaseUrl =
     Http.get
-        { url = "/.netlify/functions/fetchCourses"
+        { url = apiBaseUrl ++ "/.netlify/functions/fetchCourses"
         , expect = Http.expectJson GotCourses coursesDecoder
         }
 
