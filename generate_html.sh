@@ -6,7 +6,7 @@ URL=$3
 
 # Detect the base URL
 BASE_URL=${BASE_URL:-http://localhost:3000}
-API_BASE_URL=${API_BASE_URL:-http://localhost:8888}
+API_BASE_URL=${API_BASE_URL:-""}
 
 # Extract metadata for the URL using Python to parse JSON
 OG_TITLE=$(python3 -c "import sys, json; print(json.load(sys.stdin)['$URL']['og_title'])" < metatags.json)

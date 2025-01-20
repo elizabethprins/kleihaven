@@ -12,6 +12,7 @@ SCSS_FILES = $(shell find scss -name '*.scss')
 URLS = /kleihaven/ /cursussen/ /over-ons/ /air/ /
 DIST_URLS = $(foreach url, $(URLS), $(DIST_DIR)$(url)/index.html)
 BASE_URL ?= http://localhost:3000
+API_BASE_URL ?= http://localhost:8888
 ASSETS_DIR = assets
 OUTPUT_WEBP_DIR = assets/webp
 OUTPUT_AVIF_DIR = assets/avif
@@ -32,7 +33,7 @@ assets:
 build: deps elmoptimized styles minify assets generate_html
 
 production:
-	@$(MAKE) build BASE_URL=https://kleihaven.netlify.app
+	@$(MAKE) build BASE_URL=https://kleihaven.netlify.app API_BASE_URL=""
 
 clean:
 	@rm -Rf dist/*
@@ -96,7 +97,7 @@ serve:
 generate_html: ensure_script_permissions
 	@for url in $(URLS); do \
 		mkdir -p $(DIST_DIR)$$url && \
-		BASE_URL=$(BASE_URL) ./generate_html.sh index.template.html $(DIST_DIR)$$url/index.html $$url; \
+		BASE_URL=$(BASE_URL) API_BASE_URL=$(API_BASE_URL) ./generate_html.sh index.template.html $(DIST_DIR)$$url/index.html $$url; \
 		echo "Generated: $(DIST_DIR)$$url/index.html"; \
 	done
 
