@@ -80,3 +80,25 @@
     line-height: 1.6;
     color: settings.$sealBrown;
 }
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    display: inline-block;
+    border: 3px solid settings.$sunset;
+    border-radius: 50%;
+    border-top: 3px solid settings.$drabBrown;
+    vertical-align: middle;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

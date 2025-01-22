@@ -8,7 +8,17 @@ exports.handler = async () => {
     try {
         const response = await client.query(fql`
             Courses.all().map(
-                (course) => course.data
+                (doc) => {
+                    let data = doc.data
+                    {
+                        id: doc.id,
+                        title: data.title,
+                        description: data.description,
+                        imageUrl: data.imageUrl,
+                        price: data.price,
+                        periods: data.periods
+                    }
+                }
             )
         `);
 

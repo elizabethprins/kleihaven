@@ -1,4 +1,4 @@
-module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly)
+module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withType)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -13,6 +13,7 @@ type Config msg
         , style : Style
         , isDisabled : Bool
         , isMobileOnly : Bool
+        , buttonType : Maybe String
         }
 
 
@@ -37,6 +38,7 @@ new style { label, action } =
         , style = style
         , isDisabled = False
         , isMobileOnly = False
+        , buttonType = Nothing
         }
 
 
@@ -68,6 +70,11 @@ withDisabledIf condition (Config config) =
 withMobileOnly : Config msg -> Config msg
 withMobileOnly (Config config) =
     Config { config | isMobileOnly = True }
+
+
+withType : String -> Config msg -> Config msg
+withType buttonType (Config config) =
+    Config { config | buttonType = Just buttonType }
 
 
 
@@ -123,6 +130,7 @@ toHtmlNode (Config config) =
                 [ onClick msg
                 , disabled config.isDisabled
                 , classList
+                , type_ (Maybe.withDefault "button" config.buttonType)
                 ]
 
 

@@ -6,16 +6,18 @@ import Browser.Navigation as Navigation
 import Copy exposing (copy)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick)
+import Html.Events exposing (on, onClick, onInput, onSubmit)
 import Html.Keyed
 import Http
 import Json.Decode as Decode
 import Json.Decode.Pipeline as Pipeline
+import Parser exposing ((|.), (|=), Parser)
 import Route
 import Set exposing (Set)
 import Task
 import Ui.Button
 import Ui.Date
+import Ui.FormField
 import Url exposing (Url)
 
 
@@ -64,11 +66,17 @@ type alias Model =
     , courses : List Course
     , loadingCourses : Bool
     , error : Maybe Http.Error
+    , registrationModal : Maybe RegistrationModal
     }
 
 
+type Id
+    = Id String
+
+
 type alias Course =
-    { title : String
+    { id : Id
+    , title : String
     , description : String
     , imageUrl : String
     , price : Float
@@ -77,11 +85,36 @@ type alias Course =
 
 
 type alias CoursePeriod =
-    { id : String
+    { id : Id
     , startDate : String
     , endDate : String
     , timeInfo : Maybe String
     , availableSpots : Int
+    }
+
+
+type alias RegistrationModal =
+    { course : Course
+    , period : CoursePeriod
+    , name : String
+    , email : String
+    , spots : Int
+    , errors : ValidationErrors
+    }
+
+
+type alias ValidationErrors =
+    { name : Maybe String
+    , email : Maybe String
+    , spots : Maybe String
+    }
+
+
+emptyValidationErrors : ValidationErrors
+emptyValidationErrors =
+    { name = Nothing
+    , email = Nothing
+    , spots = Nothing
     }
 
 
@@ -99,6 +132,7 @@ init flags url key =
       , courses = []
       , loadingCourses = initialPage == Route.Cursussen
       , error = Nothing
+      , registrationModal = Nothing
       }
     , if initialPage == Route.Cursussen then
         fetchCourses flags.apiBaseUrl
@@ -119,6 +153,12 @@ type Msg
     | ImageLoaded String
     | ToggleMobileMenu
     | GotCourses (Result Http.Error (List Course))
+    | OpenRegistrationModal Course CoursePeriod
+    | CloseRegistrationModal
+    | UpdateRegistrationName String
+    | UpdateRegistrationEmail String
+    | UpdateRegistrationSpots String
+    | SubmitRegistration
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -198,6 +238,87 @@ update msg model =
                     , Cmd.none
                     )
 
+        OpenRegistrationModal course period ->
+            ( { model
+                | registrationModal =
+                    Just
+                        { course = course
+                        , period = period
+                        , name = ""
+                        , email = ""
+                        , spots = 1
+                        , errors = emptyValidationErrors
+                        }
+              }
+            , Cmd.none
+            )
+
+        CloseRegistrationModal ->
+            ( { model | registrationModal = Nothing }, Cmd.none )
+
+        UpdateRegistrationName name ->
+            ( { model
+                | registrationModal = Maybe.map (\m -> { m | name = name }) model.registrationModal
+              }
+            , Cmd.none
+            )
+
+        UpdateRegistrationEmail email ->
+            ( { model
+                | registrationModal = Maybe.map (\m -> { m | email = email }) model.registrationModal
+              }
+            , Cmd.none
+            )
+
+        UpdateRegistrationSpots spotsStr ->
+            ( { model
+                | registrationModal =
+                    Maybe.map
+                        (\m ->
+                            { m
+                                | spots =
+                                    String.toInt spotsStr
+                                        |> Maybe.withDefault m.spots
+                                        |> clamp 1 10
+                            }
+                        )
+                        model.registrationModal
+              }
+            , Cmd.none
+            )
+
+        SubmitRegistration ->
+            case model.registrationModal of
+                Nothing ->
+                    ( model, Cmd.none )
+
+                Just modal ->
+                    let
+                        validationErrors =
+                            validateRegistration modal
+
+                        hasErrors =
+                            validationErrors.name
+                                /= Nothing
+                                || validationErrors.email
+                                /= Nothing
+                                || validationErrors.spots
+                                /= Nothing
+                    in
+                    if hasErrors then
+                        ( { model
+                            | registrationModal =
+                                Just { modal | errors = validationErrors }
+                          }
+                        , Cmd.none
+                        )
+
+                    else
+                        -- TODO: Submit the form
+                        ( { model | registrationModal = Nothing }
+                        , Cmd.none
+                        )
+
 
 
 -- VIEW
@@ -227,6 +348,7 @@ view model =
 
                 Route.NotFound ->
                     viewPageNotFound
+        , viewRegistrationModal model.registrationModal
         ]
     }
 
@@ -698,6 +820,32 @@ lorem =
         - zomerschool: aan tafel! ( 2 weken in de zomer , start 21 juni, eind 5 juli)
         - zomerschool: vrij/creatief ( 2 weken in de zomer, start 13 juli, eind 25 julie)
 
+        1. Draaien / Handvormen voor beginners
+        Pasen - 18 tot en met 21 april - 4 dagen - 14 personen
+
+        2. Draaien / Handvormen / Decoratietechnieken / Rakustook / alle niveaus
+        Meivakantie - 28 april tot en met 4 mei - 7 dagen - 14 personen
+
+        3. Draaien / Handvormen voor alle niveaus
+        Hemelvaart 29 mei - 1 juni - 4 dagen - 14 personen
+
+        4. Draaien / Gevorderden
+        Pinksteren 7 en 8 juni - Baba - 8 personen
+
+        5. Rakustook
+        Pinkstermaandag 9 juni
+
+        6. Zomerschool 1 - Aan tafel!
+        Alle niveaus / wadlopen / decoratietechnieken / rakustook? kuilvuur?
+        Zaterdag 21 juni tot en met vrijdag 5 juli - 13 dagen
+
+        7. Zomerschool 2 - Vorm vrij - creatief handvormen en draaien
+        Alle niveaus / wadlopen / decoratietechnieken / rakustook / kuilvuur
+        Zondag 13 juli tot en met vrijdag 25 juli - 13 dagen
+
+        Wat uniek is wat wij doen is dat in alle cursussen zowel handvormen als draaien zit.
+        Bij alle andere dingen ga je of draaien of handvormen doen.
+
 -}
 viewPageCursussen : Model -> List (Html Msg)
 viewPageCursussen model =
@@ -705,7 +853,7 @@ viewPageCursussen model =
     , h2 [ class "centered" ] [ text "Keramiekcursussen voor elk niveau" ]
     , if model.loadingCourses then
         div [ class "centered" ]
-            [ text "Cursussen worden geladen..." ]
+            [ div [ class "loading-spinner" ] [] ]
 
       else
         case model.error of
@@ -734,14 +882,14 @@ viewCourse loadedImages course =
                 , text (String.fromFloat course.price)
                 ]
             , div [ class "course-card__periods" ]
-                (List.map viewCoursePeriod course.periods)
+                (List.map (viewCoursePeriod course) course.periods)
             ]
         , extraClass = "course-card -vertical"
         }
 
 
-viewCoursePeriod : CoursePeriod -> Html Msg
-viewCoursePeriod period =
+viewCoursePeriod : Course -> CoursePeriod -> Html Msg
+viewCoursePeriod course period =
     div [ class "course-period" ]
         [ div []
             [ p [ class "course-period__dates" ]
@@ -759,7 +907,7 @@ viewCoursePeriod period =
             ]
         , Ui.Button.newPrimary
             { label = "Inschrijven"
-            , action = Ui.Button.Msg NoOp
+            , action = Ui.Button.Msg (OpenRegistrationModal course period)
             }
             |> Ui.Button.view
         ]
@@ -811,6 +959,7 @@ coursesDecoder =
 courseDecoder : Decode.Decoder Course
 courseDecoder =
     Decode.succeed Course
+        |> Pipeline.required "id" (Decode.map Id Decode.string)
         |> Pipeline.required "title" Decode.string
         |> Pipeline.required "description" Decode.string
         |> Pipeline.required "imageUrl" Decode.string
@@ -825,7 +974,7 @@ courseDecoder =
 coursePeriodDecoder : Decode.Decoder CoursePeriod
 coursePeriodDecoder =
     Decode.succeed CoursePeriod
-        |> Pipeline.required "id" Decode.string
+        |> Pipeline.required "id" (Decode.map Id Decode.string)
         |> Pipeline.required "startDate" Decode.string
         |> Pipeline.required "endDate" Decode.string
         |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
@@ -834,3 +983,156 @@ coursePeriodDecoder =
                 (Decode.field "totalSpots" Decode.int)
                 (Decode.field "bookedSpots" Decode.int)
             )
+
+
+viewRegistrationModal : Maybe RegistrationModal -> Html Msg
+viewRegistrationModal maybeModal =
+    case maybeModal of
+        Nothing ->
+            text ""
+
+        Just modal ->
+            div [ class "modal-overlay" ]
+                [ div [ class "modal" ]
+                    [ h2 [] [ text "Inschrijfformulier" ]
+                    , h3 []
+                        [ text modal.course.title ]
+                    , p [ class "bold font-secondary" ]
+                        [ Ui.Date.periodString
+                            { start = modal.period.startDate
+                            , end = modal.period.endDate
+                            }
+                            |> text
+                        ]
+                    , p [] [ text "Wat leuk dat je mee wilt doen! Vul het formulier in om je inschrijving te voltooien. Je wordt automatisch doorverwezen naar de betalingspagina." ]
+                    , Html.form [ onSubmit SubmitRegistration ]
+                        [ Ui.FormField.new
+                            { id = "name"
+                            , label = "Naam"
+                            , value = modal.name
+                            , onInput = UpdateRegistrationName
+                            }
+                            |> Ui.FormField.withRequired True
+                            |> Ui.FormField.withError modal.errors.name
+                            |> Ui.FormField.view
+                        , Ui.FormField.new
+                            { id = "email"
+                            , label = "E-mail"
+                            , value = modal.email
+                            , onInput = UpdateRegistrationEmail
+                            }
+                            |> Ui.FormField.withType "email"
+                            |> Ui.FormField.withRequired True
+                            |> Ui.FormField.withError modal.errors.email
+                            |> Ui.FormField.view
+                        , Ui.FormField.new
+                            { id = "spots"
+                            , label = "Aantal plekken"
+                            , value = String.fromInt modal.spots
+                            , onInput = UpdateRegistrationSpots
+                            }
+                            |> Ui.FormField.withSelect
+                                (List.range 1 modal.period.availableSpots
+                                    |> List.map
+                                        (\n ->
+                                            { value = String.fromInt n
+                                            , label = String.fromInt n
+                                            , selected = n == modal.spots
+                                            }
+                                        )
+                                )
+                            |> Ui.FormField.withError modal.errors.spots
+                            |> Ui.FormField.view
+                        , p [ class "modal__total-cost" ]
+                            [ text "Totaal: € "
+                            , String.fromFloat (modal.course.price * toFloat modal.spots)
+                                |> text
+                            ]
+                        , div [ class "modal-buttons" ]
+                            [ Ui.Button.newSecondary
+                                { label = "Annuleren"
+                                , action = Ui.Button.Msg CloseRegistrationModal
+                                }
+                                |> Ui.Button.withType "button"
+                                |> Ui.Button.view
+                            , Ui.Button.newPrimary
+                                { label = "Afrekenen"
+                                , action = Ui.Button.Msg SubmitRegistration
+                                }
+                                |> Ui.Button.withType "submit"
+                                |> Ui.Button.view
+                            ]
+                        ]
+                    ]
+                ]
+
+
+viewFieldError : Maybe String -> Html msg
+viewFieldError maybeError =
+    case maybeError of
+        Just error ->
+            p [ class "form-field__error" ] [ text error ]
+
+        Nothing ->
+            text ""
+
+
+validateRegistration : RegistrationModal -> ValidationErrors
+validateRegistration modal =
+    { name =
+        if String.isEmpty (String.trim modal.name) then
+            Just "Naam is verplicht"
+
+        else
+            Nothing
+    , email =
+        if String.isEmpty (String.trim modal.email) then
+            Just "E-mail is verplicht"
+
+        else if not (isValidEmail modal.email) then
+            Just "Vul een geldig e-mailadres in"
+
+        else
+            Nothing
+    , spots =
+        if modal.spots < 1 then
+            Just "Kies minimaal 1 plek"
+
+        else if modal.spots > 10 then
+            Just "Maximaal 10 plekken per registratie"
+
+        else
+            Nothing
+    }
+
+
+isValidEmail : String -> Bool
+isValidEmail email =
+    email
+        |> String.trim
+        |> Parser.run emailParser
+        |> Result.map (always True)
+        |> Result.withDefault False
+
+
+emailParser : Parser ()
+emailParser =
+    let
+        localPart =
+            Parser.succeed ()
+                |. Parser.chompIf (\c -> Char.isAlphaNum c || List.member c [ '.', '_', '-', '+' ])
+                |. Parser.chompWhile (\c -> Char.isAlphaNum c || List.member c [ '.', '_', '-', '+' ])
+
+        domainPart =
+            Parser.succeed ()
+                |. Parser.chompIf Char.isAlphaNum
+                |. Parser.chompWhile (\c -> Char.isAlphaNum c || c == '-')
+                |. Parser.symbol "."
+                |. Parser.chompIf Char.isAlpha
+                |. Parser.chompWhile Char.isAlpha
+    in
+    Parser.succeed ()
+        |. localPart
+        |. Parser.symbol "@"
+        |. domainPart
+        |. Parser.end
