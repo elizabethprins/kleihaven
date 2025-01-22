@@ -3,7 +3,7 @@
 
 .button {
     width: fit-content;
-    padding: .5em 2em;
+    padding: .5em 1.75em;
     margin: 1.25em 0 1em;
     display: block;
     border: 1px solid currentColor;
@@ -59,4 +59,10 @@
     @include tools.hover {
         text-decoration: underline;
     }
+}
+
+.button .loading-spinner {
+    width: .75em;
+    height: .75em;
+    margin: 0 -1em 0 .25em;
 }

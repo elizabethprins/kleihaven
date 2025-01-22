@@ -1,4 +1,4 @@
-module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withType)
+module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withSpinner, withType)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,6 +14,7 @@ type Config msg
         , isDisabled : Bool
         , isMobileOnly : Bool
         , buttonType : Maybe String
+        , showSpinner : Bool
         }
 
 
@@ -39,6 +40,7 @@ new style { label, action } =
         , isDisabled = False
         , isMobileOnly = False
         , buttonType = Nothing
+        , showSpinner = False
         }
 
 
@@ -77,6 +79,11 @@ withType buttonType (Config config) =
     Config { config | buttonType = Just buttonType }
 
 
+withSpinner : Bool -> Config msg -> Config msg
+withSpinner showSpinner (Config config) =
+    Config { config | showSpinner = showSpinner }
+
+
 
 -- VIEW
 
@@ -90,7 +97,13 @@ view (Config config) =
                     [ span [ class "visually-hidden" ] [ text config.label ] ]
 
                 _ ->
-                    [ text config.label ]
+                    if config.showSpinner then
+                        [ text config.label
+                        , div [ class "loading-spinner" ] []
+                        ]
+
+                    else
+                        [ text config.label ]
     in
     toHtmlNode (Config config) content
 

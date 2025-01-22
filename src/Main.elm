@@ -11,6 +11,7 @@ import Html.Keyed
 import Http
 import Json.Decode as Decode
 import Json.Decode.Pipeline as Pipeline
+import Json.Encode as Encode
 import Parser exposing ((|.), (|=), Parser)
 import Route
 import Set exposing (Set)
@@ -100,6 +101,8 @@ type alias RegistrationModal =
     , email : String
     , spots : Int
     , errors : ValidationErrors
+    , bookingError : Maybe String
+    , submitting : Bool
     }
 
 
@@ -159,6 +162,13 @@ type Msg
     | UpdateRegistrationEmail String
     | UpdateRegistrationSpots String
     | SubmitRegistration
+    | GotBookingResponse (Result Http.Error BookingResponse)
+
+
+type alias BookingResponse =
+    { success : Bool
+    , paymentUrl : String
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -248,6 +258,8 @@ update msg model =
                         , email = ""
                         , spots = 1
                         , errors = emptyValidationErrors
+                        , submitting = False
+                        , bookingError = Nothing
                         }
               }
             , Cmd.none
@@ -308,16 +320,64 @@ update msg model =
                     if hasErrors then
                         ( { model
                             | registrationModal =
-                                Just { modal | errors = validationErrors }
+                                Just
+                                    { modal
+                                        | errors = validationErrors
+                                        , bookingError = Nothing
+                                    }
                           }
                         , Cmd.none
                         )
 
                     else
-                        -- TODO: Submit the form
-                        ( { model | registrationModal = Nothing }
-                        , Cmd.none
+                        ( { model
+                            | registrationModal =
+                                Just
+                                    { modal
+                                        | errors = emptyValidationErrors
+                                        , submitting = True
+                                        , bookingError = Nothing
+                                    }
+                          }
+                        , createBooking model.apiBaseUrl modal
                         )
+
+        GotBookingResponse result ->
+            let
+                newModel =
+                    { model
+                        | registrationModal =
+                            model.registrationModal
+                                |> Maybe.map (\m -> { m | submitting = False })
+                    }
+            in
+            case result of
+                Ok response ->
+                    if response.success then
+                        ( newModel
+                        , Navigation.load response.paymentUrl
+                        )
+
+                    else
+                        -- Handle unsuccessful booking
+                        ( newModel, Cmd.none )
+
+                Err _ ->
+                    ( { model
+                        | registrationModal =
+                            model.registrationModal
+                                |> Maybe.map
+                                    (\m ->
+                                        { m
+                                            | submitting = False
+                                            , bookingError =
+                                                -- Just "Sorry, er is iets fout gegaan bij het maken van de boeking. Probeer het later opnieuw."
+                                                Just "* Under construction! *"
+                                        }
+                                    )
+                      }
+                    , Cmd.none
+                    )
 
 
 
@@ -810,43 +870,6 @@ lorem =
 -- Cursussen
 
 
-{-|
-
-        2025
-        - draaien voor beginners (pasen, 4 dagen)
-        - draaien en handvormen (meivakantie, 1week: 28 april - 4 mei)
-        - draaien voor gevorderden (hemelvaart, 4 dagen)
-        - decoratie en stooktechnieken (pinksteren, 3 dagen)
-        - zomerschool: aan tafel! ( 2 weken in de zomer , start 21 juni, eind 5 juli)
-        - zomerschool: vrij/creatief ( 2 weken in de zomer, start 13 juli, eind 25 julie)
-
-        1. Draaien / Handvormen voor beginners
-        Pasen - 18 tot en met 21 april - 4 dagen - 14 personen
-
-        2. Draaien / Handvormen / Decoratietechnieken / Rakustook / alle niveaus
-        Meivakantie - 28 april tot en met 4 mei - 7 dagen - 14 personen
-
-        3. Draaien / Handvormen voor alle niveaus
-        Hemelvaart 29 mei - 1 juni - 4 dagen - 14 personen
-
-        4. Draaien / Gevorderden
-        Pinksteren 7 en 8 juni - Baba - 8 personen
-
-        5. Rakustook
-        Pinkstermaandag 9 juni
-
-        6. Zomerschool 1 - Aan tafel!
-        Alle niveaus / wadlopen / decoratietechnieken / rakustook? kuilvuur?
-        Zaterdag 21 juni tot en met vrijdag 5 juli - 13 dagen
-
-        7. Zomerschool 2 - Vorm vrij - creatief handvormen en draaien
-        Alle niveaus / wadlopen / decoratietechnieken / rakustook / kuilvuur
-        Zondag 13 juli tot en met vrijdag 25 juli - 13 dagen
-
-        Wat uniek is wat wij doen is dat in alle cursussen zowel handvormen als draaien zit.
-        Bij alle andere dingen ga je of draaien of handvormen doen.
-
--}
 viewPageCursussen : Model -> List (Html Msg)
 viewPageCursussen model =
     [ h1 [ class "centered" ] [ text "Cursusaanbod" ]
@@ -937,52 +960,7 @@ viewPageNotFound =
 
 
 
--- HTTP
-
-
-fetchCourses : String -> Cmd Msg
-fetchCourses apiBaseUrl =
-    Http.get
-        { url = apiBaseUrl ++ "/.netlify/functions/fetchCourses"
-        , expect = Http.expectJson GotCourses coursesDecoder
-        }
-
-
-coursesDecoder : Decode.Decoder (List Course)
-coursesDecoder =
-    Decode.field "data"
-        (Decode.field "data"
-            (Decode.list courseDecoder)
-        )
-
-
-courseDecoder : Decode.Decoder Course
-courseDecoder =
-    Decode.succeed Course
-        |> Pipeline.required "id" (Decode.map Id Decode.string)
-        |> Pipeline.required "title" Decode.string
-        |> Pipeline.required "description" Decode.string
-        |> Pipeline.required "imageUrl" Decode.string
-        |> Pipeline.required "price"
-            (Decode.string
-                |> Decode.map String.toFloat
-                |> Decode.map (Maybe.withDefault 0)
-            )
-        |> Pipeline.required "periods" (Decode.list coursePeriodDecoder)
-
-
-coursePeriodDecoder : Decode.Decoder CoursePeriod
-coursePeriodDecoder =
-    Decode.succeed CoursePeriod
-        |> Pipeline.required "id" (Decode.map Id Decode.string)
-        |> Pipeline.required "startDate" Decode.string
-        |> Pipeline.required "endDate" Decode.string
-        |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
-        |> Pipeline.custom
-            (Decode.map2 (\total booked -> total - booked)
-                (Decode.field "totalSpots" Decode.int)
-                (Decode.field "bookedSpots" Decode.int)
-            )
+-- REGISTRATION MODAL
 
 
 viewRegistrationModal : Maybe RegistrationModal -> Html Msg
@@ -1048,6 +1026,7 @@ viewRegistrationModal maybeModal =
                             , String.fromFloat (modal.course.price * toFloat modal.spots)
                                 |> text
                             ]
+                        , viewModalError modal.bookingError
                         , div [ class "modal-buttons" ]
                             [ Ui.Button.newSecondary
                                 { label = "Annuleren"
@@ -1059,6 +1038,7 @@ viewRegistrationModal maybeModal =
                                 { label = "Afrekenen"
                                 , action = Ui.Button.Msg SubmitRegistration
                                 }
+                                |> Ui.Button.withSpinner modal.submitting
                                 |> Ui.Button.withType "submit"
                                 |> Ui.Button.view
                             ]
@@ -1067,11 +1047,21 @@ viewRegistrationModal maybeModal =
                 ]
 
 
+viewModalError : Maybe String -> Html msg
+viewModalError =
+    viewError "modal__error"
+
+
 viewFieldError : Maybe String -> Html msg
-viewFieldError maybeError =
+viewFieldError =
+    viewError "form-field__error"
+
+
+viewError : String -> Maybe String -> Html msg
+viewError className maybeError =
     case maybeError of
         Just error ->
-            p [ class "form-field__error" ] [ text error ]
+            p [ class className ] [ text error ]
 
         Nothing ->
             text ""
@@ -1136,3 +1126,84 @@ emailParser =
         |. Parser.symbol "@"
         |. domainPart
         |. Parser.end
+
+
+
+-- HTTP
+
+
+fetchCourses : String -> Cmd Msg
+fetchCourses apiBaseUrl =
+    Http.get
+        { url = apiBaseUrl ++ "/.netlify/functions/fetchCourses"
+        , expect = Http.expectJson GotCourses coursesDecoder
+        }
+
+
+coursesDecoder : Decode.Decoder (List Course)
+coursesDecoder =
+    Decode.field "data"
+        (Decode.field "data"
+            (Decode.list courseDecoder)
+        )
+
+
+courseDecoder : Decode.Decoder Course
+courseDecoder =
+    Decode.succeed Course
+        |> Pipeline.required "id" (Decode.map Id Decode.string)
+        |> Pipeline.required "title" Decode.string
+        |> Pipeline.required "description" Decode.string
+        |> Pipeline.required "imageUrl" Decode.string
+        |> Pipeline.required "price"
+            (Decode.string
+                |> Decode.map String.toFloat
+                |> Decode.map (Maybe.withDefault 0)
+            )
+        |> Pipeline.required "periods" (Decode.list coursePeriodDecoder)
+
+
+coursePeriodDecoder : Decode.Decoder CoursePeriod
+coursePeriodDecoder =
+    Decode.succeed CoursePeriod
+        |> Pipeline.required "id" (Decode.map Id Decode.string)
+        |> Pipeline.required "startDate" Decode.string
+        |> Pipeline.required "endDate" Decode.string
+        |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
+        |> Pipeline.custom
+            (Decode.map2 (\total booked -> total - booked)
+                (Decode.field "totalSpots" Decode.int)
+                (Decode.field "bookedSpots" Decode.int)
+            )
+
+
+createBooking : String -> RegistrationModal -> Cmd Msg
+createBooking apiBaseUrl modal =
+    Http.post
+        { url = apiBaseUrl ++ "/.netlify/functions/createBooking"
+        , body = Http.jsonBody (bookingEncoder modal)
+        , expect = Http.expectJson GotBookingResponse bookingResponseDecoder
+        }
+
+
+bookingEncoder : RegistrationModal -> Encode.Value
+bookingEncoder modal =
+    Encode.object
+        [ ( "courseId", Encode.string (toString modal.course.id) )
+        , ( "periodId", Encode.string (toString modal.period.id) )
+        , ( "email", Encode.string (String.trim modal.email) )
+        , ( "name", Encode.string (String.trim modal.name) )
+        , ( "numberOfSpots", Encode.int modal.spots )
+        ]
+
+
+bookingResponseDecoder : Decode.Decoder BookingResponse
+bookingResponseDecoder =
+    Decode.map2 BookingResponse
+        (Decode.field "success" Decode.bool)
+        (Decode.field "paymentUrl" Decode.string)
+
+
+toString : Id -> String
+toString (Id id) =
+    id

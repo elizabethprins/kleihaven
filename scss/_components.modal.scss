@@ -80,3 +80,8 @@
     text-align: right;
     color: settings.$blackBean;
 }
+
+.modal__error {
+    font-weight: 500;
+    color: settings.$error;
+}
