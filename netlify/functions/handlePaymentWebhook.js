@@ -1,13 +1,12 @@
 const { createMollieClient } = require('@mollie/api-client');
 const fauna = require('fauna');
-const q = fauna.query;
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { id } = JSON.parse(event.body); // Get the payment ID from the webhook
+    const { id } = JSON.parse(event.body);
     const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
     const client = new fauna.Client({ secret: process.env.FAUNA_SECRET_KEY });
 
@@ -17,38 +16,45 @@ exports.handler = async (event) => {
 
         if (payment.isPaid()) {
             // Payment is successful, update the booking in FaunaDB
-            const { metadata } = payment; // Get metadata which includes courseId, periodId, etc.
+            const { metadata } = payment;
             const { courseId, periodId, email, name, numberOfSpots } = metadata;
 
-            // Update the corresponding period in FaunaDB
-            const course = await client.query(
-                q.Get(q.Ref(q.Collection('Courses'), courseId))
-            );
+            // Get current course data
+            const course = await client.query(fql`
+                Courses.byId(${courseId})
+            `);
 
-            const periods = q.Select('periods', course);
-            const selectedPeriod = q.Get(q.Ref(q.Collection('Periods'), periodId));
+            if (!course || !course.data) {
+                return {
+                    statusCode: 404,
+                    body: JSON.stringify({ error: 'Course not found' })
+                };
+            }
 
-            // Update booked spots for the selected period
-            await client.query(
-                q.Update(q.Select('ref', course), {
-                    data: {
-                        periods: q.Map(periods, period =>
-                            q.If(
-                                q.Equals(q.Select('id', period), q.Select('id', selectedPeriod)),
-                                {
-                                    ...period,
-                                    bookedSpots: q.Add(q.Select('bookedSpots', period), numberOfSpots) // Update booked spots
-                                },
-                                period
-                            )
-                        )
+            // Update the periods
+            const updatedPeriods = course.data.periods.map(p =>
+                p.id === periodId
+                    ? {
+                        ...p,
+                        bookedSpots: (p.bookedSpots || 0) + numberOfSpots,
+                        pendingReservations: Math.max(0, (p.pendingReservations || 0) - numberOfSpots)
                     }
-                })
+                    : p
             );
+
+            await client.query(fql`
+                Courses.byId(${courseId})
+                ?.update({
+                    periods: ${updatedPeriods}
+                })
+            `);
 
             return {
                 statusCode: 200,
-                body: JSON.stringify({ success: true, message: 'Payment processed and booking confirmed.' })
+                body: JSON.stringify({
+                    success: true,
+                    message: 'Payment processed and booking confirmed.'
+                })
             };
         } else {
             return {
