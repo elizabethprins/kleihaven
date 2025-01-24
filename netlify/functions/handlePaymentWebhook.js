@@ -1,5 +1,6 @@
 const { createMollieClient } = require('@mollie/api-client');
 const fauna = require('fauna');
+const sendConfirmationEmail = require('./sendConfirmationEmail');
 
 exports.handler = async (event) => {
     if (event.httpMethod !== 'POST') {
@@ -48,6 +49,19 @@ exports.handler = async (event) => {
                     periods: ${updatedPeriods}
                 })
             `);
+
+            // Send confirmation email
+            const emailSent = await sendConfirmationEmail({
+                email,
+                name,
+                numberOfSpots,
+                course,
+                periodId
+            });
+
+            if (!emailSent) {
+                console.warn('Booking confirmed but email failed to send');
+            }
 
             return {
                 statusCode: 200,

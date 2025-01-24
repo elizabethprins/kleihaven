@@ -1036,7 +1036,7 @@ viewRegistrationModal maybeModal =
                                 |> Ui.Button.view
                             , Ui.Button.newPrimary
                                 { label = "Afrekenen"
-                                , action = Ui.Button.Msg SubmitRegistration
+                                , action = Ui.Button.Msg NoOp
                                 }
                                 |> Ui.Button.withSpinner modal.submitting
                                 |> Ui.Button.withType "submit"
