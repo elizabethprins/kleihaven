@@ -16,9 +16,10 @@
 
 .modal {
     width: 90%;
-    max-width: 500px;
+    max-width: settings.$max-content-width;
     max-height: 90%;
     padding: 2rem;
+    position: relative;
     border-radius: settings.$borderRadius;
     background: settings.$white;
     overflow: auto;
@@ -45,6 +46,16 @@
     }
 }
 
+.modal__close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.course-detail-modal {
+    max-width: settings.$max-page-width;
+}
+
 .form-group {
     margin-bottom: 1rem;
 }
@@ -61,14 +72,29 @@
 .modal-buttons {
     gap: 1rem;
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
 
     button {
         margin: 0;
     }
 
-    .button--secondary {
-        color: settings.$drabBrownDark;
+    .button--link {
+        padding: .5em 0;
+        margin: 0;
+        margin-left: auto;
+        order: 999;
+        font-size: 1.125em;
+
+        @include tools.breakpoint(settings.$tiny) {
+            width: 100%;
+            padding: .5em 1.5em;
+            order: 0;
+        }
+
+        @include tools.breakpoint(settings.$small) {
+            width: auto;
+        }
     }
 }
 
@@ -84,4 +110,19 @@
 .modal__error {
     font-weight: 500;
     color: settings.$error;
+}
+
+.modal__content__image {
+    img {
+        width: 100%;
+        height: 15rem;
+        border: 1px solid currentColor;
+        border-radius: settings.$borderRadius;
+        object-fit: cover;
+    }
+}
+
+.modal__content__intro {
+    max-width: settings.$max-content-width;
+    margin-bottom: 1rem;
 }

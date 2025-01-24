@@ -3,7 +3,7 @@
 
 .main {
     width: 90%;
-    max-width: 1400px;
+    max-width: settings.$max-page-width;
     padding-bottom: 6rem;
     margin: 1rem auto 6rem;
 }

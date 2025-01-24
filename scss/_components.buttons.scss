@@ -1,5 +1,6 @@
 @use "settings.variables";
 @use "tools.mixins";
+@use "sass:color";
 
 .button {
     width: fit-content;
@@ -65,4 +66,19 @@
     width: .75em;
     height: .75em;
     margin: 0 -1em 0 .25em;
+}
+
+.button--link {
+    border: none !important;
+    box-shadow: none !important;
+    text-decoration: underline !important;
+    transform: none !important;
+
+    @include tools.hover {
+        background-color: rgba(settings.$drabBrownDark, 0.1);
+    }
+}
+
+.close {
+    padding: 1rem;
 }

@@ -125,10 +125,32 @@
     }
 }
 
+.course-card {
+    color: settings.$drabBrownDark;
+
+    .button--primary {
+        margin: .5rem 0 .25rem auto;
+    }
+
+    .button--link {
+        padding: .5em 1.5em;
+        padding-left: 0;
+        margin: 0;
+        font-size: 1.125em;
+
+        @include tools.breakpoint(settings.$tiny) {
+            padding-left: 1.5em;
+        }
+    }
+}
+
 .course-card__price {
-    margin: .5rem 0;
-    font-size: 1.25rem;
+    margin: .25rem 0;
+    margin: 0;
+    font-family: settings.$fontSecondary;
+    font-size: 1.5rem !important;
     font-weight: 700;
+    color: settings.$resedaGreen;
 }
 
 .course-card__periods {
@@ -136,22 +158,20 @@
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
+    border-top: 1px solid settings.$drabBrown;
 }
 
 .course-period {
     gap: .75rem;
     margin-top: .75rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
+    justify-content: space-between;
 
     p {
         margin: 0;
         font-size: 1rem;
-    }
-
-    button {
-        margin: 0;
     }
 }
 

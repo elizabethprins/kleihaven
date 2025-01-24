@@ -15,6 +15,14 @@
     text-align: center;
 }
 
+.max-width {
+    max-width: settings.$max-content-width;
+
+    &.centered {
+        margin: 0 auto;
+    }
+}
+
 .bold {
     font-weight: 700;
 }

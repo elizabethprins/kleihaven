@@ -1,9 +1,22 @@
-module Ui.Button exposing (Action(..), newClose, newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withSpinner, withType)
+module Ui.Button exposing
+    ( Action(..)
+    , newClose
+    , newLink
+    , newLinkButton
+    , newPrimary
+    , newSecondary
+    , secretLink
+    , view
+    , withMobileOnly
+    , withSpinner
+    , withType
+    )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Route
+import Ui.Icons.Close
 
 
 type Config msg
@@ -29,6 +42,7 @@ type Style
     = Primary
     | Secondary
     | Link
+    | LinkButton
     | SecretLink
     | Close
 
@@ -59,6 +73,11 @@ newSecondary { label, action } =
 newLink : { label : String, action : Action msg } -> Config msg
 newLink { label, action } =
     new Link { label = label, action = action }
+
+
+newLinkButton : { label : String, action : Action msg } -> Config msg
+newLinkButton { label, action } =
+    new LinkButton { label = label, action = action }
 
 
 newClose : { label : String, action : Action msg } -> Config msg
@@ -108,9 +127,7 @@ view (Config config) =
 
                 Close ->
                     [ secretText
-                    , div [ class "modal__close" ]
-                        [ text "x"
-                        ]
+                    , Ui.Icons.Close.view
                     ]
 
                 _ ->
@@ -174,10 +191,19 @@ toHtmlNode (Config config) =
 toClassList : Config msg -> Attribute msg
 toClassList (Config config) =
     classList
-        [ ( "button", config.style /= Link && config.style /= SecretLink )
+        [ ( "button"
+          , config.style
+                /= Link
+                && config.style
+                /= SecretLink
+                && config.style
+                /= Close
+          )
+        , ( "close", config.style == Close )
         , ( "link", config.style == Link )
         , ( "button--primary", config.style == Primary )
         , ( "button--secondary", config.style == Secondary )
+        , ( "button--link", config.style == LinkButton )
         , ( "-is-disabled", config.isDisabled )
         , ( "-is-mobile-only", config.isMobileOnly )
         , ( "link-secret", config.style == SecretLink )
