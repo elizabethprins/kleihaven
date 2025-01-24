@@ -6,9 +6,11 @@ module Route exposing
     , toUrl
     )
 
+import Id exposing (CourseId)
 import Url exposing (Url)
 import Url.Builder
-import Url.Parser as Parser
+import Url.Parser as Parser exposing ((</>), (<?>))
+import Url.Parser.Query
 
 
 
@@ -18,7 +20,7 @@ import Url.Parser as Parser
 type Page
     = Home
     | Kleihaven
-    | Cursussen
+    | Cursussen (Maybe CourseId)
     | OverOns
     | AIR
     | NotFound
@@ -27,7 +29,7 @@ type Page
 allPages : List Page
 allPages =
     [ Kleihaven
-    , Cursussen
+    , Cursussen Nothing
     , AIR
     , OverOns
     ]
@@ -45,7 +47,16 @@ parser =
     Parser.oneOf
         [ Parser.map Home Parser.top
         , Parser.map Kleihaven (Parser.s "kleihaven")
-        , Parser.map Cursussen (Parser.s "cursussen")
+        , Parser.map
+            (\str ->
+                case str of
+                    Just courseId ->
+                        Cursussen (Just (Id.fromString courseId))
+
+                    Nothing ->
+                        Cursussen Nothing
+            )
+            (Parser.s "cursussen" <?> Url.Parser.Query.string "id")
         , Parser.map OverOns (Parser.s "over-ons")
         , Parser.map AIR (Parser.s "air")
         ]
@@ -63,8 +74,13 @@ toUrl page =
         NotFound ->
             Url.Builder.absolute [ "notfound", "" ] []
 
-        Cursussen ->
-            Url.Builder.absolute [ "cursussen", "" ] []
+        Cursussen maybeCourseId ->
+            case maybeCourseId of
+                Just courseId ->
+                    Url.Builder.absolute [ "cursussen" ] [ Url.Builder.string "id" (Id.toCourseId courseId) ]
+
+                Nothing ->
+                    Url.Builder.absolute [ "cursussen", "" ] []
 
         OverOns ->
             Url.Builder.absolute [ "over-ons", "" ] []
@@ -85,7 +101,7 @@ toLabel page =
         NotFound ->
             ""
 
-        Cursussen ->
+        Cursussen _ ->
             "Cursussen"
 
         OverOns ->

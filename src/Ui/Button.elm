@@ -1,4 +1,4 @@
-module Ui.Button exposing (Action(..), newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withSpinner, withType)
+module Ui.Button exposing (Action(..), newClose, newLink, newPrimary, newSecondary, secretLink, view, withMobileOnly, withSpinner, withType)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -22,6 +22,7 @@ type Action msg
     = ToPage Route.Page
     | ToUrl String
     | Msg msg
+    | Submit
 
 
 type Style
@@ -29,6 +30,7 @@ type Style
     | Secondary
     | Link
     | SecretLink
+    | Close
 
 
 new : Style -> { label : String, action : Action msg } -> Config msg
@@ -57,6 +59,11 @@ newSecondary { label, action } =
 newLink : { label : String, action : Action msg } -> Config msg
 newLink { label, action } =
     new Link { label = label, action = action }
+
+
+newClose : { label : String, action : Action msg } -> Config msg
+newClose { label, action } =
+    new Close { label = label, action = action }
 
 
 secretLink : { label : String, action : Action msg } -> Config msg
@@ -91,10 +98,20 @@ withSpinner showSpinner (Config config) =
 view : Config msg -> Html msg
 view (Config config) =
     let
+        secretText =
+            span [ class "visually-hidden" ] [ text config.label ]
+
         content =
             case config.style of
                 SecretLink ->
-                    [ span [ class "visually-hidden" ] [ text config.label ] ]
+                    [ secretText ]
+
+                Close ->
+                    [ secretText
+                    , div [ class "modal__close" ]
+                        [ text "x"
+                        ]
+                    ]
 
                 _ ->
                     if config.showSpinner then
@@ -117,6 +134,12 @@ toHtmlNode (Config config) =
     let
         classList =
             toClassList (Config config)
+
+        buttonAttrs =
+            [ disabled config.isDisabled
+            , classList
+            , type_ (Maybe.withDefault "button" config.buttonType)
+            ]
     in
     case config.action of
         ToPage page ->
@@ -140,11 +163,12 @@ toHtmlNode (Config config) =
 
         Msg msg ->
             button
-                [ onClick msg
-                , disabled config.isDisabled
-                , classList
-                , type_ (Maybe.withDefault "button" config.buttonType)
-                ]
+                (onClick msg
+                    :: buttonAttrs
+                )
+
+        Submit ->
+            button buttonAttrs
 
 
 toClassList : Config msg -> Attribute msg

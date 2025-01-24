@@ -6,9 +6,10 @@ import Browser.Navigation as Navigation
 import Copy exposing (copy)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onInput, onSubmit)
+import Html.Events exposing (on, onClick, onInput, onSubmit, preventDefaultOn)
 import Html.Keyed
 import Http
+import Id exposing (CourseId, PeriodId)
 import Json.Decode as Decode
 import Json.Decode.Pipeline as Pipeline
 import Json.Encode as Encode
@@ -66,17 +67,14 @@ type alias Model =
     , mobileMenuOpen : Bool
     , courses : List Course
     , loadingCourses : Bool
+    , currentCourse : Maybe Course
     , error : Maybe Http.Error
     , registrationModal : Maybe RegistrationModal
     }
 
 
-type Id
-    = Id String
-
-
 type alias Course =
-    { id : Id
+    { id : CourseId
     , title : String
     , description : String
     , imageUrl : String
@@ -86,7 +84,7 @@ type alias Course =
 
 
 type alias CoursePeriod =
-    { id : Id
+    { id : PeriodId
     , startDate : String
     , endDate : String
     , timeInfo : Maybe String
@@ -133,16 +131,27 @@ init flags url key =
       , loadedImages = Set.empty
       , mobileMenuOpen = False
       , courses = []
-      , loadingCourses = initialPage == Route.Cursussen
+      , loadingCourses = isPageCursussen initialPage
+      , currentCourse = Nothing
       , error = Nothing
       , registrationModal = Nothing
       }
-    , if initialPage == Route.Cursussen then
+    , if isPageCursussen initialPage then
         fetchCourses flags.apiBaseUrl
 
       else
         Cmd.none
     )
+
+
+isPageCursussen : Route.Page -> Bool
+isPageCursussen page =
+    case page of
+        Route.Cursussen _ ->
+            True
+
+        _ ->
+            False
 
 
 
@@ -163,6 +172,7 @@ type Msg
     | UpdateRegistrationSpots String
     | SubmitRegistration
     | GotBookingResponse (Result Http.Error BookingResponse)
+    | CloseCourseDetailModal
 
 
 type alias BookingResponse =
@@ -209,12 +219,20 @@ update msg model =
 
             else
                 ( { newModel
-                    | loadingCourses = page == Route.Cursussen
+                    | loadingCourses = isPageCursussen page
+                    , currentCourse =
+                        case page of
+                            Route.Cursussen (Just courseId) ->
+                                List.filter (.id >> (==) courseId) model.courses
+                                    |> List.head
+
+                            _ ->
+                                Nothing
                     , loadedImages = Set.empty
                   }
                 , Cmd.batch
                     [ urlChanged (Route.toUrl <| Route.toPage url)
-                    , if page == Route.Cursussen then
+                    , if isPageCursussen page then
                         fetchCourses model.apiBaseUrl
 
                       else
@@ -236,6 +254,14 @@ update msg model =
                     ( { model
                         | courses = courses
                         , loadingCourses = False
+                        , currentCourse =
+                            case model.page of
+                                Route.Cursussen (Just courseId) ->
+                                    List.filter (.id >> (==) courseId) courses
+                                        |> List.head
+
+                                _ ->
+                                    Nothing
                       }
                     , Cmd.none
                     )
@@ -379,6 +405,11 @@ update msg model =
                     , Cmd.none
                     )
 
+        CloseCourseDetailModal ->
+            ( model
+            , Navigation.pushUrl model.navKey (Route.toUrl (Route.Cursussen Nothing))
+            )
+
 
 
 -- VIEW
@@ -397,8 +428,8 @@ view model =
                 Route.Kleihaven ->
                     viewPageKleihaven model
 
-                Route.Cursussen ->
-                    viewPageCursussen model
+                Route.Cursussen maybeCourseId ->
+                    viewPageCursussen model maybeCourseId
 
                 Route.AIR ->
                     viewPageAIR model
@@ -486,7 +517,7 @@ viewIntro model content imgProps =
                 [ text content.intro ]
             , Ui.Button.newPrimary
                 { label = content.coursesButton
-                , action = Ui.Button.ToPage Route.Cursussen
+                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
                 }
                 |> Ui.Button.view
             ]
@@ -789,7 +820,7 @@ viewMobileCoursesButton : Html Msg
 viewMobileCoursesButton =
     Ui.Button.newPrimary
         { label = copy.kleihaven.mobileCoursesButton
-        , action = Ui.Button.ToPage Route.Cursussen
+        , action = Ui.Button.ToPage (Route.Cursussen Nothing)
         }
         |> Ui.Button.withMobileOnly
         |> Ui.Button.view
@@ -870,8 +901,8 @@ lorem =
 -- Cursussen
 
 
-viewPageCursussen : Model -> List (Html Msg)
-viewPageCursussen model =
+viewPageCursussen : Model -> Maybe CourseId -> List (Html Msg)
+viewPageCursussen model maybeCourseId =
     [ h1 [ class "centered" ] [ text "Cursusaanbod" ]
     , h2 [ class "centered" ] [ text "Keramiekcursussen voor elk niveau" ]
     , if model.loadingCourses then
@@ -887,6 +918,7 @@ viewPageCursussen model =
             Nothing ->
                 div [ class "courses-grid" ]
                     (List.map (viewCourse model.loadedImages) model.courses)
+    , viewCourseDetailModal model
     ]
 
 
@@ -899,11 +931,16 @@ viewCourse loadedImages course =
         }
         { content =
             [ h3 [] [ text course.title ]
-            , p [] [ text course.description ]
             , p [ class "course-card__price" ]
-                [ text "Kosten per persoon: € "
+                [ text "€"
                 , text (String.fromFloat course.price)
                 ]
+            , p [] [ text course.description ]
+            , Ui.Button.newPrimary
+                { label = "Meer informatie"
+                , action = Ui.Button.ToPage (Route.Cursussen (Just course.id))
+                }
+                |> Ui.Button.view
             , div [ class "course-card__periods" ]
                 (List.map (viewCoursePeriod course) course.periods)
             ]
@@ -928,7 +965,7 @@ viewCoursePeriod course period =
                 , text " plekken beschikbaar"
                 ]
             ]
-        , Ui.Button.newPrimary
+        , Ui.Button.newSecondary
             { label = "Inschrijven"
             , action = Ui.Button.Msg (OpenRegistrationModal course period)
             }
@@ -942,6 +979,50 @@ viewTimeInfo timeInfo =
         Just info ->
             p [ class "course-period__time-info" ]
                 [ text info ]
+
+        Nothing ->
+            text ""
+
+
+viewCourseDetailModal : Model -> Html Msg
+viewCourseDetailModal model =
+    case model.currentCourse of
+        Just course ->
+            div
+                [ class "modal-overlay"
+                , onClick CloseCourseDetailModal
+                ]
+                [ div [ class "modal course-detail-modal" ]
+                    [ div [ class "modal__close" ]
+                        [ Ui.Button.newClose
+                            { label = "Sluiten"
+                            , action = Ui.Button.Msg CloseCourseDetailModal
+                            }
+                            |> Ui.Button.view
+                        ]
+                    , div [ class "modal__content" ]
+                        [ h2 [] [ text course.title ]
+                        , div [ class "course-detail__image" ]
+                            [ viewImage model.loadedImages
+                                { imgSrc = course.imageUrl
+                                , imgAlt = course.title
+                                , lazy = False
+                                }
+                            ]
+                        , div [ class "course-detail__description" ]
+                            [ text course.description ]
+                        , p [ class "course-detail__price" ]
+                            [ text "Kosten per persoon: € "
+                            , text (String.fromFloat course.price)
+                            ]
+                        , div [ class "course-detail__periods" ]
+                            (List.map (viewCoursePeriod course) course.periods)
+                        ]
+                    ]
+                , node "style"
+                    []
+                    [ text "body { height: 100%; overflow: hidden; }" ]
+                ]
 
         Nothing ->
             text ""
@@ -983,7 +1064,10 @@ viewRegistrationModal maybeModal =
                             |> text
                         ]
                     , p [] [ text "Wat leuk dat je mee wilt doen! Vul het formulier in om je inschrijving te voltooien. Je wordt automatisch doorverwezen naar de betalingspagina." ]
-                    , Html.form [ onSubmit SubmitRegistration ]
+                    , Html.form
+                        [ preventDefaultOn "submit" (Decode.succeed ( SubmitRegistration, True ))
+                        , novalidate True
+                        ]
                         [ Ui.FormField.new
                             { id = "name"
                             , label = "Naam"
@@ -1036,7 +1120,7 @@ viewRegistrationModal maybeModal =
                                 |> Ui.Button.view
                             , Ui.Button.newPrimary
                                 { label = "Afrekenen"
-                                , action = Ui.Button.Msg NoOp
+                                , action = Ui.Button.Submit
                                 }
                                 |> Ui.Button.withSpinner modal.submitting
                                 |> Ui.Button.withType "submit"
@@ -1151,7 +1235,7 @@ coursesDecoder =
 courseDecoder : Decode.Decoder Course
 courseDecoder =
     Decode.succeed Course
-        |> Pipeline.required "id" (Decode.map Id Decode.string)
+        |> Pipeline.required "id" Id.fromJson
         |> Pipeline.required "title" Decode.string
         |> Pipeline.required "description" Decode.string
         |> Pipeline.required "imageUrl" Decode.string
@@ -1166,7 +1250,7 @@ courseDecoder =
 coursePeriodDecoder : Decode.Decoder CoursePeriod
 coursePeriodDecoder =
     Decode.succeed CoursePeriod
-        |> Pipeline.required "id" (Decode.map Id Decode.string)
+        |> Pipeline.required "id" Id.fromJson
         |> Pipeline.required "startDate" Decode.string
         |> Pipeline.required "endDate" Decode.string
         |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
@@ -1189,8 +1273,8 @@ createBooking apiBaseUrl modal =
 bookingEncoder : RegistrationModal -> Encode.Value
 bookingEncoder modal =
     Encode.object
-        [ ( "courseId", Encode.string (toString modal.course.id) )
-        , ( "periodId", Encode.string (toString modal.period.id) )
+        [ ( "courseId", Encode.string (Id.toString modal.course.id) )
+        , ( "periodId", Encode.string (Id.toString modal.period.id) )
         , ( "email", Encode.string (String.trim modal.email) )
         , ( "name", Encode.string (String.trim modal.name) )
         , ( "numberOfSpots", Encode.int modal.spots )
@@ -1202,8 +1286,3 @@ bookingResponseDecoder =
     Decode.map2 BookingResponse
         (Decode.field "success" Decode.bool)
         (Decode.field "paymentUrl" Decode.string)
-
-
-toString : Id -> String
-toString (Id id) =
-    id

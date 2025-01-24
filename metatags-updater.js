@@ -39,7 +39,8 @@ async function updateMetaTags(url) {
         };
 
         const baseUrl = window.env?.BASE_URL || window.location.origin;
-        const fullUrl = new URL(url, baseUrl).toString();
+        const parsedUrl = new URL(url, baseUrl);
+        const fullUrl = parsedUrl.origin + parsedUrl.pathname;
 
         setTitle(data.og_title || 'Studio1931 | Kleihaven');
         setDescription(data.og_description || 'Keramiekcursussen en artist residency in Den Oever');
