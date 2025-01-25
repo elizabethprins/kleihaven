@@ -77,10 +77,9 @@
     font-size: 1.125em;
     text-align: center;
 
-    > p {
+    p {
         max-width: settings.$max-text-width;
         margin: 0 auto;
-        margin-top: 0;
         font-style: italic;
     }
 }

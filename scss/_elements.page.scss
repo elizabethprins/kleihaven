@@ -43,6 +43,15 @@ h1 {
 
     @include tools.breakpoint(settings.$small) {
         font-size: 4rem;
+
+        + .block__header {
+            margin: 1.5rem 0;
+            color: settings.$drabBrownDark;
+
+            p {
+                margin-top: 1.25em;
+            }
+        }
     }
 }
 

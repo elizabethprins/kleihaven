@@ -679,9 +679,9 @@ viewHomeBlock : Html Msg
 viewHomeBlock =
     section [ class "block -extra-margin-top" ]
         [ div [ class "block__header" ]
-            [ h2 [ class "centered" ]
+            [ h2 []
                 [ text copy.home.block.title ]
-            , p [ class "centered" ]
+            , p []
                 [ text copy.home.block.description ]
             ]
         ]
@@ -828,8 +828,8 @@ viewKleihavenBlock model =
     in
     section [ class "block" ]
         [ div [ class "block__header" ]
-            [ h2 [ class "centered" ] [ text copy.kleihaven.blockOne.title ]
-            , p [ class "centered" ] [ text copy.kleihaven.blockOne.subtitle ]
+            [ h2 [] [ text copy.kleihaven.blockOne.title ]
+            , p [] [ text copy.kleihaven.blockOne.subtitle ]
             ]
         , div [ class "block__cards" ] <|
             List.map viewCard copy.kleihaven.blockOne.cards
@@ -840,8 +840,8 @@ viewKleihavenBlockTwo : Html Msg
 viewKleihavenBlockTwo =
     section [ class "block" ]
         [ div [ class "block__header" ]
-            [ h2 [ class "centered" ] [ text copy.kleihaven.blockTwo.title ]
-            , p [ class "centered" ]
+            [ h2 [] [ text copy.kleihaven.blockTwo.title ]
+            , p []
                 [ text copy.kleihaven.blockTwo.intro ]
             ]
         , div [ class "block__cards" ]
@@ -956,8 +956,8 @@ viewPageCursussen : Model -> Maybe CourseId -> List (Html Msg)
 viewPageCursussen model maybeCourseId =
     [ h1 [ class "centered" ] [ text "Cursusaanbod" ]
     , div [ class "block__header" ]
-        [ h2 [ class "centered" ] [ text "Keramiekcursussen voor elk niveau" ]
-        , p [ class "centered max-width" ] [ text "Onze cursussen bieden een unieke combinatie van handvormen en draaien, waar jouw creativiteit centraal staat. Met een mix van techniek, experiment en plezier ontdek je de magie van keramiek!" ]
+        [ h2 [] [ text "Keramiekcursussen voor elk niveau" ]
+        , p [] [ text "Onze cursussen bieden een unieke combinatie van handvormen en draaien, waar jouw creativiteit centraal staat. Met een mix van techniek, experiment en plezier ontdek je de magie van keramiek!" ]
         ]
     , if model.loadingCourses then
         div [ class "centered" ]
