@@ -63,16 +63,25 @@
     margin: 5rem 0;
     color: settings.$drabBrown;
 
+    @include tools.breakpoint(settings.$small) {
+        margin: 6rem 0;
+
+        .block__header {
+            font-size: 1.5em;
+        }
+    }
+}
+
+.block__header {
+    margin: 0 auto;
+    font-size: 1.125em;
+    text-align: center;
+
     > p {
         max-width: settings.$max-text-width;
         margin: 0 auto;
         margin-top: 0;
-        font-size: 1.5rem;
         font-style: italic;
-    }
-
-    @include tools.breakpoint(settings.$small) {
-        margin: 6rem 0;
     }
 }
 

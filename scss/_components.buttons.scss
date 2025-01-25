@@ -12,6 +12,7 @@
     box-shadow: -1px 2px 0 0 currentColor;
     font-family: settings.$fontSecondary;
     font-size: 1em;
+    font-size: 1.125em;
     font-weight: 700;
     text-decoration: none;
     text-transform: lowercase;
@@ -31,7 +32,7 @@
         transform: translate(0, 0);
     }
 
-    @include tools.breakpoint(settings.$small) {
+    @include tools.breakpoint(settings.$tiny) {
         font-size: 1.25em;
     }
 }

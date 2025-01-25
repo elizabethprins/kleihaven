@@ -37,7 +37,7 @@
 
 .modal__content {
     height: 100%;
-    padding: 2rem 1rem;
+    padding: 2rem 1.25rem;
     overflow-y: auto;
 
     h2 {
@@ -68,13 +68,13 @@
 
 .modal__close {
     position: absolute;
-    top: .5rem;
-    right: .5rem;
+    top: .75rem;
+    right: .75rem;
     color: settings.$drabBrownDark;
 
     @include tools.breakpoint(settings.$tiny) {
-        top: 1rem;
-        right: 1rem;
+        top: 1.75rem;
+        right: 1.75rem;
     }
 }
 
