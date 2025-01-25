@@ -1092,6 +1092,9 @@ viewModal { content, closeMsg, extraClass } =
                 , div [ class "modal__content" ] content
                 ]
             ]
+        , node "style"
+            []
+            [ text "body { height: 100%; overflow: hidden; }" ]
         ]
 
 
@@ -1123,9 +1126,6 @@ viewCourseDetailModal model =
                         ]
                     , div [ class "modal__content__periods" ]
                         (List.map (viewCoursePeriodInModal course) course.periods)
-                    , node "style"
-                        []
-                        [ text "body { height: 100%; overflow: hidden; }" ]
                     ]
                 }
 
