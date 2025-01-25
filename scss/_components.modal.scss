@@ -14,15 +14,31 @@
     z-index: 1000;
 }
 
-.modal {
+.modal-wrapper {
     width: 90%;
     max-width: settings.$max-content-width;
-    max-height: 90%;
-    padding: 2rem;
+    max-height: 90vh;
     position: relative;
+
+    &.course-detail-modal {
+        max-width: settings.$max-page-width;
+    }
+}
+
+.modal {
+    width: 100%;
+    height: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     border-radius: settings.$borderRadius;
     background: settings.$white;
-    overflow: auto;
+}
+
+.modal__content {
+    height: 100%;
+    padding: 2rem 1rem;
+    overflow-y: auto;
 
     h2 {
         margin-bottom: .75rem;
@@ -44,16 +60,22 @@
     form {
         margin-top: 1.5rem;
     }
+
+    @include tools.breakpoint(settings.$tiny) {
+        padding: 2rem;
+    }
 }
 
 .modal__close {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
-}
+    top: .5rem;
+    right: .5rem;
+    color: settings.$drabBrownDark;
 
-.course-detail-modal {
-    max-width: settings.$max-page-width;
+    @include tools.breakpoint(settings.$tiny) {
+        top: 1rem;
+        right: 1rem;
+    }
 }
 
 .form-group {

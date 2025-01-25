@@ -214,13 +214,19 @@ update msg model =
                         | page = page
                         , mobileMenuOpen = False
                     }
+
+                shouldFetchCourses =
+                    isPageCursussen page && not (isPageCursussen model.page)
+
+                staysOnPageCursussen =
+                    isPageCursussen page && isPageCursussen model.page
             in
             if page == model.page then
                 ( newModel, Cmd.none )
 
             else
                 ( { newModel
-                    | loadingCourses = isPageCursussen page
+                    | loadingCourses = shouldFetchCourses
                     , currentCourse =
                         case page of
                             Route.Cursussen (Just courseId) ->
@@ -229,11 +235,16 @@ update msg model =
 
                             _ ->
                                 Nothing
-                    , loadedImages = Set.empty
+                    , loadedImages =
+                        if staysOnPageCursussen then
+                            model.loadedImages
+
+                        else
+                            Set.empty
                   }
                 , Cmd.batch
                     [ urlChanged (Route.toUrl <| Route.toPage url)
-                    , if isPageCursussen page then
+                    , if shouldFetchCourses then
                         fetchCourses model.apiBaseUrl
 
                       else
@@ -1051,6 +1062,32 @@ viewPageNotFound =
 
 
 -- MODALS
+
+
+viewModal :
+    { closeMsg : Msg
+    , extraClass : String
+    , content : List (Html Msg)
+    }
+    -> Html Msg
+viewModal { content, closeMsg, extraClass } =
+    div [ class "modal-overlay" ]
+        [ div [ class "modal-wrapper", class extraClass ]
+            [ div [ class "modal" ]
+                [ div [ class "modal__close" ]
+                    [ Ui.Button.newClose
+                        { label = "Sluiten"
+                        , action = Ui.Button.Msg closeMsg
+                        }
+                        |> Ui.Button.view
+                    ]
+                , div [ class "modal__content" ] content
+                ]
+            ]
+        ]
+
+
+
 -- COURSE DETAIL MODAL
 
 
@@ -1058,38 +1095,31 @@ viewCourseDetailModal : Model -> Html Msg
 viewCourseDetailModal model =
     case model.currentCourse of
         Just course ->
-            div [ class "modal-overlay" ]
-                [ div [ class "modal course-detail-modal" ]
-                    [ div [ class "modal__close" ]
-                        [ Ui.Button.newClose
-                            { label = "Sluiten"
-                            , action = Ui.Button.Msg CloseCourseDetailModal
+            viewModal
+                { closeMsg = CloseCourseDetailModal
+                , extraClass = "course-detail-modal"
+                , content =
+                    [ h2 [] [ text course.title ]
+                    , p [ class "modal__content__intro" ]
+                        [ text course.description ]
+                    , div [ class "modal__content__image" ]
+                        [ viewImage model.loadedImages
+                            { imgSrc = course.imageUrl
+                            , imgAlt = course.title
+                            , lazy = False
                             }
-                            |> Ui.Button.view
                         ]
-                    , div [ class "modal__content" ]
-                        [ h2 [] [ text course.title ]
-                        , p [ class "modal__content__intro" ]
-                            [ text course.description ]
-                        , div [ class "modal__content__image" ]
-                            [ viewImage model.loadedImages
-                                { imgSrc = course.imageUrl
-                                , imgAlt = course.title
-                                , lazy = False
-                                }
-                            ]
-                        , p []
-                            [ text "Kosten per persoon: € "
-                            , text (String.fromFloat course.price)
-                            ]
-                        , div [ class "modal__content__periods" ]
-                            (List.map (viewCoursePeriodInModal course) course.periods)
+                    , p []
+                        [ text "Kosten per persoon: € "
+                        , text (String.fromFloat course.price)
                         ]
+                    , div [ class "modal__content__periods" ]
+                        (List.map (viewCoursePeriodInModal course) course.periods)
+                    , node "style"
+                        []
+                        [ text "body { height: 100%; overflow: hidden; }" ]
                     ]
-                , node "style"
-                    []
-                    [ text "body { height: 100%; overflow: hidden; }" ]
-                ]
+                }
 
         Nothing ->
             text ""
@@ -1106,101 +1136,94 @@ viewRegistrationModal maybeModal currentCourse =
             text ""
 
         Just modal ->
-            div [ class "modal-overlay" ]
-                [ div [ class "modal" ]
-                    [ div [ class "modal__close" ]
-                        [ Ui.Button.newClose
-                            { label = "Sluiten"
-                            , action = Ui.Button.Msg CloseRegistrationModal
+            viewModal
+                { closeMsg = CloseRegistrationModal
+                , extraClass = ""
+                , content =
+                    [ h2 [] [ text "Inschrijfformulier" ]
+                    , h3 []
+                        [ text modal.course.title ]
+                    , p [ class "bold font-secondary" ]
+                        [ Ui.Date.periodString
+                            { start = modal.period.startDate
+                            , end = modal.period.endDate
                             }
-                            |> Ui.Button.view
+                            |> text
                         ]
-                    , div [ class "modal__content" ]
-                        [ h2 [] [ text "Inschrijfformulier" ]
-                        , h3 []
-                            [ text modal.course.title ]
-                        , p [ class "bold font-secondary" ]
-                            [ Ui.Date.periodString
-                                { start = modal.period.startDate
-                                , end = modal.period.endDate
-                                }
+                    , p [] [ text "Wat leuk dat je mee wilt doen! Vul het formulier in om je inschrijving te voltooien. Je wordt automatisch doorverwezen naar de betalingspagina." ]
+                    , Html.form
+                        [ preventDefaultOn "submit" (Decode.succeed ( SubmitRegistration, True ))
+                        , novalidate True
+                        ]
+                        [ Ui.FormField.new
+                            { id = "name"
+                            , label = "Naam"
+                            , value = modal.name
+                            , onInput = UpdateRegistrationName
+                            }
+                            |> Ui.FormField.withRequired True
+                            |> Ui.FormField.withError modal.errors.name
+                            |> Ui.FormField.view
+                        , Ui.FormField.new
+                            { id = "email"
+                            , label = "E-mail"
+                            , value = modal.email
+                            , onInput = UpdateRegistrationEmail
+                            }
+                            |> Ui.FormField.withType "email"
+                            |> Ui.FormField.withRequired True
+                            |> Ui.FormField.withError modal.errors.email
+                            |> Ui.FormField.view
+                        , Ui.FormField.new
+                            { id = "spots"
+                            , label = "Aantal plekken"
+                            , value = String.fromInt modal.spots
+                            , onInput = UpdateRegistrationSpots
+                            }
+                            |> Ui.FormField.withSelect
+                                (List.range 1 modal.period.availableSpots
+                                    |> List.map
+                                        (\n ->
+                                            { value = String.fromInt n
+                                            , label = String.fromInt n
+                                            , selected = n == modal.spots
+                                            }
+                                        )
+                                )
+                            |> Ui.FormField.withError modal.errors.spots
+                            |> Ui.FormField.view
+                        , p [ class "modal__total-cost" ]
+                            [ text "Totaal: € "
+                            , String.fromFloat (modal.course.price * toFloat modal.spots)
                                 |> text
                             ]
-                        , p [] [ text "Wat leuk dat je mee wilt doen! Vul het formulier in om je inschrijving te voltooien. Je wordt automatisch doorverwezen naar de betalingspagina." ]
-                        , Html.form
-                            [ preventDefaultOn "submit" (Decode.succeed ( SubmitRegistration, True ))
-                            , novalidate True
-                            ]
-                            [ Ui.FormField.new
-                                { id = "name"
-                                , label = "Naam"
-                                , value = modal.name
-                                , onInput = UpdateRegistrationName
-                                }
-                                |> Ui.FormField.withRequired True
-                                |> Ui.FormField.withError modal.errors.name
-                                |> Ui.FormField.view
-                            , Ui.FormField.new
-                                { id = "email"
-                                , label = "E-mail"
-                                , value = modal.email
-                                , onInput = UpdateRegistrationEmail
-                                }
-                                |> Ui.FormField.withType "email"
-                                |> Ui.FormField.withRequired True
-                                |> Ui.FormField.withError modal.errors.email
-                                |> Ui.FormField.view
-                            , Ui.FormField.new
-                                { id = "spots"
-                                , label = "Aantal plekken"
-                                , value = String.fromInt modal.spots
-                                , onInput = UpdateRegistrationSpots
-                                }
-                                |> Ui.FormField.withSelect
-                                    (List.range 1 modal.period.availableSpots
-                                        |> List.map
-                                            (\n ->
-                                                { value = String.fromInt n
-                                                , label = String.fromInt n
-                                                , selected = n == modal.spots
-                                                }
-                                            )
-                                    )
-                                |> Ui.FormField.withError modal.errors.spots
-                                |> Ui.FormField.view
-                            , p [ class "modal__total-cost" ]
-                                [ text "Totaal: € "
-                                , String.fromFloat (modal.course.price * toFloat modal.spots)
-                                    |> text
-                                ]
-                            , viewModalError modal.bookingError
-                            , div [ class "modal-buttons" ]
-                                [ viewIf (currentCourse == Nothing)
-                                    (Ui.Button.newLinkButton
-                                        { label = "Meer lezen over deze cursus?"
-                                        , action = Ui.Button.Msg (CloseRegistrationAndOpenCourse modal.course.id)
-                                        }
-                                        |> Ui.Button.withType "button"
-                                        |> Ui.Button.view
-                                    )
-                                , Ui.Button.newSecondary
-                                    { label = "Annuleren"
-                                    , action = Ui.Button.Msg CloseRegistrationModal
+                        , viewModalError modal.bookingError
+                        , div [ class "modal-buttons" ]
+                            [ viewIf (currentCourse == Nothing)
+                                (Ui.Button.newLinkButton
+                                    { label = "Meer lezen over deze cursus?"
+                                    , action = Ui.Button.Msg (CloseRegistrationAndOpenCourse modal.course.id)
                                     }
                                     |> Ui.Button.withType "button"
                                     |> Ui.Button.view
-                                , Ui.Button.newPrimary
-                                    { label = "Afrekenen"
-                                    , action = Ui.Button.Submit
-                                    }
-                                    |> Ui.Button.withSpinner modal.submitting
-                                    |> Ui.Button.withType "submit"
-                                    |> Ui.Button.view
-                                ]
+                                )
+                            , Ui.Button.newSecondary
+                                { label = "Annuleren"
+                                , action = Ui.Button.Msg CloseRegistrationModal
+                                }
+                                |> Ui.Button.withType "button"
+                                |> Ui.Button.view
+                            , Ui.Button.newPrimary
+                                { label = "Afrekenen"
+                                , action = Ui.Button.Submit
+                                }
+                                |> Ui.Button.withSpinner modal.submitting
+                                |> Ui.Button.withType "submit"
+                                |> Ui.Button.view
                             ]
                         ]
                     ]
-                ]
+                }
 
 
 viewModalError : Maybe String -> Html msg

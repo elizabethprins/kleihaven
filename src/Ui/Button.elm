@@ -196,10 +196,8 @@ toClassList (Config config) =
                 /= Link
                 && config.style
                 /= SecretLink
-                && config.style
-                /= Close
           )
-        , ( "close", config.style == Close )
+        , ( "button--close", config.style == Close )
         , ( "link", config.style == Link )
         , ( "button--primary", config.style == Primary )
         , ( "button--secondary", config.style == Secondary )

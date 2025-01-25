@@ -79,6 +79,16 @@
     }
 }
 
-.close {
-    padding: 1rem;
+.button--close {
+    padding: 1.25rem;
+    margin: 0;
+    position: relative;
+    background: settings.$white;
+
+    svg {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%, -50%);
+    }
 }
