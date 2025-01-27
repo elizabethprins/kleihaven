@@ -8,6 +8,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (on, onClick, onInput, onSubmit, preventDefaultOn)
 import Html.Keyed
+import Html.Parser
+import Html.Parser.Util
 import Http
 import Id exposing (CourseId, PeriodId)
 import Json.Decode as Decode
@@ -77,6 +79,7 @@ type alias Course =
     { id : CourseId
     , title : String
     , description : String
+    , content : Maybe String
     , imageUrl : String
     , price : Float
     , periods : List CoursePeriod
@@ -1121,14 +1124,31 @@ viewCourseDetailModal model =
                             , lazy = False
                             }
                         ]
-                    , p []
+                    , p [ class "modal__content__price" ]
                         [ text "Kosten per persoon: € "
                         , text (String.fromFloat course.price)
                         ]
+                    , viewParsedHtml "modal__content__text" course.content
                     , div [ class "modal__content__periods" ]
                         (List.map (viewCoursePeriodInModal course) course.periods)
                     ]
                 }
+
+        Nothing ->
+            text ""
+
+
+viewParsedHtml : String -> Maybe String -> Html Msg
+viewParsedHtml className maybeContent =
+    case maybeContent of
+        Just content ->
+            case Html.Parser.run content of
+                Ok nodes ->
+                    div [ class className ]
+                        (Html.Parser.Util.toVirtualDom nodes)
+
+                Err _ ->
+                    text "Oeps, er is iets misgegaan bij het laden van de tekst."
 
         Nothing ->
             text ""
@@ -1339,6 +1359,7 @@ courseDecoder =
         |> Pipeline.required "id" Id.fromJson
         |> Pipeline.required "title" Decode.string
         |> Pipeline.required "description" Decode.string
+        |> Pipeline.optional "content" (Decode.maybe Decode.string) Nothing
         |> Pipeline.required "imageUrl" Decode.string
         |> Pipeline.required "price"
             (Decode.string

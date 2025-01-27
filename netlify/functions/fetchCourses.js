@@ -14,6 +14,7 @@ exports.handler = async () => {
                         id: doc.id,
                         title: data.title,
                         description: data.description,
+                        content: data.content,
                         imageUrl: data.imageUrl,
                         price: data.price,
                         periods: data.periods

@@ -146,6 +146,30 @@
 }
 
 .modal__content__intro {
-    max-width: settings.$max-content-width;
+    max-width: settings.$max-text-width;
     margin-bottom: 1rem;
+    font-size: 1.125em;
+}
+
+.modal__content__price {
+    font-weight: 500;
+}
+
+.modal__content__text {
+    max-width: settings.$max-text-width;
+
+    ul {
+        padding-left: 1em;
+        list-style-type: disc;
+        line-height: 1.5;
+
+        @include tools.breakpoint(settings.$tiny) {
+            padding-left: 2em;
+        }
+    }
+}
+
+.modal__content__periods {
+    margin-top: 1.5rem;
+    border-top: 1px solid settings.$drabBrownDark;
 }
