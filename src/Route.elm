@@ -23,6 +23,9 @@ type Page
     | Cursussen (Maybe CourseId)
     | OverOns
     | AIR
+    | Privacy
+    | FAQ
+    | Terms
     | NotFound
 
 
@@ -59,6 +62,9 @@ parser =
             (Parser.s "cursussen" <?> Url.Parser.Query.string "id")
         , Parser.map OverOns (Parser.s "over-ons")
         , Parser.map AIR (Parser.s "air")
+        , Parser.map Privacy (Parser.s "privacy")
+        , Parser.map FAQ (Parser.s "veelgestelde-vragen")
+        , Parser.map Terms (Parser.s "algemene-voorwaarden")
         ]
 
 
@@ -88,6 +94,15 @@ toUrl page =
         AIR ->
             Url.Builder.absolute [ "air", "" ] []
 
+        Privacy ->
+            Url.Builder.absolute [ "privacy", "" ] []
+
+        FAQ ->
+            Url.Builder.absolute [ "veelgestelde-vragen", "" ] []
+
+        Terms ->
+            Url.Builder.absolute [ "algemene-voorwaarden", "" ] []
+
 
 toLabel : Page -> String
 toLabel page =
@@ -109,3 +124,12 @@ toLabel page =
 
         AIR ->
             "AIR Programma's"
+
+        Privacy ->
+            "Privacy Policy"
+
+        FAQ ->
+            "Veelgestelde Vragen"
+
+        Terms ->
+            "Algemene Voorwaarden"

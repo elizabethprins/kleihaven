@@ -22,6 +22,8 @@ import Task
 import Ui.Button
 import Ui.Date
 import Ui.FormField
+import Ui.Icons.Facebook
+import Ui.Icons.Instagram
 import Url exposing (Url)
 
 
@@ -457,6 +459,15 @@ view model =
                 Route.OverOns ->
                     viewPageOverOns
 
+                Route.Privacy ->
+                    viewPagePrivacy
+
+                Route.FAQ ->
+                    viewPageFAQ
+
+                Route.Terms ->
+                    viewPageTerms
+
                 Route.NotFound ->
                     viewPageNotFound
         , viewFooter model
@@ -513,21 +524,74 @@ viewNavigation model =
         ]
 
 
-{-| Footer
-
-  - Social media links / mailen / icons
-  - Adresgegevens
-  - Privacy pagina
-  - FAQ pagina
-  - Algemene voorwaarden pagina
-  - Copyright disclaimer
-
--}
 viewFooter : Model -> Html Msg
 viewFooter model =
+    let
+        footerPages =
+            [ Route.Privacy
+            , Route.FAQ
+            , Route.Terms
+            ]
+    in
     footer [ class "footer" ]
-        [ div [ class "footer__inner" ]
-            [ text "" ]
+        [ div [ class "footer__top" ]
+            [ div [ class "footer__section" ]
+                [ h4 [] [ text "Volg ons" ]
+                , div [ class "footer__social" ]
+                    [ a
+                        [ href "https://instagram.com/studio.1931"
+                        , target "_blank"
+                        , rel "noopener noreferrer"
+                        ]
+                        [ Ui.Icons.Instagram.view
+                        , span [ class "visually-hidden" ] [ text "Instagram" ]
+                        ]
+                    , a
+                        [ href "https://facebook.com/studio.1931"
+                        , target "_blank"
+                        , rel "noopener noreferrer"
+                        ]
+                        [ Ui.Icons.Facebook.view
+                        , span [ class "visually-hidden" ] [ text "Facebook" ]
+                        ]
+                    ]
+                ]
+            , div [ class "footer__section" ]
+                [ h4 [] [ text "Contact" ]
+                , address []
+                    [ text "Studio1931"
+                    , br [] []
+                    , a
+                        [ href "https://maps.app.goo.gl/STQx8Low2n1sw4267"
+                        , target "_blank"
+                        , rel "noopener noreferrer"
+                        ]
+                        [ text "Zwinstraat 66"
+                        , br [] []
+                        , text "1779 BH Den Oever"
+                        ]
+                    , br [] []
+                    , a [ href "mailto:info@studio1931.nl" ] [ text "info@studio1931.nl" ]
+                    ]
+                ]
+            , div [ class "footer__section" ]
+                [ h4 [] [ text "Informatie" ]
+                , footerPages
+                    |> List.map
+                        (\page ->
+                            li []
+                                [ Ui.Button.newLink
+                                    { label = Route.toLabel page
+                                    , action = Ui.Button.ToPage page
+                                    }
+                                    |> Ui.Button.view
+                                ]
+                        )
+                    |> ul []
+                ]
+            ]
+        , div [ class "footer__bottom" ]
+            [ p [] [ text "© 2025 Studio1931. Alle rechten voorbehouden." ] ]
         ]
 
 
@@ -1069,6 +1133,35 @@ viewPageNotFound =
     toContentPage
         [ h1 [] [ text copy.notFound.title ]
         , p [] [ text copy.notFound.description ]
+        ]
+
+
+viewPagePrivacy : List (Html Msg)
+viewPagePrivacy =
+    toContentPage
+        [ h1 [] [ text "Privacy Policy" ]
+        , p [] [ text "Hier komt de privacy policy tekst..." ]
+        ]
+
+
+viewPageFAQ : List (Html Msg)
+viewPageFAQ =
+    toContentPage
+        [ h1 [] [ text "Veelgestelde vragen" ]
+        , div [ class "faq" ]
+            [ div [ class "faq-item" ]
+                [ h3 [] [ text "Vraag 1?" ]
+                , p [] [ text "Antwoord 1..." ]
+                ]
+            ]
+        ]
+
+
+viewPageTerms : List (Html Msg)
+viewPageTerms =
+    toContentPage
+        [ h1 [] [ text "Algemene Voorwaarden" ]
+        , p [] [ text "Hier komen de algemene voorwaarden..." ]
         ]
 
 

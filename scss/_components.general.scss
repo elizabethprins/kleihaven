@@ -4,8 +4,9 @@
 .main {
     width: 90%;
     max-width: settings.$max-page-width;
+    min-height: 50vh;
     padding-bottom: 6rem;
-    margin: 1rem auto 6rem;
+    margin: 1rem auto;
 }
 
 .divider-img {

@@ -1,0 +1,72 @@
+@use "settings.variables";
+@use "tools.mixins";
+
+.footer {
+    @include tools.aa;
+    color: settings.$white;
+    background: settings.$resedaGreen;
+
+    a {
+        color: settings.$white;
+    }
+
+    address a {
+        transition: color .2s;
+
+        @include tools.hover {
+            color: settings.$eggShell;
+        }
+    }
+
+    address,
+    a {
+        line-height: 1.4;
+    }
+
+    @include tools.breakpoint(settings.$small) {
+        h4 {
+            font-size: 1.25rem;
+        }
+    }
+}
+
+.footer__top,
+.footer__bottom {
+    width: 90%;
+    max-width: settings.$max-page-width;
+    padding: 2rem 0;
+    margin: 0 auto;
+}
+
+.footer__top {
+    gap: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+    @include tools.breakpoint(settings.$small) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.footer__social {
+    gap: 1rem;
+    display: flex;
+
+    a {
+        transition: color .2s;
+
+        @include tools.hover {
+            color: settings.$eggShell;
+        }
+    }
+}
+
+.footer__bottom {
+    border-top: 1px solid settings.$white;
+    text-align: center;
+
+    p {
+        margin: 0;
+        font-size: .875rem;
+    }
+}
