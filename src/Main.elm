@@ -822,7 +822,7 @@ viewKleihavenBlock model =
                     , p [ class "centered" ] [ text "☆" ]
                     , Ui.Button.secretLink
                         { label = copy.kleihaven.blockOne.viewCoursesButton
-                        , action = Ui.Button.ToPage Route.AIR
+                        , action = Ui.Button.ToPage (Route.Cursussen Nothing)
                         }
                         |> Ui.Button.view
                     ]
