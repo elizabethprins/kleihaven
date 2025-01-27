@@ -989,7 +989,8 @@ viewCourse loadedImages course =
                 [ text "€"
                 , text (String.fromFloat course.price)
                 ]
-            , p [] [ text course.description ]
+            , p [ class "course-card__description" ]
+                [ text course.description ]
             , Ui.Button.newPrimary
                 { label = "Meer informatie"
                 , action = Ui.Button.ToPage (Route.Cursussen (Just course.id))

@@ -4,18 +4,18 @@
 
 .button {
     width: fit-content;
-    padding: .5em 1.75em;
+    padding: .5em 1.5em;
     margin: 1.25em 0 1em;
     display: block;
     border: 1px solid currentColor;
     border-radius: settings.$borderRadius;
     box-shadow: -1px 2px 0 0 currentColor;
     font-family: settings.$fontSecondary;
-    font-size: 1em;
     font-size: 1.125em;
     font-weight: 700;
     text-decoration: none;
     text-transform: lowercase;
+    white-space: nowrap;
     transition: all .2s ease-in-out;
 
     @include tools.hover {

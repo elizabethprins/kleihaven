@@ -129,7 +129,7 @@
     color: settings.$drabBrownDark;
 
     .button--primary {
-        margin: .5rem 0 .25rem auto;
+        margin: auto 0 .25rem auto;
     }
 
     .button--link {
@@ -151,6 +151,10 @@
     font-size: 1.5rem !important;
     font-weight: 700;
     color: settings.$resedaGreen;
+}
+
+.course-card__description {
+    margin-bottom: 1.25em;
 }
 
 .course-card__periods {
