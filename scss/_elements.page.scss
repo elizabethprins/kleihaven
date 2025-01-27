@@ -59,7 +59,7 @@ h2 {
     font-size: 1.75em;
 
     @include tools.breakpoint(settings.$small) {
-        margin: .25em 0;
+        margin: .5em 0;
     }
 }
 
