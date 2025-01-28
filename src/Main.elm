@@ -11,7 +11,7 @@ import Html.Keyed
 import Html.Parser
 import Html.Parser.Util
 import Http
-import Id exposing (CourseId, PeriodId)
+import Id exposing (BookingId, CourseId, PeriodId)
 import Json.Decode as Decode
 import Json.Decode.Pipeline as Pipeline
 import Json.Encode as Encode
@@ -234,7 +234,7 @@ type Msg
     | UpdateRegistrationEmail String
     | UpdateRegistrationSpots String
     | SubmitRegistration
-    | GotBookingResponse (Result Http.Error BookingResponse)
+    | GotBookingResponse (Result BookingResponseError BookingResponse)
     | CloseCourseDetailModal
     | GotPaymentDetails (Result Http.Error PaymentDetails)
 
@@ -494,20 +494,23 @@ update msg model =
                         , Cmd.none
                         )
 
-                Err httpError ->
+                Err error ->
                     let
                         errorMessage =
-                            case httpError of
-                                Http.BadBody body ->
-                                    case Decode.decodeString bookingErrorDecoder body of
-                                        Ok bookingError ->
-                                            bookingErrorToString bookingError
+                            case error of
+                                Error bookingError ->
+                                    bookingErrorToString bookingError
 
-                                        Err _ ->
-                                            "Er is iets misgegaan bij het verwerken van de boeking. Probeer het later opnieuw."
+                                HttpError httpError ->
+                                    case httpError of
+                                        Http.NetworkError ->
+                                            "Kan geen verbinding maken. Controleer je internetverbinding."
 
-                                _ ->
-                                    "Er is iets misgegaan bij het maken van de boeking. Controleer je internetverbinding en probeer het opnieuw."
+                                        Http.Timeout ->
+                                            "De verbinding is verlopen. Probeer het opnieuw."
+
+                                        _ ->
+                                            "Er is iets misgegaan. Probeer het later opnieuw."
                     in
                     ( { model
                         | registrationModal =
@@ -1590,12 +1593,48 @@ coursePeriodDecoder =
             )
 
 
+expectJsonWithError : (Result BookingResponseError a -> msg) -> Decode.Decoder a -> Decode.Decoder BookingError -> Http.Expect msg
+expectJsonWithError toMsg decoder errorDecoder =
+    Http.expectStringResponse toMsg <|
+        \response ->
+            case response of
+                Http.BadUrl_ url ->
+                    Err (HttpError (Http.BadUrl url))
+
+                Http.Timeout_ ->
+                    Err (HttpError Http.Timeout)
+
+                Http.NetworkError_ ->
+                    Err (HttpError Http.NetworkError)
+
+                Http.BadStatus_ metadata body ->
+                    case Decode.decodeString errorDecoder body of
+                        Ok bookingError ->
+                            Err (Error bookingError)
+
+                        Err _ ->
+                            Err (HttpError (Http.BadStatus metadata.statusCode))
+
+                Http.GoodStatus_ _ body ->
+                    case Decode.decodeString decoder body of
+                        Ok value ->
+                            Ok value
+
+                        Err err ->
+                            Err (HttpError (Http.BadBody (Decode.errorToString err)))
+
+
+type BookingResponseError
+    = Error BookingError
+    | HttpError Http.Error
+
+
 createBooking : String -> RegistrationModal -> Cmd Msg
 createBooking apiBaseUrl modal =
     Http.post
         { url = apiBaseUrl ++ "/.netlify/functions/createBooking"
         , body = Http.jsonBody (bookingEncoder modal)
-        , expect = Http.expectJson GotBookingResponse bookingResponseDecoder
+        , expect = expectJsonWithError GotBookingResponse bookingResponseDecoder bookingErrorDecoder
         }
 
 
@@ -1643,7 +1682,7 @@ bookingErrorToString : BookingError -> String
 bookingErrorToString error =
     case error of
         SpotsNotAvailable ->
-            "Er zijn niet genoeg plekken meer beschikbaar. Ververs de pagina om het actuele aantal te zien."
+            "Er zijn niet genoeg plekken meer beschikbaar. Ververs de pagina om het actuele aantal te zien. Mogelijk zitten deze plekken in het winkelmandje van een andere bezoeker. Probeer het dan later opnieuw."
 
         PeriodNotFound ->
             "De gekozen cursusperiode bestaat niet meer. Ververs de pagina om de beschikbare periodes te zien."
@@ -1655,10 +1694,10 @@ bookingErrorToString error =
             "Er is iets misgegaan: " ++ message
 
 
-fetchPaymentDetails : String -> String -> Cmd Msg
+fetchPaymentDetails : String -> BookingId -> Cmd Msg
 fetchPaymentDetails apiBaseUrl paymentId =
     Http.get
-        { url = apiBaseUrl ++ "/.netlify/functions/getPaymentStatus?id=" ++ paymentId
+        { url = apiBaseUrl ++ "/.netlify/functions/getPaymentStatus?id=" ++ Id.toBookingId paymentId
         , expect = Http.expectJson GotPaymentDetails paymentDetailsDecoder
         }
 

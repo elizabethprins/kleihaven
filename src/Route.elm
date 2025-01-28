@@ -6,7 +6,7 @@ module Route exposing
     , toUrl
     )
 
-import Id exposing (CourseId)
+import Id exposing (BookingId, CourseId)
 import Url exposing (Url)
 import Url.Builder
 import Url.Parser as Parser exposing ((</>), (<?>))
@@ -26,7 +26,7 @@ type Page
     | Privacy
     | FAQ
     | Terms
-    | BookingConfirmation (Maybe String)
+    | BookingConfirmation (Maybe BookingId)
     | NotFound
 
 
@@ -70,7 +70,7 @@ parser =
             (\str ->
                 case str of
                     Just paymentId ->
-                        BookingConfirmation (Just paymentId)
+                        BookingConfirmation (Just (Id.fromString paymentId))
 
                     Nothing ->
                         NotFound
@@ -117,7 +117,7 @@ toUrl page =
         BookingConfirmation maybePaymentId ->
             case maybePaymentId of
                 Just paymentId ->
-                    Url.Builder.absolute [ "boeking", "bevestiging" ] [ Url.Builder.string "id" paymentId ]
+                    Url.Builder.absolute [ "boeking", "bevestiging" ] [ Url.Builder.string "id" (Id.toBookingId paymentId) ]
 
                 Nothing ->
                     Url.Builder.absolute [ "boeking", "bevestiging" ] []

@@ -1,9 +1,11 @@
 module Id exposing
-    ( CourseId
+    ( BookingId
+    , CourseId
     , PeriodId
     , fromJson
     , fromString
     , fromUrl
+    , toBookingId
     , toCourseId
     , toJson
     , toPeriodId
@@ -27,6 +29,10 @@ type alias PeriodId =
     Id { period : () }
 
 
+type alias BookingId =
+    Id { booking : () }
+
+
 toCourseId : CourseId -> String
 toCourseId (Id id) =
     id
@@ -34,6 +40,11 @@ toCourseId (Id id) =
 
 toPeriodId : PeriodId -> String
 toPeriodId (Id id) =
+    id
+
+
+toBookingId : BookingId -> String
+toBookingId (Id id) =
     id
 
 
