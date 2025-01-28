@@ -1,7 +1,6 @@
 module Ui.Date exposing (periodString)
 
-import Date exposing (Date)
-import Html exposing (..)
+import Date
 import Time exposing (Month(..), Weekday(..))
 
 

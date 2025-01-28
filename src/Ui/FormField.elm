@@ -1,13 +1,10 @@
 module Ui.FormField exposing
-    ( FormField
-    , new
+    ( new
     , view
     , withError
-    , withMax
-    , withMin
     , withRequired
     , withSelect
-    , withType
+    , withTypeEmail
     )
 
 import Html exposing (..)
@@ -21,23 +18,15 @@ type Config msg
         , label : String
         , value : String
         , onInput : String -> msg
-        , inputType : String
         , isRequired : Bool
-        , minValue : Maybe String
-        , maxValue : Maybe String
         , error : Maybe String
         , fieldType : FieldType
         }
 
 
-type FormField msg
-    = FormField (Config msg)
-
-
 type FieldType
     = Text
     | Email
-    | Number
     | Select (List SelectOption)
 
 
@@ -61,10 +50,7 @@ new { id, label, value, onInput } =
         , label = label
         , value = value
         , onInput = onInput
-        , inputType = "text"
         , isRequired = False
-        , minValue = Nothing
-        , maxValue = Nothing
         , error = Nothing
         , fieldType = Text
         }
@@ -75,21 +61,6 @@ withRequired isRequired (Config config) =
     Config { config | isRequired = isRequired }
 
 
-withType : String -> Config msg -> Config msg
-withType inputType (Config config) =
-    Config { config | inputType = inputType }
-
-
-withMin : String -> Config msg -> Config msg
-withMin minValue (Config config) =
-    Config { config | minValue = Just minValue }
-
-
-withMax : String -> Config msg -> Config msg
-withMax maxValue (Config config) =
-    Config { config | maxValue = Just maxValue }
-
-
 withError : Maybe String -> Config msg -> Config msg
 withError error (Config config) =
     Config { config | error = error }
@@ -98,6 +69,11 @@ withError error (Config config) =
 withSelect : List SelectOption -> Config msg -> Config msg
 withSelect options (Config config) =
     Config { config | fieldType = Select options }
+
+
+withTypeEmail : Config msg -> Config msg
+withTypeEmail (Config config) =
+    Config { config | fieldType = Email }
 
 
 
@@ -166,9 +142,6 @@ typeToString fieldType =
 
         Email ->
             "email"
-
-        Number ->
-            "number"
 
         Select _ ->
             "select"

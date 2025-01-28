@@ -4,19 +4,16 @@ import Browser
 import Browser.Dom
 import Browser.Navigation as Navigation
 import Copy exposing (copy)
+import Course exposing (Course)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, onInput, onSubmit, preventDefaultOn)
+import Html.Events exposing (on, onClick, preventDefaultOn)
 import Html.Keyed
 import Html.Parser
 import Html.Parser.Util
 import Http
-import Id exposing (BookingId, CourseId, PeriodId)
+import Id exposing (CourseId)
 import Json.Decode as Decode
-import Json.Decode.Pipeline as Pipeline
-import Json.Encode as Encode
-import Parser exposing ((|.), (|=), Parser)
-import Process
 import Route
 import Set exposing (Set)
 import Task
@@ -74,91 +71,10 @@ type alias Model =
     , loadingCourses : Bool
     , currentCourse : Maybe Course
     , error : Maybe Http.Error
-    , registrationModal : Maybe RegistrationModal
-    , paymentDetails : Maybe PaymentDetails
+    , registrationModal : Maybe Course.RegistrationModal
+    , paymentDetails : Maybe Course.PaymentDetails
     , loadingPayment : Bool
     }
-
-
-type alias Course =
-    { id : CourseId
-    , title : String
-    , description : String
-    , content : Maybe String
-    , imageUrl : String
-    , price : Float
-    , periods : List CoursePeriod
-    }
-
-
-type alias CoursePeriod =
-    { id : PeriodId
-    , startDate : String
-    , endDate : String
-    , timeInfo : Maybe String
-    , availableSpots : Int
-    }
-
-
-type alias RegistrationModal =
-    { course : Course
-    , period : CoursePeriod
-    , name : String
-    , email : String
-    , spots : Int
-    , errors : ValidationErrors
-    , bookingError : Maybe String
-    , submitting : Bool
-    }
-
-
-type alias ValidationErrors =
-    { name : Maybe String
-    , email : Maybe String
-    , spots : Maybe String
-    }
-
-
-emptyValidationErrors : ValidationErrors
-emptyValidationErrors =
-    { name = Nothing
-    , email = Nothing
-    , spots = Nothing
-    }
-
-
-type PaymentStatus
-    = Open
-    | Canceled
-    | Pending
-    | Expired
-    | Failed
-    | Paid
-    | Authorized
-    | Refunded
-    | ChargedBack
-
-
-type alias PaymentDetails =
-    { status : PaymentStatus
-    , paymentId : String
-    , amount : { value : String, currency : String }
-    , metadata :
-        { courseId : CourseId
-        , periodId : PeriodId
-        , email : String
-        , name : String
-        , numberOfSpots : Int
-        }
-    , description : String
-    }
-
-
-type BookingError
-    = SpotsNotAvailable
-    | PeriodNotFound
-    | PaymentConfigError
-    | UnknownError String
 
 
 init : Flags -> Url -> Navigation.Key -> ( Model, Cmd Msg )
@@ -170,11 +86,11 @@ init flags url key =
         initialCmd =
             case initialPage of
                 Route.BookingConfirmation (Just paymentId) ->
-                    fetchPaymentDetails flags.apiBaseUrl paymentId
+                    Course.fetchPaymentDetails flags.apiBaseUrl paymentId GotPaymentDetails
 
                 _ ->
                     if isPageCursussen initialPage then
-                        fetchCourses flags.apiBaseUrl
+                        Course.fetchCourses flags.apiBaseUrl GotCourses
 
                     else
                         Cmd.none
@@ -227,23 +143,16 @@ type Msg
     | ImageLoaded String
     | ToggleMobileMenu
     | GotCourses (Result Http.Error (List Course))
-    | OpenRegistrationModal Course CoursePeriod
+    | OpenRegistrationModal Course Course.CoursePeriod
     | CloseRegistrationModal
     | CloseRegistrationAndOpenCourse CourseId
     | UpdateRegistrationName String
     | UpdateRegistrationEmail String
     | UpdateRegistrationSpots String
     | SubmitRegistration
-    | GotBookingResponse (Result BookingResponseError BookingResponse)
+    | GotBookingResponse (Result Course.BookingResponseError Course.BookingResponse)
     | CloseCourseDetailModal
-    | GotPaymentDetails (Result Http.Error PaymentDetails)
-
-
-type alias BookingResponse =
-    { success : Bool
-    , paymentUrl : String
-    , error : Maybe BookingError
-    }
+    | GotPaymentDetails (Result Http.Error Course.PaymentDetails)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -314,7 +223,7 @@ update msg model =
                         , Cmd.batch
                             [ newCmd
                             , if shouldFetchCourses then
-                                fetchCourses model.apiBaseUrl
+                                Course.fetchCourses model.apiBaseUrl GotCourses
 
                               else
                                 Cmd.none
@@ -327,7 +236,7 @@ update msg model =
                           }
                         , Cmd.batch
                             [ newCmd
-                            , fetchPaymentDetails model.apiBaseUrl paymentId
+                            , Course.fetchPaymentDetails model.apiBaseUrl paymentId GotPaymentDetails
                             ]
                         )
 
@@ -377,7 +286,7 @@ update msg model =
                         , name = ""
                         , email = ""
                         , spots = 1
-                        , errors = emptyValidationErrors
+                        , errors = Course.emptyValidationErrors
                         , submitting = False
                         , bookingError = Nothing
                         }
@@ -432,7 +341,7 @@ update msg model =
                 Just modal ->
                     let
                         validationErrors =
-                            validateRegistration modal
+                            Course.validateRegistration modal
 
                         hasErrors =
                             validationErrors.name
@@ -459,12 +368,12 @@ update msg model =
                             | registrationModal =
                                 Just
                                     { modal
-                                        | errors = emptyValidationErrors
+                                        | errors = Course.emptyValidationErrors
                                         , submitting = True
                                         , bookingError = Nothing
                                     }
                           }
-                        , createBooking model.apiBaseUrl modal
+                        , Course.createBooking model.apiBaseUrl modal GotBookingResponse
                         )
 
         GotBookingResponse result ->
@@ -487,7 +396,7 @@ update msg model =
                                         (\m ->
                                             { m
                                                 | submitting = False
-                                                , bookingError = Maybe.map bookingErrorToString response.error
+                                                , bookingError = Maybe.map Course.bookingErrorToString response.error
                                             }
                                         )
                           }
@@ -498,10 +407,10 @@ update msg model =
                     let
                         errorMessage =
                             case error of
-                                Error bookingError ->
-                                    bookingErrorToString bookingError
+                                Course.Error bookingError ->
+                                    Course.bookingErrorToString bookingError
 
-                                HttpError httpError ->
+                                Course.HttpError httpError ->
                                     case httpError of
                                         Http.NetworkError ->
                                             "Kan geen verbinding maken. Controleer je internetverbinding."
@@ -586,7 +495,10 @@ view model =
                     viewPageNotFound
 
                 Route.BookingConfirmation _ ->
-                    viewBookingConfirmation model
+                    Course.viewBookingConfirmation
+                        { loadingPayment = model.loadingPayment
+                        , paymentDetails = model.paymentDetails
+                        }
         , viewFooter model
         , viewRegistrationModal model.registrationModal model.currentCourse
         ]
@@ -1149,7 +1061,7 @@ viewPageCursussen model maybeCourseId =
 
       else
         case model.error of
-            Just err ->
+            Just _ ->
                 div [ class "centered" ]
                     [ text "Sorry, er is iets misgegaan bij het laden van de cursussen" ]
 
@@ -1187,17 +1099,17 @@ viewCourse loadedImages course =
         }
 
 
-viewCoursePeriod : Course -> CoursePeriod -> Html Msg
+viewCoursePeriod : Course -> Course.CoursePeriod -> Html Msg
 viewCoursePeriod =
     viewCoursePeriod_ False
 
 
-viewCoursePeriodInModal : Course -> CoursePeriod -> Html Msg
+viewCoursePeriodInModal : Course -> Course.CoursePeriod -> Html Msg
 viewCoursePeriodInModal =
     viewCoursePeriod_ True
 
 
-viewCoursePeriod_ : Bool -> Course -> CoursePeriod -> Html Msg
+viewCoursePeriod_ : Bool -> Course -> Course.CoursePeriod -> Html Msg
 viewCoursePeriod_ isModal course period =
     let
         button =
@@ -1253,12 +1165,20 @@ viewPageNotFound =
         ]
 
 
+
+-- PRIVACY
+
+
 viewPagePrivacy : List (Html Msg)
 viewPagePrivacy =
     toContentPage
         [ h1 [] [ text "Privacy Policy" ]
         , p [] [ text "Hier komt de privacy policy tekst..." ]
         ]
+
+
+
+-- FAQ
 
 
 viewPageFAQ : List (Html Msg)
@@ -1272,6 +1192,10 @@ viewPageFAQ =
                 ]
             ]
         ]
+
+
+
+-- TERMS
 
 
 viewPageTerms : List (Html Msg)
@@ -1368,7 +1292,7 @@ viewParsedHtml className maybeContent =
 -- REGISTRATION MODAL
 
 
-viewRegistrationModal : Maybe RegistrationModal -> Maybe Course -> Html Msg
+viewRegistrationModal : Maybe Course.RegistrationModal -> Maybe Course -> Html Msg
 viewRegistrationModal maybeModal currentCourse =
     case maybeModal of
         Nothing ->
@@ -1409,7 +1333,7 @@ viewRegistrationModal maybeModal currentCourse =
                             , value = modal.email
                             , onInput = UpdateRegistrationEmail
                             }
-                            |> Ui.FormField.withType "email"
+                            |> Ui.FormField.withTypeEmail
                             |> Ui.FormField.withRequired True
                             |> Ui.FormField.withError modal.errors.email
                             |> Ui.FormField.view
@@ -1436,7 +1360,7 @@ viewRegistrationModal maybeModal currentCourse =
                             , String.fromFloat (modal.course.price * toFloat modal.spots)
                                 |> text
                             ]
-                        , viewModalError modal.bookingError
+                        , viewError modal.bookingError
                         , div [ class "modal-buttons" ]
                             [ viewIf (currentCourse == Nothing)
                                 (Ui.Button.newLinkButton
@@ -1465,386 +1389,11 @@ viewRegistrationModal maybeModal currentCourse =
                 }
 
 
-viewModalError : Maybe String -> Html msg
-viewModalError =
-    viewError "modal__error"
-
-
-viewFieldError : Maybe String -> Html msg
-viewFieldError =
-    viewError "form-field__error"
-
-
-viewError : String -> Maybe String -> Html msg
-viewError className maybeError =
+viewError : Maybe String -> Html msg
+viewError maybeError =
     case maybeError of
         Just error ->
-            p [ class className ] [ text error ]
+            p [ class "modal__error" ] [ text error ]
 
         Nothing ->
             text ""
-
-
-validateRegistration : RegistrationModal -> ValidationErrors
-validateRegistration modal =
-    { name =
-        if String.isEmpty (String.trim modal.name) then
-            Just "Naam is verplicht"
-
-        else
-            Nothing
-    , email =
-        if String.isEmpty (String.trim modal.email) then
-            Just "E-mail is verplicht"
-
-        else if not (isValidEmail modal.email) then
-            Just "Vul een geldig e-mailadres in"
-
-        else
-            Nothing
-    , spots =
-        if modal.spots < 1 then
-            Just "Kies minimaal 1 plek"
-
-        else
-            Nothing
-    }
-
-
-isValidEmail : String -> Bool
-isValidEmail email =
-    email
-        |> String.trim
-        |> Parser.run emailParser
-        |> Result.map (always True)
-        |> Result.withDefault False
-
-
-emailParser : Parser ()
-emailParser =
-    let
-        localPart =
-            Parser.succeed ()
-                |. Parser.chompIf (\c -> Char.isAlphaNum c || List.member c [ '.', '_', '-', '+' ])
-                |. Parser.chompWhile (\c -> Char.isAlphaNum c || List.member c [ '.', '_', '-', '+' ])
-
-        domainPart =
-            Parser.succeed ()
-                |. Parser.chompIf Char.isAlphaNum
-                |. Parser.chompWhile (\c -> Char.isAlphaNum c || c == '-')
-                |. Parser.symbol "."
-                |. Parser.chompIf Char.isAlpha
-                |. Parser.chompWhile Char.isAlpha
-    in
-    Parser.succeed ()
-        |. localPart
-        |. Parser.symbol "@"
-        |. domainPart
-        |. Parser.end
-
-
-
--- HTTP
-
-
-fetchCourses : String -> Cmd Msg
-fetchCourses apiBaseUrl =
-    Http.get
-        { url = apiBaseUrl ++ "/.netlify/functions/fetchCourses"
-        , expect = Http.expectJson GotCourses coursesDecoder
-        }
-
-
-coursesDecoder : Decode.Decoder (List Course)
-coursesDecoder =
-    Decode.field "data"
-        (Decode.field "data"
-            (Decode.list courseDecoder)
-        )
-
-
-courseDecoder : Decode.Decoder Course
-courseDecoder =
-    Decode.succeed Course
-        |> Pipeline.required "id" Id.fromJson
-        |> Pipeline.required "title" Decode.string
-        |> Pipeline.required "description" Decode.string
-        |> Pipeline.optional "content" (Decode.maybe Decode.string) Nothing
-        |> Pipeline.required "imageUrl" Decode.string
-        |> Pipeline.required "price"
-            (Decode.string
-                |> Decode.map String.toFloat
-                |> Decode.map (Maybe.withDefault 0)
-            )
-        |> Pipeline.required "periods" (Decode.list coursePeriodDecoder)
-
-
-coursePeriodDecoder : Decode.Decoder CoursePeriod
-coursePeriodDecoder =
-    Decode.succeed CoursePeriod
-        |> Pipeline.required "id" Id.fromJson
-        |> Pipeline.required "startDate" Decode.string
-        |> Pipeline.required "endDate" Decode.string
-        |> Pipeline.optional "timeInfo" (Decode.maybe Decode.string) Nothing
-        |> Pipeline.custom
-            (Decode.map2 (\total booked -> total - booked)
-                (Decode.field "totalSpots" Decode.int)
-                (Decode.field "bookedSpots" Decode.int)
-            )
-
-
-expectJsonWithError : (Result BookingResponseError a -> msg) -> Decode.Decoder a -> Decode.Decoder BookingError -> Http.Expect msg
-expectJsonWithError toMsg decoder errorDecoder =
-    Http.expectStringResponse toMsg <|
-        \response ->
-            case response of
-                Http.BadUrl_ url ->
-                    Err (HttpError (Http.BadUrl url))
-
-                Http.Timeout_ ->
-                    Err (HttpError Http.Timeout)
-
-                Http.NetworkError_ ->
-                    Err (HttpError Http.NetworkError)
-
-                Http.BadStatus_ metadata body ->
-                    case Decode.decodeString errorDecoder body of
-                        Ok bookingError ->
-                            Err (Error bookingError)
-
-                        Err _ ->
-                            Err (HttpError (Http.BadStatus metadata.statusCode))
-
-                Http.GoodStatus_ _ body ->
-                    case Decode.decodeString decoder body of
-                        Ok value ->
-                            Ok value
-
-                        Err err ->
-                            Err (HttpError (Http.BadBody (Decode.errorToString err)))
-
-
-type BookingResponseError
-    = Error BookingError
-    | HttpError Http.Error
-
-
-createBooking : String -> RegistrationModal -> Cmd Msg
-createBooking apiBaseUrl modal =
-    Http.post
-        { url = apiBaseUrl ++ "/.netlify/functions/createBooking"
-        , body = Http.jsonBody (bookingEncoder modal)
-        , expect = expectJsonWithError GotBookingResponse bookingResponseDecoder bookingErrorDecoder
-        }
-
-
-bookingEncoder : RegistrationModal -> Encode.Value
-bookingEncoder modal =
-    Encode.object
-        [ ( "courseId", Encode.string (Id.toString modal.course.id) )
-        , ( "periodId", Encode.string (Id.toString modal.period.id) )
-        , ( "email", Encode.string (String.trim modal.email) )
-        , ( "name", Encode.string (String.trim modal.name) )
-        , ( "numberOfSpots", Encode.int modal.spots )
-        ]
-
-
-bookingResponseDecoder : Decode.Decoder BookingResponse
-bookingResponseDecoder =
-    Decode.succeed BookingResponse
-        |> Pipeline.required "success" Decode.bool
-        |> Pipeline.required "paymentUrl" Decode.string
-        |> Pipeline.optional "error" (Decode.map Just bookingErrorDecoder) Nothing
-
-
-bookingErrorDecoder : Decode.Decoder BookingError
-bookingErrorDecoder =
-    Decode.field "error" Decode.string
-        |> Decode.andThen
-            (\errorCode ->
-                case errorCode of
-                    "PERIOD_NOT_FOUND" ->
-                        Decode.succeed PeriodNotFound
-
-                    "SPOTS_NOT_AVAILABLE" ->
-                        Decode.succeed SpotsNotAvailable
-
-                    "PAYMENT_CONFIG_ERROR" ->
-                        Decode.succeed PaymentConfigError
-
-                    _ ->
-                        Decode.field "message" Decode.string
-                            |> Decode.map UnknownError
-            )
-
-
-bookingErrorToString : BookingError -> String
-bookingErrorToString error =
-    case error of
-        SpotsNotAvailable ->
-            "Er zijn niet genoeg plekken meer beschikbaar. Ververs de pagina om het actuele aantal te zien. Mogelijk zitten deze plekken in het winkelmandje van een andere bezoeker. Probeer het dan later opnieuw."
-
-        PeriodNotFound ->
-            "De gekozen cursusperiode bestaat niet meer. Ververs de pagina om de beschikbare periodes te zien."
-
-        PaymentConfigError ->
-            "Er is een probleem met de betalingsconfiguratie. Probeer het later opnieuw of neem contact met ons op."
-
-        UnknownError message ->
-            "Er is iets misgegaan: " ++ message
-
-
-fetchPaymentDetails : String -> BookingId -> Cmd Msg
-fetchPaymentDetails apiBaseUrl paymentId =
-    Http.get
-        { url = apiBaseUrl ++ "/.netlify/functions/getPaymentStatus?id=" ++ Id.toBookingId paymentId
-        , expect = Http.expectJson GotPaymentDetails paymentDetailsDecoder
-        }
-
-
-paymentStatusFromString : String -> PaymentStatus
-paymentStatusFromString str =
-    case str of
-        "open" ->
-            Open
-
-        "canceled" ->
-            Canceled
-
-        "pending" ->
-            Pending
-
-        "expired" ->
-            Expired
-
-        "failed" ->
-            Failed
-
-        "paid" ->
-            Paid
-
-        "authorized" ->
-            Authorized
-
-        "refunded" ->
-            Refunded
-
-        "charged_back" ->
-            ChargedBack
-
-        _ ->
-            Failed
-
-
-paymentDetailsDecoder : Decode.Decoder PaymentDetails
-paymentDetailsDecoder =
-    Decode.succeed PaymentDetails
-        |> Pipeline.required "status" (Decode.string |> Decode.map paymentStatusFromString)
-        |> Pipeline.required "id" Decode.string
-        |> Pipeline.required "amount"
-            (Decode.map2 (\v c -> { value = v, currency = c })
-                (Decode.field "value" Decode.string)
-                (Decode.field "currency" Decode.string)
-            )
-        |> Pipeline.required "metadata"
-            (Decode.succeed
-                (\courseId periodId email name spots ->
-                    { courseId = courseId
-                    , periodId = periodId
-                    , email = email
-                    , name = name
-                    , numberOfSpots = spots
-                    }
-                )
-                |> Pipeline.required "courseId" Id.fromJson
-                |> Pipeline.required "periodId" Id.fromJson
-                |> Pipeline.required "email" Decode.string
-                |> Pipeline.required "name" Decode.string
-                |> Pipeline.required "numberOfSpots" Decode.int
-            )
-        |> Pipeline.required "description" Decode.string
-
-
-viewBookingConfirmation : Model -> List (Html Msg)
-viewBookingConfirmation model =
-    if model.loadingPayment then
-        [ div [ class "centered" ]
-            [ div [ class "loading-spinner" ] [] ]
-        ]
-
-    else
-        case model.paymentDetails of
-            Nothing ->
-                [ div [ class "content" ]
-                    [ h1 [] [ text "Betaling niet gevonden" ]
-                    , p [] [ text "Er is geen betaling gevonden. Ga terug naar de cursussen en probeer het opnieuw." ]
-                    , Ui.Button.newPrimary
-                        { label = "Terug naar cursussen"
-                        , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                        }
-                        |> Ui.Button.view
-                    ]
-                ]
-
-            Just payment ->
-                [ div [ class "content" ] <|
-                    case payment.status of
-                        Paid ->
-                            [ h1 [] [ text "Bedankt voor je boeking!" ]
-                            , p [] [ text ("We hebben je betaling ontvangen voor " ++ payment.description) ]
-                            , p [] [ text ("Er is een bevestigingsmail verstuurd naar " ++ payment.metadata.email) ]
-                            ]
-
-                        Open ->
-                            [ h1 [] [ text "Betaling gestart" ]
-                            , p [] [ text "Je wordt doorgestuurd naar je bank om de betaling af te ronden." ]
-                            , p [] [ text "Na succesvolle betaling ontvang je een bevestigingsmail." ]
-                            ]
-
-                        Pending ->
-                            [ h1 [] [ text "Betaling in behandeling" ]
-                            , p [] [ text "Je betaling wordt verwerkt door de bank." ]
-                            , p [] [ text "Zodra de betaling is gelukt sturen we je een bevestigingsmail." ]
-                            , p [] [ text "Je kunt deze pagina veilig sluiten." ]
-                            ]
-
-                        Failed ->
-                            [ h1 [] [ text "Betaling mislukt" ]
-                            , p [] [ text "Er is helaas iets misgegaan met je betaling. Probeer het opnieuw." ]
-                            , Ui.Button.newPrimary
-                                { label = "Terug naar cursussen"
-                                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                                }
-                                |> Ui.Button.view
-                            ]
-
-                        Canceled ->
-                            [ h1 [] [ text "Betaling geannuleerd" ]
-                            , p [] [ text "Je hebt de betaling geannuleerd." ]
-                            , Ui.Button.newPrimary
-                                { label = "Terug naar cursussen"
-                                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                                }
-                                |> Ui.Button.view
-                            ]
-
-                        Expired ->
-                            [ h1 [] [ text "Betaling verlopen" ]
-                            , p [] [ text "De betalingstermijn is verlopen. Maak een nieuwe boeking." ]
-                            , Ui.Button.newPrimary
-                                { label = "Terug naar cursussen"
-                                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                                }
-                                |> Ui.Button.view
-                            ]
-
-                        _ ->
-                            [ h1 [] [ text "Onbekende status" ]
-                            , p [] [ text ("De status van je betaling is: " ++ Debug.toString payment.status) ]
-                            , Ui.Button.newPrimary
-                                { label = "Terug naar cursussen"
-                                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                                }
-                                |> Ui.Button.view
-                            ]
-                ]
