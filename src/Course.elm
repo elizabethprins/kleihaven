@@ -84,8 +84,6 @@ type PaymentStatus
     | Failed
     | Paid
     | Authorized
-    | Refunded
-    | ChargedBack
 
 
 type alias PaymentDetails =
@@ -203,14 +201,10 @@ viewBookingConfirmation model =
                                 |> Ui.Button.view
                             ]
 
-                        _ ->
-                            [ h1 [] [ text "Onbekende status" ]
-                            , p [] [ text ("De status van je betaling is: " ++ Debug.toString payment.status) ]
-                            , Ui.Button.newPrimary
-                                { label = "Terug naar cursussen"
-                                , action = Ui.Button.ToPage (Route.Cursussen Nothing)
-                                }
-                                |> Ui.Button.view
+                        Authorized ->
+                            [ h1 [] [ text "Betaling geautoriseerd" ]
+                            , p [] [ text "Je betaling is geautoriseerd en wordt verwerkt." ]
+                            , p [] [ text "Zodra de betaling is afgerond sturen we je een bevestigingsmail." ]
                             ]
                 ]
 
@@ -495,12 +489,6 @@ paymentStatusFromString str =
 
         "authorized" ->
             Authorized
-
-        "refunded" ->
-            Refunded
-
-        "charged_back" ->
-            ChargedBack
 
         _ ->
             Failed
