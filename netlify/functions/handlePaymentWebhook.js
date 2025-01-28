@@ -4,11 +4,35 @@ const { fql } = fauna;
 const sendConfirmationEmail = require('./sendConfirmationEmail');
 
 exports.handler = async (event) => {
+    console.log('Webhook received:', {
+        body: event.body,
+        headers: event.headers,
+        method: event.httpMethod
+    });
+
     if (event.httpMethod !== 'POST') {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
-    const { id } = JSON.parse(event.body);
+    let id;
+    try {
+        // Try parsing as JSON first
+        const data = JSON.parse(event.body);
+        id = data.id;
+    } catch (e) {
+        // If JSON parsing fails, try URL-encoded format
+        const params = new URLSearchParams(event.body);
+        id = params.get('id');
+    }
+
+    if (!id) {
+        console.error('No payment ID found in webhook payload');
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: 'No payment ID provided' })
+        };
+    }
+
     const mollieClient = createMollieClient({ apiKey: process.env.MOLLIE_API_KEY });
     const client = new fauna.Client({ secret: process.env.FAUNA_SECRET_KEY });
 
