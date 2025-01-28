@@ -38,4 +38,20 @@ Team Kleihaven</p>`);
     }
 }
 
-module.exports = sendConfirmationEmail;
+exports.handler = async function (event, context) {
+    if (event.httpMethod !== 'POST') {
+        return {
+            statusCode: 405,
+            body: 'Method Not Allowed'
+        };
+    }
+
+    const { email, name, numberOfSpots, course, periodId } = JSON.parse(event.body);
+
+    const success = await sendConfirmationEmail({ email, name, numberOfSpots, course, periodId });
+
+    return {
+        statusCode: success ? 200 : 500,
+        body: JSON.stringify({ success })
+    };
+};
