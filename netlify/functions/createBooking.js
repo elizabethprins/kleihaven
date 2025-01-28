@@ -50,7 +50,10 @@ exports.handler = async (event) => {
             return {
                 statusCode: 404,
                 headers: corsHeaders,
-                body: JSON.stringify({ error: 'Period not found' })
+                body: JSON.stringify({
+                    error: 'PERIOD_NOT_FOUND',
+                    message: 'De gekozen cursusperiode bestaat niet meer.'
+                })
             };
         }
 
@@ -61,18 +64,23 @@ exports.handler = async (event) => {
             return {
                 statusCode: 400,
                 headers: corsHeaders,
-                body: JSON.stringify({ error: 'Not enough spots available' })
+                body: JSON.stringify({
+                    error: 'SPOTS_NOT_AVAILABLE',
+                    message: 'Er zijn niet genoeg plekken meer beschikbaar.'
+                })
             };
         } else {
+            const siteUrl = process.env.URL || 'http://localhost:3000';
+            const isDevelopment = !process.env.URL;
+
             // Create payment request with Mollie
-            const payment = await mollieClient.payments.create({
+            const paymentData = {
                 amount: {
                     currency: 'EUR',
                     value: (parseFloat(data.price) * numberOfSpots).toFixed(2)
                 },
                 description: `Boeking voor ${data.title} (${numberOfSpots} plekken)`,
-                redirectUrl: `${process.env.URL}/booking/confirmation`,
-                webhookUrl: `${process.env.URL}/.netlify/functions/handlePaymentWebhook`,
+                redirectUrl: `${siteUrl}/boeking/bevestiging`,
                 metadata: {
                     courseId,
                     periodId,
@@ -80,6 +88,18 @@ exports.handler = async (event) => {
                     name,
                     numberOfSpots
                 }
+            };
+
+            // Only add webhook URL in production
+            if (!isDevelopment) {
+                paymentData.webhookUrl = `${siteUrl}/.netlify/functions/handlePaymentWebhook`;
+            }
+
+            const payment = await mollieClient.payments.create(paymentData);
+
+            // Update the redirect URL with the payment ID
+            await mollieClient.payments.update(payment.id, {
+                redirectUrl: `${siteUrl}/boeking/bevestiging?id=${payment.id}`
             });
 
             // Update pending reservations
@@ -105,19 +125,37 @@ exports.handler = async (event) => {
             };
         }
     } catch (error) {
-        console.error('Booking creation failed:', {
-            error: error.message,
-            stack: error.stack,
-            body: event.body,
-            name: error.name,
-            message: error.message
-        });
+        console.error('Booking creation failed:', error);
+
+        // Handle specific error cases
+        if (error.name === 'NotFound') {
+            return {
+                statusCode: 404,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    error: 'PERIOD_NOT_FOUND',
+                    message: 'De gekozen cursusperiode bestaat niet meer.'
+                })
+            };
+        }
+
+        if (error.message?.includes('The redirect URL is invalid')) {
+            return {
+                statusCode: 400,
+                headers: corsHeaders,
+                body: JSON.stringify({
+                    error: 'PAYMENT_CONFIG_ERROR',
+                    message: 'Er is een probleem met de betalingsconfiguratie. Probeer het later opnieuw.'
+                })
+            };
+        }
+
         return {
             statusCode: 500,
             headers: corsHeaders,
             body: JSON.stringify({
-                error: error.message,
-                code: error.code,
+                error: 'UNKNOWN_ERROR',
+                message: 'Er is iets misgegaan. Probeer het later opnieuw.'
             })
         };
     }

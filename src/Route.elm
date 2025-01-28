@@ -26,6 +26,7 @@ type Page
     | Privacy
     | FAQ
     | Terms
+    | BookingConfirmation (Maybe String)
     | NotFound
 
 
@@ -65,6 +66,16 @@ parser =
         , Parser.map Privacy (Parser.s "privacy")
         , Parser.map FAQ (Parser.s "veelgestelde-vragen")
         , Parser.map Terms (Parser.s "algemene-voorwaarden")
+        , Parser.map
+            (\str ->
+                case str of
+                    Just paymentId ->
+                        BookingConfirmation (Just paymentId)
+
+                    Nothing ->
+                        NotFound
+            )
+            (Parser.s "boeking" </> Parser.s "bevestiging" <?> Url.Parser.Query.string "id")
         ]
 
 
@@ -103,6 +114,14 @@ toUrl page =
         Terms ->
             Url.Builder.absolute [ "algemene-voorwaarden", "" ] []
 
+        BookingConfirmation maybePaymentId ->
+            case maybePaymentId of
+                Just paymentId ->
+                    Url.Builder.absolute [ "boeking", "bevestiging" ] [ Url.Builder.string "id" paymentId ]
+
+                Nothing ->
+                    Url.Builder.absolute [ "boeking", "bevestiging" ] []
+
 
 toLabel : Page -> String
 toLabel page =
@@ -133,3 +152,6 @@ toLabel page =
 
         Terms ->
             "Algemene Voorwaarden"
+
+        BookingConfirmation _ ->
+            "Bevestiging"
