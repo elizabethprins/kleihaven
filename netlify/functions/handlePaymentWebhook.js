@@ -1,5 +1,6 @@
 const { createMollieClient } = require('@mollie/api-client');
 const fauna = require('fauna');
+const { fql } = fauna;
 const sendConfirmationEmail = require('./sendConfirmationEmail');
 
 exports.handler = async (event) => {
@@ -18,7 +19,8 @@ exports.handler = async (event) => {
         if (payment.isPaid()) {
             // Payment is successful, update the booking in FaunaDB
             const { metadata } = payment;
-            const { courseId, periodId, email, name, numberOfSpots } = metadata;
+            const { courseId, periodId, email, name } = metadata;
+            const numberOfSpots = parseInt(metadata.numberOfSpots, 10);
 
             // Get current course data
             const course = await client.query(fql`
@@ -77,6 +79,7 @@ exports.handler = async (event) => {
             };
         }
     } catch (error) {
+        console.error('Webhook processing error:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message })
