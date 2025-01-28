@@ -40,7 +40,7 @@ exports.handler = async (event) => {
         // Retrieve the payment status from Mollie
         const payment = await mollieClient.payments.get(id);
 
-        if (payment.isPaid()) {
+        if (payment.status === 'paid') {
             // Payment is successful, update the booking in FaunaDB
             const { metadata } = payment;
             const { courseId, periodId, email, name } = metadata;
