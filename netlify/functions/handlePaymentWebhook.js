@@ -1,7 +1,7 @@
 const { createMollieClient } = require('@mollie/api-client');
 const fauna = require('fauna');
 const { fql } = fauna;
-const { handler: sendConfirmationEmail } = require('./sendConfirmationEmail');
+const { sendConfirmationEmail } = require('./sendConfirmationEmail');
 
 exports.handler = async (event) => {
     console.log('Webhook received:', {
@@ -77,17 +77,15 @@ exports.handler = async (event) => {
             `);
 
             // Send confirmation email
-            const emailResult = await sendConfirmationEmail({
-                body: JSON.stringify({
-                    email,
-                    name,
-                    numberOfSpots,
-                    course,
-                    periodId
-                })
+            const emailSent = await sendConfirmationEmail({
+                email,
+                name,
+                numberOfSpots,
+                course,
+                periodId
             });
 
-            if (emailResult.statusCode !== 200) {
+            if (!emailSent) {
                 console.warn('Booking confirmed but email failed to send');
             }
 

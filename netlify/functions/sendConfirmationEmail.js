@@ -38,6 +38,8 @@ Team Kleihaven</p>`);
     }
 }
 
+
+exports.sendConfirmationEmail = sendConfirmationEmail;
 exports.handler = async function (event, context) {
     if (event.httpMethod !== 'POST') {
         return {
