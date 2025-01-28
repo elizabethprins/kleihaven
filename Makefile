@@ -29,6 +29,7 @@ assets:
 	@cp metatags.json ${DIST_DIR}
 	@cp metatags-updater.js ${DIST_DIR}
 	@cp -R netlify ${DIST_DIR}
+	@echo "/*    /index.html   200" > ${DIST_DIR}/_redirects
 
 build: deps elmoptimized styles minify assets generate_html
 
