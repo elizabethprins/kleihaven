@@ -4,9 +4,39 @@ const mailerSend = new MailerSend({
     apiKey: process.env.MAILERSEND_API_KEY
 });
 
+function formatDutchDate(isoDate) {
+    const date = new Date(isoDate);
+
+    const weekdays = {
+        0: 'zo', 1: 'ma', 2: 'di', 3: 'wo', 4: 'do', 5: 'vr', 6: 'za'
+    };
+
+    const months = {
+        0: 'januari', 1: 'februari', 2: 'maart', 3: 'april',
+        4: 'mei', 5: 'juni', 6: 'juli', 7: 'augustus',
+        8: 'september', 9: 'oktober', 10: 'november', 11: 'december'
+    };
+
+    const weekday = weekdays[date.getDay()];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+
+    return `${weekday} ${day} ${month}`;
+}
+
 async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId }) {
     const period = course.data.periods.find(p => p.id === periodId);
     const siteUrl = process.env.URL || 'http://localhost:3000';
+
+    // Format dates in the same style as the Elm app
+    const startDate = formatDutchDate(period.startDate);
+    const endDate = formatDutchDate(period.endDate);
+
+    // If dates are in same month, use shorter format for start date
+    const sameMonth = new Date(period.startDate).getMonth() === new Date(period.endDate).getMonth();
+    const periodString = sameMonth
+        ? `${startDate.split(' ').slice(0, 2).join(' ')} t/m ${endDate}`
+        : `${startDate} t/m ${endDate}`;
 
     try {
         const emailParams = new EmailParams()
@@ -18,7 +48,7 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                 email: email,
                 data: {
                     name: name,
-                    period: `${period.startDate} t/m ${period.endDate}`,
+                    period: `${periodString}`,
                     course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
                     course_title: course.data.title,
                     numberOfSpots: numberOfSpots,
