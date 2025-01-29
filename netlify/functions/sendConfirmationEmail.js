@@ -53,7 +53,8 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                     course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
                     course_title: course.data.title,
                     numberOfSpots: numberOfSpots,
-                    support_email: ownerEmail
+                    support_email: ownerEmail,
+                    payment_amount: `${paymentCurrency} ${paymentAmount}`
                 }
             }]);
 
