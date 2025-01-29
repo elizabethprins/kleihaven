@@ -120,7 +120,10 @@ exports.handler = async (event) => {
                 name,
                 numberOfSpots,
                 course,
-                periodId
+                periodId,
+                paymentId: id,
+                paymentAmount: payment.amount.value,
+                paymentCurrency: payment.amount.currency
             });
 
             if (!emailSent) {

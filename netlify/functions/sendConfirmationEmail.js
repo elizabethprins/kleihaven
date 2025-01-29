@@ -24,7 +24,7 @@ function formatDutchDate(isoDate) {
     return `${weekday} ${day} ${month}`;
 }
 
-async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId }) {
+async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId, paymentId, paymentAmount, paymentCurrency }) {
     const period = course.data.periods.find(p => p.id === periodId);
     const siteUrl = process.env.URL || 'http://localhost:3000';
     const ownerEmail = process.env.OWNER_EMAIL || 'hello@studio1931.nl';
@@ -71,7 +71,9 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                     period: periodString,
                     course_title: course.data.title,
                     numberOfSpots: numberOfSpots,
-                    course_url: `${siteUrl}/cursussen/${course.data.slug}`
+                    course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
+                    payment_id: paymentId,
+                    payment_amount: `${paymentCurrency} ${paymentAmount}`
                 }
             }]);
 
