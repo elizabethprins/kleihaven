@@ -6,28 +6,25 @@ const mailerSend = new MailerSend({
 
 async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId }) {
     const period = course.data.periods.find(p => p.id === periodId);
+    const siteUrl = process.env.URL || 'http://localhost:3000';
 
     try {
         const emailParams = new EmailParams()
-            .setFrom(new Sender('kleihaven@trial-yzkq3406wxk4d796.mlsender.net', 'Kleihaven'))
+            .setFrom(new Sender('kleihaven@trial-yzkq3406wxk4d796.mlsender.net', 'Studio1931 // Kleihaven'))
             .setTo([new Recipient(email, name)])
             .setSubject('Bevestiging van je boeking bij Kleihaven')
-            .setHtml(`<p>Beste ${name},</p>
-
-<p>Bedankt voor je boeking bij Kleihaven! Je reservering is bevestigd.</p>
-
-<h3>Details van je boeking:</h3>
-<ul>
-    <li>Cursus: ${course.data.title}</li>
-    <li>Aantal plekken: ${numberOfSpots}</li>
-    <li>Periode: ${period.startDate} t/m ${period.endDate}</li>
-    <li>Tijden: ${period.timeInfo}</li>
-</ul>
-
-<p>We kijken ernaar uit je te verwelkomen!</p>
-
-<p>Met vriendelijke groet,<br>
-Team Kleihaven</p>`);
+            .setTemplateId('neqvygm5oqz40p7w')
+            .setPersonalization([{
+                email: email,
+                data: {
+                    name: name,
+                    period: `${period.startDate} t/m ${period.endDate}`,
+                    course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
+                    course_title: course.data.title,
+                    numberOfSpots: numberOfSpots,
+                    support_email: 'hello@studio1931.nl'
+                }
+            }]);
 
         await mailerSend.email.send(emailParams);
         console.log('Confirmation email sent to:', email);
