@@ -3,6 +3,44 @@ const fauna = require('fauna');
 const { fql } = fauna;
 const { sendConfirmationEmail } = require('./sendConfirmationEmail');
 
+async function removePendingReservation(client, payment) {
+    try {
+        const { metadata } = payment;
+        const { courseId, periodId, numberOfSpots } = metadata;
+
+        // Get current course data
+        const course = await client.query(fql`
+            Courses.byId(${courseId})
+        `);
+
+        if (!course || !course.data) {
+            console.error('Course not found while removing pending reservation');
+            return;
+        }
+
+        // Update the periods - only decrease pendingReservations
+        const updatedPeriods = course.data.periods.map(p =>
+            p.id === periodId
+                ? {
+                    ...p,
+                    pendingReservations: Math.max(0, (p.pendingReservations || 0) - parseInt(numberOfSpots, 10))
+                }
+                : p
+        );
+
+        await client.query(fql`
+            Courses.byId(${courseId})
+            ?.update({
+                periods: ${updatedPeriods}
+            })
+        `);
+
+        console.log(`Removed pending reservation for course ${courseId}, period ${periodId}`);
+    } catch (error) {
+        console.error('Error removing pending reservation:', error);
+    }
+}
+
 exports.handler = async (event) => {
     console.log('Webhook received:', {
         body: event.body,
@@ -97,6 +135,8 @@ exports.handler = async (event) => {
                 })
             };
         } else {
+            // Remove pending reservation for failed payments
+            await removePendingReservation(client, payment);
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: 'Payment not successful.' })
@@ -104,6 +144,15 @@ exports.handler = async (event) => {
         }
     } catch (error) {
         console.error('Webhook processing error:', error);
+
+        // Try to remove pending reservation even if webhook processing failed
+        try {
+            const payment = await mollieClient.payments.get(id);
+            await removePendingReservation(client, payment);
+        } catch (e) {
+            console.error('Failed to remove pending reservation after error:', e);
+        }
+
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message })
