@@ -27,6 +27,7 @@ function formatDutchDate(isoDate) {
 async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId }) {
     const period = course.data.periods.find(p => p.id === periodId);
     const siteUrl = process.env.URL || 'http://localhost:3000';
+    const ownerEmail = process.env.OWNER_EMAIL || 'hello@studio1931.nl';
 
     // Format dates in the same style as the Elm app
     const startDate = formatDutchDate(period.startDate);
@@ -48,16 +49,37 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                 email: email,
                 data: {
                     name: name,
-                    period: `${periodString}`,
+                    period: periodString,
                     course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
                     course_title: course.data.title,
                     numberOfSpots: numberOfSpots,
-                    support_email: 'hello@studio1931.nl'
+                    support_email: ownerEmail
                 }
             }]);
 
-        await mailerSend.email.send(emailParams);
-        console.log('Confirmation email sent to:', email);
+        // Send email to owner
+        const ownerEmailParams = new EmailParams()
+            .setFrom(new Sender('kleihaven@trial-yzkq3406wxk4d796.mlsender.net', 'Studio1931 // Kleihaven'))
+            .setTo([new Recipient(ownerEmail, 'Studio1931')])
+            .setSubject('Nieuwe boeking bij Kleihaven')
+            .setTemplateId('7dnvo4d865rl5r86')
+            .setPersonalization([{
+                email: ownerEmail,
+                data: {
+                    customer_name: name,
+                    customer_email: email,
+                    period: periodString,
+                    course_title: course.data.title,
+                    numberOfSpots: numberOfSpots,
+                    course_url: `${siteUrl}/cursussen/${course.data.slug}`
+                }
+            }]);
+
+        await Promise.all([
+            mailerSend.email.send(emailParams),
+            mailerSend.email.send(ownerEmailParams)
+        ]);
+        console.log('Confirmation emails sent to:', email, 'and', ownerEmail);
         return true;
     } catch (error) {
         console.error('Failed to send confirmation email:', error);
