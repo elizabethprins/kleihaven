@@ -737,6 +737,16 @@ viewIf condition html =
         text ""
 
 
+viewMaybe : Maybe a -> (a -> Html msg) -> Html msg
+viewMaybe maybe toHtml =
+    case maybe of
+        Just value ->
+            toHtml value
+
+        Nothing ->
+            text ""
+
+
 
 -- VIEW PAGES
 -- HOMEPAGE
@@ -1081,6 +1091,8 @@ viewCourse loadedImages course =
         }
         { content =
             [ h3 [] [ text course.title ]
+            , viewMaybe course.subtitle
+                (\subtitle -> h4 [] [ text subtitle ])
             , p [ class "course-card__price" ]
                 [ text "€"
                 , text (String.fromFloat course.price)
