@@ -68,7 +68,7 @@
         }
     }
 
-    a {
+    a:not(.button) {
         text-decoration: underline;
 
         @include tools.hover {
