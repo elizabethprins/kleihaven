@@ -58,6 +58,24 @@
         object-fit: cover;
     }
 
+    ul {
+        padding-left: 1.25em;
+        list-style-type: disc;
+        line-height: 1.8;
+
+        @include tools.breakpoint(settings.$tiny) {
+            padding-left: 2.5em;
+        }
+    }
+
+    a {
+        text-decoration: underline;
+
+        @include tools.hover {
+            text-decoration: none;
+        }
+    }
+
     @include tools.breakpoint(settings.$small) {
         margin: 0 2rem;
 
