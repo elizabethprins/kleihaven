@@ -1076,8 +1076,13 @@ viewPageCursussen model maybeCourseId =
                     [ text "Sorry, er is iets misgegaan bij het laden van de cursussen" ]
 
             Nothing ->
-                div [ class "courses-grid" ]
-                    (List.map (viewCourse model.loadedImages) model.courses)
+                Html.Keyed.node "div"
+                    []
+                    [ ( "courses"
+                      , div [ class "courses-grid" ]
+                            (List.map (viewCourse model.loadedImages) model.courses)
+                      )
+                    ]
     , viewCourseDetailModal model
     ]
 
