@@ -1315,21 +1315,23 @@ viewCourseDetailModal model =
                 { closeMsg = CloseCourseDetailModal
                 , extraClass = "course-detail-modal"
                 , content =
-                    [ h2 [] [ text course.title ]
-                    , p [ class "modal__content__intro" ]
-                        [ text course.description ]
-                    , div [ class "modal__content__image" ]
-                        [ viewImage model.loadedImages
-                            { imgSrc = course.imageUrl
-                            , imgAlt = course.title
-                            , lazy = False
-                            }
+                    [ div [ class "modal__content__inner" ]
+                        [ h2 [] [ text course.title ]
+                        , p [ class "modal__content__intro" ]
+                            [ text course.description ]
+                        , div [ class "modal__content__image" ]
+                            [ viewImage model.loadedImages
+                                { imgSrc = course.imageUrl
+                                , imgAlt = course.title
+                                , lazy = False
+                                }
+                            ]
+                        , p [ class "modal__content__price" ]
+                            [ text "Kosten per persoon: € "
+                            , text (String.fromFloat course.price)
+                            ]
+                        , viewParsedHtml "modal__content__text" course.content
                         ]
-                    , p [ class "modal__content__price" ]
-                        [ text "Kosten per persoon: € "
-                        , text (String.fromFloat course.price)
-                        ]
-                    , viewParsedHtml "modal__content__text" course.content
                     , div [ class "modal__content__periods" ]
                         (List.map (viewCoursePeriodInModal course) course.periods)
                     ]

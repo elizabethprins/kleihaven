@@ -17,11 +17,11 @@
 .modal-wrapper {
     width: 90%;
     max-width: settings.$max-content-width;
-    max-height: 87vh;
+    max-height: 86vh;
     position: relative;
 
-    &.course-detail-modal {
-        max-width: settings.$max-page-width;
+    @include tools.breakpoint(settings.$medium) {
+        max-height: 90vh;
     }
 }
 
@@ -137,8 +137,6 @@
 }
 
 .modal__content__image {
-    max-width: settings.$max-text-width;
-
     img {
         width: 100%;
         height: 15rem;
@@ -148,8 +146,11 @@
     }
 }
 
-.modal__content__intro {
+.modal__content__inner {
     max-width: settings.$max-text-width;
+}
+
+.modal__content__intro {
     margin-bottom: 1rem;
     font-size: 1.125em;
 }
@@ -159,8 +160,6 @@
 }
 
 .modal__content__text {
-    max-width: settings.$max-text-width;
-
     ul {
         padding-left: 1.25em;
         list-style-type: disc;
@@ -175,4 +174,31 @@
 .modal__content__periods {
     margin-top: 1.5rem;
     border-top: 1px solid settings.$drabBrownDark;
+}
+
+.course-detail-modal {
+    max-width: settings.$max-page-width;
+
+    @include tools.breakpoint(settings.$medium) {
+        .modal__content {
+            padding: 0;
+        }
+
+        .modal__content__inner {
+            padding: 2rem;
+        }
+
+        .modal__content__periods {
+            padding: 1rem 2rem 2rem;
+            position: sticky;
+            bottom: 0;
+            border-radius: 0 0 settings.$borderRadius settings.$borderRadius;
+            background-color: settings.$white;
+
+            .button {
+                margin: 0;
+                align-self: center;
+            }
+        }
+    }
 }
