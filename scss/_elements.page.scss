@@ -98,9 +98,13 @@ label {
     margin-bottom: 0.5rem;
     display: block;
     font-weight: 500;
+
+    a {
+        text-decoration: underline;
+    }
 }
 
-input,
+input:not([type="checkbox"]),
 select {
     appearance: none;
     width: 100%;

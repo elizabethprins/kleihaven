@@ -7,7 +7,7 @@ import Copy exposing (copy)
 import Course exposing (Course)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (on, onClick, preventDefaultOn)
+import Html.Events exposing (on, onCheck, onClick, preventDefaultOn)
 import Html.Keyed
 import Html.Parser
 import Html.Parser.Util
@@ -153,6 +153,7 @@ type Msg
     | GotBookingResponse (Result Course.BookingResponseError Course.BookingResponse)
     | CloseCourseDetailModal
     | GotPaymentDetails (Result Http.Error Course.PaymentDetails)
+    | UpdateRegistrationTerms Bool
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -289,6 +290,7 @@ update msg model =
                         , errors = Course.emptyValidationErrors
                         , submitting = False
                         , bookingError = Nothing
+                        , acceptedTerms = False
                         }
               }
             , Cmd.none
@@ -454,6 +456,13 @@ update msg model =
                     ( { model | loadingPayment = False }
                     , Cmd.none
                     )
+
+        UpdateRegistrationTerms accepted ->
+            ( { model
+                | registrationModal = Maybe.map (\m -> { m | acceptedTerms = accepted }) model.registrationModal
+              }
+            , Cmd.none
+            )
 
 
 
@@ -1359,6 +1368,37 @@ viewRegistrationModal maybeModal currentCourse =
                                         )
                                 )
                             |> Ui.FormField.withError modal.errors.spots
+                            |> Ui.FormField.view
+                        , Ui.FormField.new
+                            { id = "terms"
+                            , label = ""
+                            , value =
+                                if modal.acceptedTerms then
+                                    "true"
+
+                                else
+                                    "false"
+                            , onInput = \_ -> UpdateRegistrationTerms (not modal.acceptedTerms)
+                            }
+                            |> Ui.FormField.withTypeCheckbox
+                            |> Ui.FormField.withRequired True
+                            |> Ui.FormField.withError modal.errors.terms
+                            |> Ui.FormField.withHtmlLabel
+                                (span []
+                                    [ text "Ik heb de "
+                                    , a
+                                        [ href (Route.toUrl Route.Terms)
+                                        , target "_blank"
+                                        ]
+                                        [ text "algemene voorwaarden" ]
+                                    , text " gelezen en ga akkoord met het "
+                                    , a
+                                        [ href (Route.toUrl Route.Privacy)
+                                        , target "_blank"
+                                        ]
+                                        [ text "privacybeleid" ]
+                                    ]
+                                )
                             |> Ui.FormField.view
                         , p [ class "modal__total-cost" ]
                             [ text "Totaal: € "

@@ -2,8 +2,10 @@ module Ui.FormField exposing
     ( new
     , view
     , withError
+    , withHtmlLabel
     , withRequired
     , withSelect
+    , withTypeCheckbox
     , withTypeEmail
     )
 
@@ -15,12 +17,12 @@ import Html.Events exposing (onInput)
 type Config msg
     = Config
         { id : String
-        , label : String
+        , label : Html msg
         , value : String
         , onInput : String -> msg
-        , isRequired : Bool
-        , error : Maybe String
         , fieldType : FieldType
+        , error : Maybe String
+        , isRequired : Bool
         }
 
 
@@ -28,6 +30,7 @@ type FieldType
     = Text
     | Email
     | Select (List SelectOption)
+    | Checkbox
 
 
 type alias SelectOption =
@@ -44,15 +47,15 @@ new :
     , onInput : String -> msg
     }
     -> Config msg
-new { id, label, value, onInput } =
+new config =
     Config
-        { id = id
-        , label = label
-        , value = value
-        , onInput = onInput
-        , isRequired = False
-        , error = Nothing
+        { id = config.id
+        , label = text config.label
+        , value = config.value
+        , onInput = config.onInput
         , fieldType = Text
+        , error = Nothing
+        , isRequired = False
         }
 
 
@@ -76,14 +79,28 @@ withTypeEmail (Config config) =
     Config { config | fieldType = Email }
 
 
+withTypeCheckbox : Config msg -> Config msg
+withTypeCheckbox (Config config) =
+    Config { config | fieldType = Checkbox }
+
+
+withHtmlLabel : Html msg -> Config msg -> Config msg
+withHtmlLabel label (Config config) =
+    Config { config | label = label }
+
+
 
 -- VIEW
 
 
 view : Config msg -> Html msg
 view (Config config) =
-    div [ class "form-group" ]
-        [ label [ for config.id ] [ text config.label ]
+    div
+        [ class "form-group"
+        , classList
+            [ ( "form-group--checkbox", config.fieldType == Checkbox ) ]
+        ]
+        [ label [ for config.id ] [ config.label ]
         , case config.fieldType of
             Select options ->
                 select
@@ -96,13 +113,27 @@ view (Config config) =
                     ]
                     (List.map viewOption options)
 
+            Checkbox ->
+                input
+                    [ id config.id
+                    , type_ "checkbox"
+                    , checked (config.value == "true")
+                    , onInput config.onInput
+                    , required config.isRequired
+                    , class "form-group__checkbox"
+                    , classList
+                        [ ( "form-group__input", True )
+                        , ( "form-group__input--error", config.error /= Nothing )
+                        ]
+                    ]
+                    []
+
             _ ->
                 input
                     [ id config.id
                     , type_ (typeToString config.fieldType)
                     , value config.value
                     , onInput config.onInput
-                    , class "form-field__input"
                     , required config.isRequired
                     , classList
                         [ ( "form-group__input", True )
@@ -145,3 +176,6 @@ typeToString fieldType =
 
         Select _ ->
             "select"
+
+        Checkbox ->
+            "checkbox"

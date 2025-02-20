@@ -59,6 +59,7 @@ type alias RegistrationModal =
     , errors : ValidationErrors
     , bookingError : Maybe String
     , submitting : Bool
+    , acceptedTerms : Bool
     }
 
 
@@ -66,6 +67,7 @@ type alias ValidationErrors =
     { name : Maybe String
     , email : Maybe String
     , spots : Maybe String
+    , terms : Maybe String
     }
 
 
@@ -74,6 +76,7 @@ emptyValidationErrors =
     { name = Nothing
     , email = Nothing
     , spots = Nothing
+    , terms = Nothing
     }
 
 
@@ -218,13 +221,13 @@ validateRegistration : RegistrationModal -> ValidationErrors
 validateRegistration modal =
     { name =
         if String.isEmpty (String.trim modal.name) then
-            Just "Naam is verplicht"
+            Just "Vul je naam in"
 
         else
             Nothing
     , email =
         if String.isEmpty (String.trim modal.email) then
-            Just "E-mail is verplicht"
+            Just "Vul je e-mailadres in"
 
         else if not (isValidEmail modal.email) then
             Just "Vul een geldig e-mailadres in"
@@ -233,7 +236,13 @@ validateRegistration modal =
             Nothing
     , spots =
         if modal.spots < 1 then
-            Just "Kies minimaal 1 plek"
+            Just "Kies het aantal plekken"
+
+        else
+            Nothing
+    , terms =
+        if not modal.acceptedTerms then
+            Just "Je moet akkoord gaan met de voorwaarden"
 
         else
             Nothing
