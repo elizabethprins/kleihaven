@@ -100,47 +100,49 @@ view (Config config) =
         , classList
             [ ( "form-group--checkbox", config.fieldType == Checkbox ) ]
         ]
-        [ label [ for config.id ] [ config.label ]
-        , case config.fieldType of
-            Select options ->
-                select
-                    [ id config.id
-                    , onInput config.onInput
-                    , classList
-                        [ ( "form-group__input", True )
-                        , ( "form-group__input--error", config.error /= Nothing )
+        [ div []
+            [ label [ for config.id ] [ config.label ]
+            , case config.fieldType of
+                Select options ->
+                    select
+                        [ id config.id
+                        , onInput config.onInput
+                        , classList
+                            [ ( "form-group__input", True )
+                            , ( "form-group__input--error", config.error /= Nothing )
+                            ]
                         ]
-                    ]
-                    (List.map viewOption options)
+                        (List.map viewOption options)
 
-            Checkbox ->
-                input
-                    [ id config.id
-                    , type_ "checkbox"
-                    , checked (config.value == "true")
-                    , onInput config.onInput
-                    , required config.isRequired
-                    , class "form-group__checkbox"
-                    , classList
-                        [ ( "form-group__input", True )
-                        , ( "form-group__input--error", config.error /= Nothing )
+                Checkbox ->
+                    input
+                        [ id config.id
+                        , type_ "checkbox"
+                        , checked (config.value == "true")
+                        , onInput config.onInput
+                        , required config.isRequired
+                        , class "form-group__checkbox"
+                        , classList
+                            [ ( "form-group__input", True )
+                            , ( "form-group__input--error", config.error /= Nothing )
+                            ]
                         ]
-                    ]
-                    []
+                        []
 
-            _ ->
-                input
-                    [ id config.id
-                    , type_ (typeToString config.fieldType)
-                    , value config.value
-                    , onInput config.onInput
-                    , required config.isRequired
-                    , classList
-                        [ ( "form-group__input", True )
-                        , ( "form-group__input--error", config.error /= Nothing )
+                _ ->
+                    input
+                        [ id config.id
+                        , type_ (typeToString config.fieldType)
+                        , value config.value
+                        , onInput config.onInput
+                        , required config.isRequired
+                        , classList
+                            [ ( "form-group__input", True )
+                            , ( "form-group__input--error", config.error /= Nothing )
+                            ]
                         ]
-                    ]
-                    []
+                        []
+            ]
         , viewError config.error
         ]
 

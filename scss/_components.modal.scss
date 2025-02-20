@@ -93,7 +93,7 @@
     border-color: settings.$error;
 }
 
-.form-group--checkbox {
+.form-group--checkbox > div:first-child {
     gap: 1rem;
     margin-top: 1.5em;
     display: flex;
