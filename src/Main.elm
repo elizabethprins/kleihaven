@@ -1188,60 +1188,7 @@ viewPageNotFound =
 
 viewPagePrivacy : List (Html Msg)
 viewPagePrivacy =
-    toContentPage
-        [ h1 [] [ text "Privacy Policy" ]
-        , p [ class "content__intro" ]
-            [ text "We vinden jouw privacy belangrijk en leggen hier graag uit welke gegevens we verzamelen en waarom. Door onze website te gebruiken, ga je akkoord met dit privacybeleid." ]
-        , h2 [] [ text "Welke gegevens verzamelen we?" ]
-        , p [] [ text "Als je je inschrijft voor een keramiekcursus, vragen we om:" ]
-        , ul []
-            [ li [] [ text "Je naam" ]
-            , li [] [ text "Je e-mailadres" ]
-            ]
-        , h2 [] [ text "Waarom verzamelen we deze gegevens?" ]
-        , p [] [ text "We gebruiken je gegevens om:" ]
-        , ul []
-            [ li [] [ text "Je inschrijving te verwerken" ]
-            , li [] [ text "Een bevestigingsmail te sturen via MailerSend" ]
-            , li [] [ text "Voorafgaand aan de cursus contact met je op te nemen" ]
-            ]
-        , h2 [] [ text "Betalingen" ]
-        , p []
-            [ text "De betalingen verlopen via Mollie. Wij krijgen geen inzage in je betaalgegevens. Mollie verwerkt deze volgens hun eigen privacybeleid: "
-            , a [ href "https://www.mollie.com/nl/privacy", target "_blank", rel "noopener noreferrer" ]
-                [ text "Mollie Privacybeleid" ]
-            , text "."
-            ]
-        , h2 [] [ text "Opslag en bewaartermijn van gegevens" ]
-        , p []
-            [ text "We slaan je gegevens niet op. MailerSend bewaart je gegevens en de bevestigingsmail maximaal 24 uur en verwijdert deze daarna automatisch. Lees hun privacybeleid hier: "
-            , a [ href "https://www.mailersend.com/legal/privacy-policy", target "_blank", rel "noopener noreferrer" ]
-                [ text "MailerSend Privacybeleid" ]
-            , text ", "
-            , a [ href "https://www.mailersend.com/legal/how-mailersend-stays-gdpr-compliant", target "_blank", rel "noopener noreferrer" ]
-                [ text "MailerSend AVG-verklaring" ]
-            , text "."
-            ]
-        , h2 [] [ text "Delen van gegevens" ]
-        , p [] [ text "We delen je gegevens alleen met:" ]
-        , ul []
-            [ li [] [ text "Mollie voor betalingen" ]
-            , li [] [ text "MailerSend voor het verzenden van e-mails" ]
-            ]
-        , p [] [ text "Beide partijen verwerken gegevens volgens hun eigen privacybeleid." ]
-        , h2 [] [ text "Jouw rechten" ]
-        , p [] [ text "Je mag altijd:" ]
-        , ul []
-            [ li [] [ text "Inzien welke gegevens we van je hebben" ]
-            , li [] [ text "Je gegevens laten corrigeren of verwijderen" ]
-            , li [] [ text "Bezwaar maken tegen het gebruik van je gegevens" ]
-            ]
-        , h2 [] [ text "Vragen?" ]
-        , p []
-            [ text "Stuur ons een mailtje: "
-            , a [ href "mailto:hello@studio1931.nl" ] [ text "hello@studio1931.nl" ]
-            ]
-        ]
+    toContentPage Copy.privacyPage
 
 
 
@@ -1250,15 +1197,7 @@ viewPagePrivacy =
 
 viewPageFAQ : List (Html Msg)
 viewPageFAQ =
-    toContentPage
-        [ h1 [] [ text "Veelgestelde vragen" ]
-        , div [ class "faq" ]
-            [ div [ class "faq-item" ]
-                [ h3 [] [ text "Vraag 1?" ]
-                , p [] [ text "Antwoord 1..." ]
-                ]
-            ]
-        ]
+    toContentPage Copy.faqPage
 
 
 
@@ -1267,10 +1206,7 @@ viewPageFAQ =
 
 viewPageTerms : List (Html Msg)
 viewPageTerms =
-    toContentPage
-        [ h1 [] [ text "Algemene Voorwaarden" ]
-        , p [] [ text "Hier komen de algemene voorwaarden..." ]
-        ]
+    toContentPage Copy.termsPage
 
 
 
