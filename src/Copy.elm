@@ -1,29 +1,20 @@
-module Copy exposing (copy, faqPage, privacyPage, termsPage)
+module Copy exposing (copy, faqPage, pageAir, pageOverOns, privacyPage, termsPage)
 
 import Html exposing (..)
 import Markdown
 
 
+markdownOptions : Markdown.Options
+markdownOptions =
+    let
+        options =
+            Markdown.defaultOptions
+    in
+    { options | sanitize = False, smartypants = True }
+
+
 copy =
-    { title = "Kleihaven"
-    , pageInDevelopment = "– Pagina in ontwikkeling –"
-    , lorem = """
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-        nisi ut aliquip ex ea commodo consequat.
-        """
-    , loremTwo = """
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-        sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-        nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-        reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-        culpa qui officia deserunt mollit anim id est laborum.
-        """
-    , loremTitle = "Excepteur sint occaecat"
-    , notFound =
+    { notFound =
         { title = "Pagina niet gevonden"
         , description = "De pagina die je zoekt bestaat niet."
         }
@@ -173,10 +164,10 @@ copy =
 
 privacyPage : List (Html msg)
 privacyPage =
-    [ Markdown.toHtml [] """
-# Privacy Policy
+    [ Markdown.toHtmlWith markdownOptions [] """
+# Privacybeleid
 
-### Gegevensverwerking bij Studio1931
+## Gegevensverwerking bij Studio1931
 
 Bij Studio1931 hechten we veel waarde aan de bescherming van jouw persoonsgegevens. In deze privacyverklaring leggen we duidelijk uit hoe we met jouw gegevens omgaan. We doen er alles aan om jouw privacy te waarborgen en behandelen jouw gegevens zorgvuldig.
 
@@ -222,7 +213,7 @@ In sommige gevallen kan het nodig zijn om je gegevens te verstrekken aan derden,
 
 faqPage : List (Html msg)
 faqPage =
-    [ Markdown.toHtml [] """
+    [ Markdown.toHtmlWith markdownOptions [] """
 # Veelgestelde vragen
 
 ## Cursussen
@@ -293,7 +284,7 @@ Oude, dichte schoenen en droge kleding. Je zult tot ongeveer kniehoogte nat word
 
 termsPage : List (Html msg)
 termsPage =
-    [ Markdown.toHtml [] """
+    [ Markdown.toHtmlWith markdownOptions [] """
 # Algemene Voorwaarden
 
 ## Algemene informatie
@@ -337,3 +328,122 @@ Studio1931 - Kleihaven streeft ernaar om zo zuiver mogelijk, zonder fouten, info
 - Alle informatie rondom privacy en het bewaren van persoonsgegevens, kun je vinden op onze [privacy pagina](/privacy/).
 """
     ]
+
+
+pageAir =
+    { title = "Artist in Residence"
+    , intro = """
+Ben jij een beeldend kunstenaar op zoek naar een plek waar de frisse zeewind jouw creativiteit nieuw leven inblaast?
+Of je nu verder wilt werken aan bestaande projecten of inspiratie zoekt voor nieuwe ideeën, bij Studio1931 vind je
+een ruime werkplek en de tijd om je volledig te focussen.
+    """
+    , blockOne = Markdown.toHtmlWith markdownOptions [] """
+We bieden werkperiodes van 4 tot 6 weken voor zowel individuele kunstenaars als duo's. Daarnaast organiseren we jaarlijks
+de **TUSSEN ZOET EN ZOUT** week, een projectweek waar meerdere kunstenaars samen of individueel kunnen werken en experimenteren.
+    """
+    , blockTwo = Markdown.toHtmlWith markdownOptions [] """
+### Een zee van ruimte
+
+Studio1931 stelt een van haar karakteristieke klaslokalen ter beschikking voor kunstenaars. Het atelier van circa
+7 x 6 meter biedt volop ruimte en wordt soms gedeeld met andere makers. Met een hoog plafond en een grote raampartij
+heb je prachtig, natuurlijk licht. Daarnaast is er een uitgebreide uitrusting aanwezig: een drukpers voor etsen,
+droge naald en meer, evenals draaischijven, een kleiwals en keramiekovens. Alles wat je nodig hebt om jouw ideeën vorm te geven!
+        """
+    , blockThree = Markdown.toHtmlWith markdownOptions [] """
+### Werkperiodes naar smaak
+Kunstenaars kunnen bij ons een artist-in-residence periode volgen, met werkperiodes
+variërend van twee tot acht weken. In overleg is veel mogelijk, zodat de periode
+volledig aansluit bij jouw wensen. Daarnaast bieden we de mogelijkheid om te verblijven
+in een volledig uitgeruste en gloednieuwe studio.
+        """
+    , blockFour = Markdown.toHtmlWith markdownOptions [] """
+### Tussen Zoet en Zout A-I-R project
+
+_Tussen Zoet en Zout_ is een jaarlijkse projectweek waar kunstenaars uit diverse disciplines samenkomen.
+Ongeveer 10 kunstenaars werken intensief samen, laten zich door elkaar inspireren en creëren die echte
+kunstacademie-sfeer. De kracht van de week ligt in de onderdompeling: wadlopen, eigen tentjes, samen eten,
+en de wisselwerking tussen beginnende en gevorderde kunstenaars. _Tussen Zoet en Zout_ is een rijke,
+intense week waar collectiviteit, experiment en kunst de boventoon voeren.
+        """
+    , blockFive = Markdown.toHtmlWith markdownOptions [] """
+### Aanmelden!
+
+Interesse? Dat begrijpen we helemaal! Heb jij een eigen werkplan of idee? Stuur ons dan een mailtje
+naar [hello@studio1931.nl](mailto:hello@studio1931.nl). We bekijken graag samen hoe dit in te passen is.
+Daarnaast organiseren we met regelmaat een Open Call, waarbij je kan reageren op een werkperiode met
+een specifiek onderwerp of thema, eventueel (deels) ondersteund door subsidie.
+
+_Op dit moment is er geen Open Call._
+       """
+    }
+
+
+pageOverOns =
+    { title = "Over ons"
+    , intro = """
+Studio1931 is dé broedplaats van Wieringen, een plek waar kunstenaars van alle disciplines, lokale mensen,
+cursisten en enthousiastelingen samenkomen en waar het draait om kunst en creativiteit. Studio1931 is daarmee
+een paraplu, waar atelier, gastenverblijf, kleihaven en Artist in Residence samenvallen. Kom je er bij? 
+    """
+    , blockOne = Markdown.toHtmlWith markdownOptions [] """
+## Studio1931 - een broedplaats
+
+Sinds 2018 wonen wij, Sjaak Kooij en Hanneke Kroon, in de oude school uit 1931 van Den Oever. Als kunstenaar,
+kunstliefhebbers en kunstdocenten is zo'n plek een droom. We kochten geen huis, maar een plek - Studio1931 - vol ideeën,
+waar alles mogelijk is, waar je alles van kunt maken, waar de natuur prachtig is en het gebouw historie ademt.
+En dat willen we graag delen.
+
+Studio1931 heeft als doel om wonen, werken in en tussen de kunsten te bewerkstelligen. Dit omdat kunst een grote en
+essentiële verbinder is tussen professionele- en amateurkunstenaars en omgeving. Naast ontmoetingsplek is Studio1931
+een plek waar je je kunt ontwikkelen, of je nu al jaren bezig bent als professional of net begint.
+   """
+    , blockTwo = Markdown.toHtmlWith markdownOptions [] """
+### Atelier Sjaak Kooij
+
+In een van de lokalen heeft Sjaak zijn atelier. Een fijne ruimte, met een zee van licht, een plek om te schilderen
+en drukwerk te maken. Sjaak werkt bijna 20 jaar als beeldend kunstenaar. Van schilderijen, keramieke objecten,
+installaties tot grote muurschilderingen, als je het kunt bedenken, dan kun je het maken! Je kunt zijn werk
+bekijken op <a href="https://www.sjaakkooij.com" target="_blank" rel="noopener noreferrer">www.sjaakkooij.com</a>.
+    """
+    , blockThree = Markdown.toHtmlWith markdownOptions [] """
+### Kleihaven
+
+Studio1931 presenteert Kleihaven! Het toevluchtsoord en vertrekplek voor alles wat met keramiek te maken heeft.
+We zijn genadeloos aangestoken door Sjaaks vader Baba met het zogenaamde 'kleivirus'! Keramiek biedt eindeloze
+mogelijkheden en is een uitdagend materiaal om mee te werken. Baba Kooij heeft jaren ervaring met lesgeven bij
+onder andere de Kleiacademie in Amsterdam en deelt zijn expertise nu bij Kleihaven.
+
+De keramiekcursussen die wij aanbieden, hebben een duidelijke structuur. Ze zijn ontworpen om op elkaar voort
+te bouwen, zodat je stap voor stap gedegen kennis en vaardigheden kunt ontwikkelen. Daarnaast kun je de
+modules ook als losse cursussen volgen, afhankelijk van je interesse en ervaring.
+
+In de nabije toekomst breiden we ons aanbod uit met cursussen van beeldend kunstenaars, die hun expertise
+delen in verschillende aspecten van keramiek. Te leuk om niet mee te doen!
+    """
+    , blockFour = Markdown.toHtmlWith markdownOptions [] """
+### Artist-in-Residence
+
+Studio1931 is een plek waar professionele en amateurkunstenaars zich kunnen ontwikkelen. Voor professionele
+kunstenaars, van net afgestudeerde tot een stuk verder in hun carrière, doen wij dat door het aanbieden van
+diverse werkperiodes. In zo'n werkperiode heeft de kunstenaar een ruim atelier ter beschikking om ideeën
+te ontwikkelen of plannen verder uit te werken.
+        """
+    , blockFive = Markdown.toHtmlWith markdownOptions [] """
+### Tussen Zoet en Zout A-I-R project
+
+_Tussen Zoet en Zout_ is tevens een jaarlijkse projectweek waar kunstenaars uit diverse disciplines samenkomen.
+Ongeveer 10 kunstenaars werken intensief samen, laten zich door elkaar inspireren en creëren weer die echte
+kunstacademie-sfeer. De kracht van de week ligt in de onderdompeling: wadlopen, eigen tentjes, samen eten,
+en de wisselwerking tussen beginnende en gevorderde kunstenaars.
+_Tussen Zoet en Zout_ is een week vol creativiteit en rijkdom!
+
+        """
+    , blockSix = Markdown.toHtmlWith markdownOptions [] """
+### Gastenverblijf
+
+De keramiekcursus van Kleihaven aanvullen met een heerlijk verblijf? Wieringen ontdekken en savonds lekker
+ontspannen? Studio1931 biedt een gloednieuw en heerlijk gastenverblijf aan! Het gastenverblijf is bijna
+50m2 groot en voorzien van groot tweepersoonsbed, zithoek, eettafel, keuken en een fijne badkamer met
+regendouche. Stuur ons een mailtje voor beschikbaarheid naar [info@studio1931.nl](mailto:info@studio1931.nl)!
+        """
+    }

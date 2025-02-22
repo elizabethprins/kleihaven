@@ -471,7 +471,7 @@ update msg model =
 
 view : Model -> Browser.Document Msg
 view model =
-    { title = copy.title
+    { title = Route.toLabel model.page
     , body =
         [ viewNavigation model
         , main_ [ class "main" ] <|
@@ -999,42 +999,14 @@ viewMobileCoursesButton =
 viewPageAIR : Model -> List (Html Msg)
 viewPageAIR model =
     toContentPage
-        [ h1 [] [ text "Artist in Residence" ]
+        [ h1 [] [ text Copy.pageAir.title ]
         , p [ class "content__intro" ]
-            [ text """
-            Op zoek naar een inspirerende werkomgeving? Welkom bij Studio1931!
-            """ ]
-        , h2 [] [ text "Ondertitel!" ]
-        , p [] [ text """
-        Studio1931 stelt een van haar karakteristieke klaslokalen ter beschikking voor kunstenaars.
-        Het atelier van circa 7 x 6 meter biedt volop ruimte en wordt soms gedeeld met andere makers.
-        Met een hoog plafond en een grote raampartij heb je prachtig natuurlijk licht. Daarnaast is
-        er een uitgebreide uitrusting aanwezig: een drukpers voor linoleum, droge naald en meer,
-        evenals draaischijven, een kleiwals en keramiekovens.
-        Alles wat je nodig hebt om jouw ideeën vorm te geven!
-        """ ]
-        , h3 [] [ text "Tussenkop!" ]
-        , p [] [ text """
-        Kunstenaars kunnen bij ons een artist-in-residence periode volgen, met werkperiodes
-        variërend van twee tot acht weken. In overleg is veel mogelijk, zodat de periode
-        volledig aansluit bij jouw wensen. Daarnaast bieden we de mogelijkheid om te verblijven
-        in een volledig uitgeruste en gloednieuwe studio.
-        """ ]
-        , viewImage model.loadedImages
-            { imgSrc = "air"
-            , imgAlt = "Kunstenaars aan het werk in de studio"
-            , lazy = True
-            }
-        , h3 [] [ text "Tussenkop" ]
-        , p [] [ text """
-        Interesse?
-        Dat begrijpen we helemaal! Aanmelden kan op twee manieren:
-        Via een Open Call - (link naar Open Call pagina) waarbij je reageert op een werkperiode
-        met een specifiek onderwerp of thema, eventueel (deels) ondersteund door subsidie.
-        Via jouw eigen werkplan of idee. We bekijken graag samen hoe dit in te passen is.
-        Subsidie kun je, indien nodig, zelf aanvragen via de gebruiken kanalen.
-        Meld je hier voor meer informatie en kosten!
-        """ ]
+            [ text Copy.pageAir.intro ]
+        , Copy.pageAir.blockOne
+        , Copy.pageAir.blockTwo
+        , Copy.pageAir.blockThree
+        , Copy.pageAir.blockFour
+        , Copy.pageAir.blockFive
         ]
 
 
@@ -1045,22 +1017,16 @@ viewPageAIR model =
 viewPageOverOns : List (Html Msg)
 viewPageOverOns =
     toContentPage
-        ([ h1 [] [ text "Over ons" ]
-         ]
-            ++ lorem
-        )
-
-
-lorem : List (Html Msg)
-lorem =
-    [ p [ class "content__intro" ] [ text copy.lorem ]
-    , h2 [] [ text copy.loremTitle ]
-    , p [] [ text copy.lorem ]
-    , h3 [] [ text copy.loremTitle ]
-    , p [] [ text copy.loremTwo ]
-    , h3 [] [ text copy.loremTitle ]
-    , p [] [ text copy.loremTwo ]
-    ]
+        [ h1 [] [ text Copy.pageOverOns.title ]
+        , p [ class "content__intro" ]
+            [ text Copy.pageOverOns.intro ]
+        , Copy.pageOverOns.blockOne
+        , Copy.pageOverOns.blockTwo
+        , Copy.pageOverOns.blockThree
+        , Copy.pageOverOns.blockFour
+        , Copy.pageOverOns.blockFive
+        , Copy.pageOverOns.blockSix
+        ]
 
 
 

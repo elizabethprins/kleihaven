@@ -94,12 +94,15 @@
 }
 
 .form-group--checkbox > div:first-child {
-    gap: 1rem;
     margin-top: 1.5em;
     display: flex;
     flex-direction: row-reverse;
     align-items: baseline;
     justify-content: flex-end;
+
+    label {
+        padding-left: .5rem;
+    }
 }
 
 .modal-buttons {

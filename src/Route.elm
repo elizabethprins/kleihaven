@@ -127,13 +127,13 @@ toLabel : Page -> String
 toLabel page =
     case page of
         Home ->
-            "Home"
+            "Studio1931"
 
         Kleihaven ->
             "Kleihaven"
 
         NotFound ->
-            ""
+            "Niet gevonden"
 
         Cursussen _ ->
             "Cursussen"
@@ -145,7 +145,7 @@ toLabel page =
             "AIR Programma's"
 
         Privacy ->
-            "Privacy Policy"
+            "Privacybeleid"
 
         FAQ ->
             "Veelgestelde Vragen"
