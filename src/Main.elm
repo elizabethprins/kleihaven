@@ -23,6 +23,7 @@ import Ui.FormField
 import Ui.Icons.Facebook
 import Ui.Icons.Instagram
 import Url exposing (Url)
+import Url.Builder
 
 
 
@@ -1035,10 +1036,10 @@ viewPageOverOns =
 
 viewPageCursussen : Model -> Maybe CourseId -> List (Html Msg)
 viewPageCursussen model maybeCourseId =
-    [ h1 [ class "centered" ] [ text "Cursusaanbod" ]
-    , div [ class "block__header" ]
-        [ h2 [] [ text "Keramiekcursussen voor elk niveau" ]
-        , p [] [ text "Onze cursussen bieden een unieke combinatie van handvormen en draaien, waar jouw creativiteit centraal staat. Met een mix van techniek, experiment en plezier ontdek je de magie van keramiek!" ]
+    [ h1 [ class "centered" ] [ text Copy.pageCursussen.title ]
+    , div [ class "block__header -wider" ]
+        [ h2 [] [ text Copy.pageCursussen.subtitle ]
+        , p [] [ text Copy.pageCursussen.intro ]
         ]
     , if model.loadingCourses then
         div [ class "centered" ]
@@ -1126,12 +1127,45 @@ viewCoursePeriod_ isModal course period =
                 , text " plekken beschikbaar"
                 ]
             ]
-        , button
-            { label = "Direct inschrijven"
-            , action = Ui.Button.Msg (OpenRegistrationModal course period)
-            }
-            |> Ui.Button.view
+        , if period.availableSpots > 0 then
+            button
+                { label = "Direct inschrijven"
+                , action = Ui.Button.Msg (OpenRegistrationModal course period)
+                }
+                |> Ui.Button.view
+
+          else
+            button
+                { label = "Inschrijven wachtlijst"
+                , action = Ui.Button.ToUrl (waitingListTemplateEmailUrl course period)
+                }
+                |> Ui.Button.view
         ]
+
+
+waitingListTemplateEmailUrl : Course -> Course.CoursePeriod -> String
+waitingListTemplateEmailUrl course period =
+    let
+        emailBody : String
+        emailBody =
+            """Beste Hanneke en Sjaak,
+
+Graag wil ik me op de wachtlijst inschrijven voor:
+
+- {{title}}
+- {{dates}}
+
+Met vriendelijke groet,
+
+"""
+                |> String.replace "{{title}}" course.title
+                |> String.replace "{{dates}}" (Ui.Date.periodString { start = period.startDate, end = period.endDate })
+    in
+    [ Url.Builder.string "body" emailBody
+    , Url.Builder.string "subject" ("Inschrijving wachtlijst voor '" ++ course.title ++ "'")
+    ]
+        |> Url.Builder.toQuery
+        |> String.append "mailto:hello@studio1931.nl"
 
 
 viewTimeInfo : Maybe String -> Html Msg

@@ -82,6 +82,11 @@
         margin: 0 auto;
         font-style: italic;
     }
+
+    &.-wider p {
+        text-wrap: balance;
+        max-width: 57rem;
+    }
 }
 
 .block.-reduce-margin-mobile {

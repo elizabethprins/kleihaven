@@ -1,4 +1,4 @@
-module Copy exposing (copy, faqPage, pageAir, pageOverOns, privacyPage, termsPage)
+module Copy exposing (copy, faqPage, pageAir, pageCursussen, pageOverOns, privacyPage, termsPage)
 
 import Html exposing (..)
 import Markdown
@@ -328,6 +328,21 @@ Studio1931 - Kleihaven streeft ernaar om zo zuiver mogelijk, zonder fouten, info
 - Alle informatie rondom privacy en het bewaren van persoonsgegevens, kun je vinden op onze [privacy pagina](/privacy/).
 """
     ]
+
+
+pageCursussen =
+    { title = "Cursusaanbod"
+    , subtitle = """
+Keramiekcursussen voor elk niveau
+    """
+    , intro = """
+Onze cursussen bieden een unieke combinatie van handvormen en draaien, waar creativiteit én vaardigheden centraal staan.
+Met een mix van techniek, kennis, experiment en plezier verken je keramiek en al haar mogelijkheden.
+    """
+    , introOld = """
+Onze cursussen bieden een unieke combinatie van handvormen en draaien, waar jouw creativiteit centraal staat. Met een mix van techniek, experiment en plezier ontdek je de magie van keramiek!
+    """
+    }
 
 
 pageAir =
