@@ -625,7 +625,12 @@ viewFooter model =
                 ]
             ]
         , div [ class "footer__bottom" ]
-            [ p [] [ text "© 2025 Studio1931. Alle rechten voorbehouden." ] ]
+            [ p []
+                [ text "© 2025 Studio1931. Alle rechten voorbehouden."
+                , br [] []
+                , text "Met ♥︎ gemaakt door PixelPark."
+                ]
+            ]
         ]
 
 
