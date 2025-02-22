@@ -490,7 +490,7 @@ view model =
                     viewPageAIR model
 
                 Route.OverOns ->
-                    viewPageOverOns
+                    viewPageOverOns model
 
                 Route.Privacy ->
                     viewPagePrivacy
@@ -735,6 +735,14 @@ viewImage loadedImages { imgSrc, imgAlt, lazy } =
                 ++ lazyAttr
             )
             []
+        ]
+
+
+viewImageWithCaption : Set String -> ImgProps -> String -> Html Msg
+viewImageWithCaption loadedImages imgProps caption =
+    figure []
+        [ viewImage loadedImages imgProps
+        , figcaption [] [ text caption ]
         ]
 
 
@@ -1004,9 +1012,26 @@ viewPageAIR model =
         , p [ class "content__intro" ]
             [ text Copy.pageAir.intro ]
         , Copy.pageAir.blockOne
+        , viewImage model.loadedImages
+            { imgSrc = "1600/air_people"
+            , imgAlt = "Kunstenaars aan het werk in het atelier"
+            , lazy = True
+            }
         , Copy.pageAir.blockTwo
         , Copy.pageAir.blockThree
+        , viewImageWithCaption model.loadedImages
+            { imgSrc = "1600/air"
+            , imgAlt = "Sjaak Kooij en Raafat Ballan in het atelier"
+            , lazy = True
+            }
+            "Sjaak Kooij en Raafat Ballan in het atelier"
         , Copy.pageAir.blockFour
+        , viewImageWithCaption model.loadedImages
+            { imgSrc = "1600/air_bigart"
+            , imgAlt = "Muurschildering Tussen zoet en zout op BIG Art"
+            , lazy = True
+            }
+            "Uitvloeisel Tussen Zoet en Zout op BIG Art, samenwerking tussen Raafat Ballan, Peter de Boer en Sjaak Kooij"
         , Copy.pageAir.blockFive
         ]
 
@@ -1015,18 +1040,73 @@ viewPageAIR model =
 -- OverOns
 
 
-viewPageOverOns : List (Html Msg)
-viewPageOverOns =
+viewPageOverOns : Model -> List (Html Msg)
+viewPageOverOns model =
     toContentPage
         [ h1 [] [ text Copy.pageOverOns.title ]
         , p [ class "content__intro" ]
             [ text Copy.pageOverOns.intro ]
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_1_maud"
+            , imgAlt = "Kunstenaar Maud in het atelier"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockOne
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_2_huis"
+            , imgAlt = "Het huis van Studio1931 met bloeiende tuin"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockTwo
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_3_atelier"
+            , imgAlt = "Het atelier van Sjaak Kooij"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockThree
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_kleihaven"
+            , imgAlt = "Keramieken maskers aan de muur van Studio1931"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockFour
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_6_levi"
+            , imgAlt = "Kunstenaar Levi aan het werk in het atelier"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockFive
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_wadlopen"
+            , imgAlt = "Wadlopen tijdens de Tussen Zoet en Zout"
+            , lazy = True
+            }
         , Copy.pageOverOns.blockSix
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_gastenverblijf_1"
+            , imgAlt = "Gastenverblijf, de keuken"
+            , lazy = True
+            }
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_gastenverblijf_2"
+            , imgAlt = "Gastenverblijf, eettafel en zithoek"
+            , lazy = True
+            }
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_gastenverblijf_3"
+            , imgAlt = "Gastenverblijf, de zitruimte"
+            , lazy = True
+            }
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_gastenverblijf_4"
+            , imgAlt = "Gastenverblijf, de zitruimte en de keuken"
+            , lazy = True
+            }
+        , viewImage model.loadedImages
+            { imgSrc = "1600/overons_gastenverblijf_5"
+            , imgAlt = "Gastenverblijf, het slaapgedeelte"
+            , lazy = True
+            }
         ]
 
 

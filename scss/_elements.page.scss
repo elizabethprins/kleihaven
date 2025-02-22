@@ -116,3 +116,13 @@ select {
     color: settings.$blackBean;
     background: settings.$white;
 }
+
+figure {
+    margin: 0;
+}
+
+figcaption {
+    font-size: .875em;
+    font-style: italic;
+    color: settings.$drabBrown;
+}
