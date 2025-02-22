@@ -858,7 +858,7 @@ viewHomeBlockAIR model =
                     |> Ui.Button.view
                 ]
             , viewImageCard model.loadedImages
-                { imgSrc = "air"
+                { imgSrc = "og-images/home"
                 , imgAlt = "Kunstenaars aan het werk in de studio"
                 , lazy = True
                 }
