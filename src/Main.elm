@@ -347,12 +347,7 @@ update msg model =
                             Course.validateRegistration modal
 
                         hasErrors =
-                            validationErrors.name
-                                /= Nothing
-                                || validationErrors.email
-                                /= Nothing
-                                || validationErrors.spots
-                                /= Nothing
+                            validationErrors /= Course.emptyValidationErrors
                     in
                     if hasErrors then
                         ( { model
