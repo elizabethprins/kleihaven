@@ -38,5 +38,29 @@
         "og_image_alt": "Cursisten aan het werk in de tuin van de school",
         "og_image_height": "630",
         "og_image_width": "1200"
+    },
+    "/privacy/": {
+        "og_title": "Privacybeleid – Studio1931 // Kleihaven",
+        "og_description": "Bij Studio1931 hechten we veel waarde aan de bescherming van jouw persoonsgegevens. In deze privacyverklaring leggen we duidelijk uit hoe we met jouw gegevens omgaan bij het boeken van een keramiekcursus of workshop.",
+        "og_image_path": "/assets/og-images/home.jpg",
+        "og_image_alt": "Kunstenaars aan het werk in de zonovergoten studio",
+        "og_image_height": "630",
+        "og_image_width": "1200"
+    },
+    "/algemene-voorwaarden/": {
+        "og_title": "Algemene voorwaarden – Studio1931 // Kleihaven",
+        "og_description": "Lees hier de algemene voorwaarden van Studio1931 en Kleihaven voor onze keramiekcursussen, workshops en artist-in-residence programma's.",
+        "og_image_path": "/assets/og-images/home.jpg",
+        "og_image_alt": "Kunstenaars aan het werk in de zonovergoten studio",
+        "og_image_height": "630",
+        "og_image_width": "1200"
+    },
+    "/veelgestelde-vragen/": {
+        "og_title": "Veelgestelde vragen – Studio1931 // Kleihaven",
+        "og_description": "Antwoorden op veelgestelde vragen over onze keramiekcursussen, workshops en faciliteiten. Praktische informatie over lessen, materialen, technieken en verblijf bij Studio1931 en Kleihaven in Den Oever.",
+        "og_image_path": "/assets/og-images/home.jpg",
+        "og_image_alt": "Kunstenaars aan het werk in de zonovergoten studio",
+        "og_image_height": "630",
+        "og_image_width": "1200"
     }
 }
