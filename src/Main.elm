@@ -514,10 +514,10 @@ viewNavigation : Model -> Html Msg
 viewNavigation model =
     let
         viewLogo =
-            a [ class "logo", title "Studio 1931", href (Route.toUrl Route.Home) ]
+            a [ class "logo", title "Studio1931", href (Route.toUrl Route.Home) ]
                 [ img
                     [ src "/assets/logostudio1931-small.png"
-                    , alt "Studio 1931"
+                    , alt "Studio1931"
                     ]
                     []
                 ]
@@ -581,7 +581,7 @@ viewFooter model =
                         , span [ class "visually-hidden" ] [ text "Instagram" ]
                         ]
                     , a
-                        [ href "https://facebook.com/studio.1931"
+                        [ href "https://facebook.com/studio1931wieringen"
                         , target "_blank"
                         , rel "noopener noreferrer"
                         ]
@@ -789,7 +789,7 @@ viewHomeIntro model =
         , coursesButton = copy.home.coursesButton
         }
         [ { imgSrc = "9x16/huis-tuin"
-          , imgAlt = "Huis en bloeiende tuin van Studio 1931"
+          , imgAlt = "Huis en bloeiende tuin van Studio1931"
           , lazy = False
           }
         , { imgSrc = "9x16/keramiek-lokaal"

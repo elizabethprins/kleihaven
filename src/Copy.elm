@@ -22,7 +22,7 @@ copy =
         { title = "Studio1931"
         , subtitle = "ontdekken, beleven en creëren op een bijzondere locatie"
         , intro = """
-            Gevestigd in een voormalige basisschool aan de Waddenzee, biedt Studio 1931
+            Gevestigd in een voormalige basisschool aan de Waddenzee, biedt Studio1931
             keramiekcursussen, een artist-in-residence programma en gastenverblijf in
             een inspirerende omgeving.
             """
@@ -129,7 +129,7 @@ copy =
         , blockTwo =
             { title = "Over de Kleihaven"
             , intro = """
-                Kleihaven is gevestigd in Studio 1931, de oude school van Den Oever. 
+                Kleihaven is gevestigd in Studio1931, de oude school van Den Oever.
                 Het is een plek om te wonen, werken en verblijven in en tussen de kunsten – dat delen we graag met jou!
                 """
             , inside =
