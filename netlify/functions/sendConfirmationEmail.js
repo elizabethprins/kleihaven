@@ -61,7 +61,7 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
 
         const hannekeEmailParams = new EmailParams()
             .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
-            .setTo([new Recipient(hannekeEmail, 'Hanneke Kroon')])
+            .setTo([new Recipient(hannekeEmail, 'STUDIO 1931')])
             .setSubject('Nieuwe boeking bij Kleihaven')
             .setTemplateId('7dnvo4d865rl5r86')
             .setPersonalization([{
