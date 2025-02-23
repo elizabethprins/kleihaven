@@ -28,6 +28,7 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
     const period = course.data.periods.find(p => p.id === periodId);
     const siteUrl = process.env.URL || 'https://www.studio1931.nl';
     const ownerEmail = process.env.OWNER_EMAIL || 'hello@studio1931.nl';
+    const hannekeEmail = process.env.HANNEKE_EMAIL || 'info@studio1931.nl';
 
     // Format dates in the same style as the Elm app
     const startDate = formatDutchDate(period.startDate);
@@ -78,9 +79,29 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                 }
             }]);
 
+        const hannekeEmailParams = new EmailParams()
+            .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
+            .setTo([new Recipient(hannekeEmail, 'Hanneke Kroon')])
+            .setSubject('Nieuwe boeking bij Kleihaven')
+            .setTemplateId('7dnvo4d865rl5r86')
+            .setPersonalization([{
+                email: ownerEmail,
+                data: {
+                    customer_name: name,
+                    customer_email: email,
+                    period: periodString,
+                    course_title: course.data.title,
+                    numberOfSpots: numberOfSpots,
+                    course_url: `${siteUrl}/cursussen?id=${course.data.id}`,
+                    payment_id: paymentId,
+                    payment_amount: `${paymentCurrency} ${paymentAmount}`
+                }
+            }]);
+
         await Promise.all([
             mailerSend.email.send(emailParams),
-            mailerSend.email.send(ownerEmailParams)
+            mailerSend.email.send(ownerEmailParams),
+            mailerSend.email.send(hannekeEmailParams)
         ]);
         console.log('Confirmation emails sent to:', email, 'and', ownerEmail);
         return true;
