@@ -34,7 +34,7 @@ assets:
 build: deps elmoptimized styles minify assets generate_html
 
 production:
-	@$(MAKE) build BASE_URL=https://kleihaven.netlify.app API_BASE_URL=""
+	@$(MAKE) build BASE_URL=https://www.studio1931.nl API_BASE_URL=""
 
 clean:
 	@rm -Rf dist/*

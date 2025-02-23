@@ -26,7 +26,7 @@ function formatDutchDate(isoDate) {
 
 async function sendConfirmationEmail({ email, name, numberOfSpots, course, periodId, paymentId, paymentAmount, paymentCurrency }) {
     const period = course.data.periods.find(p => p.id === periodId);
-    const siteUrl = process.env.URL || 'http://localhost:3000';
+    const siteUrl = process.env.URL || 'https://www.studio1931.nl';
     const ownerEmail = process.env.OWNER_EMAIL || 'hello@studio1931.nl';
 
     // Format dates in the same style as the Elm app
