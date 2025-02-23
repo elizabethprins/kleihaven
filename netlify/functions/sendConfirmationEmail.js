@@ -41,7 +41,7 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
 
     try {
         const emailParams = new EmailParams()
-            .setFrom(new Sender('kleihaven@trial-yzkq3406wxk4d796.mlsender.net', 'Studio1931 // Kleihaven'))
+            .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
             .setTo([new Recipient(email, name)])
             .setSubject('Bevestiging van je boeking bij Kleihaven')
             .setTemplateId('neqvygm5oqz40p7w')
@@ -60,7 +60,7 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
 
         // Send email to owner
         const ownerEmailParams = new EmailParams()
-            .setFrom(new Sender('kleihaven@trial-yzkq3406wxk4d796.mlsender.net', 'Studio1931 // Kleihaven'))
+            .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
             .setTo([new Recipient(ownerEmail, 'Studio1931')])
             .setSubject('Nieuwe boeking bij Kleihaven')
             .setTemplateId('7dnvo4d865rl5r86')
