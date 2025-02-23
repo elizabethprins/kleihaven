@@ -59,14 +59,13 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                 }
             }]);
 
-        // Send email to owner
-        const ownerEmailParams = new EmailParams()
+        const hannekeEmailParams = new EmailParams()
             .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
-            .setTo([new Recipient(ownerEmail, 'Studio1931')])
+            .setTo([new Recipient(hannekeEmail, 'Hanneke Kroon')])
             .setSubject('Nieuwe boeking bij Kleihaven')
             .setTemplateId('7dnvo4d865rl5r86')
             .setPersonalization([{
-                email: ownerEmail,
+                email: hannekeEmail,
                 data: {
                     customer_name: name,
                     customer_email: email,
@@ -79,9 +78,9 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
                 }
             }]);
 
-        const hannekeEmailParams = new EmailParams()
+        const ownerEmailParams = new EmailParams()
             .setFrom(new Sender(ownerEmail, 'Studio1931 // Kleihaven'))
-            .setTo([new Recipient(hannekeEmail, 'Hanneke Kroon')])
+            .setTo([new Recipient(ownerEmail, 'Studio1931')])
             .setSubject('Nieuwe boeking bij Kleihaven')
             .setTemplateId('7dnvo4d865rl5r86')
             .setPersonalization([{
