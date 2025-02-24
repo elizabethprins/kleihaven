@@ -1355,6 +1355,10 @@ viewCourseDetailModal model =
                             [ text "Kosten per persoon: € "
                             , text (String.fromFloat course.price)
                             ]
+                        , p [ class "modal__content__teachers" ]
+                            [ text "Docenten: "
+                            , text (String.join ", " course.teachers)
+                            ]
                         , viewParsedHtml "modal__content__text" course.content
                         ]
                     , div [ class "modal__content__periods" ]

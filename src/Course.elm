@@ -37,6 +37,7 @@ type alias Course =
     , content : Maybe String
     , imageUrl : String
     , price : Float
+    , teachers : List String
     , periods : List CoursePeriod
     }
 
@@ -367,6 +368,7 @@ courseDecoder =
                 |> Decode.map String.toFloat
                 |> Decode.map (Maybe.withDefault 0)
             )
+        |> Pipeline.optional "teachers" (Decode.list Decode.string) []
         |> Pipeline.required "periods" (Decode.list coursePeriodDecoder)
 
 

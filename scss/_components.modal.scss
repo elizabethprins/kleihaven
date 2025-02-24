@@ -167,8 +167,13 @@
     font-size: 1.125em;
 }
 
-.modal__content__price {
+.modal__content__price,
+.modal__content__teachers {
     font-weight: 500;
+}
+
+.modal__content__teachers {
+    margin-top: -1rem;
 }
 
 .modal__content__text {
