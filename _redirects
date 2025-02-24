@@ -1,0 +1,5 @@
+# Add noindex, nofollow header to .netlify.app subdomain
+https://kleihaven.netlify.app/*  /:splat  200!  X-Robots-Tag=noindex,nofollow
+
+# Allow indexing on other requests (on studio1931.nl)
+/*  /:splat  200!  X-Robots-Tag=index,follow
