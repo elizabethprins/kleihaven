@@ -1355,10 +1355,7 @@ viewCourseDetailModal model =
                             [ text "Kosten per persoon: € "
                             , text (String.fromFloat course.price)
                             ]
-                        , p [ class "modal__content__teachers" ]
-                            [ text "Docenten: "
-                            , text (String.join ", " course.teachers)
-                            ]
+                        , viewTeachers course.teachers
                         , viewParsedHtml "modal__content__text" course.content
                         ]
                     , div [ class "modal__content__periods" ]
@@ -1368,6 +1365,18 @@ viewCourseDetailModal model =
 
         Nothing ->
             text ""
+
+
+viewTeachers : List String -> Html Msg
+viewTeachers teachers =
+    if List.isEmpty teachers then
+        text ""
+
+    else
+        p [ class "modal__content__teachers" ]
+            [ text "Docenten: "
+            , text (String.join ", " teachers)
+            ]
 
 
 viewParsedHtml : String -> Maybe String -> Html Msg
