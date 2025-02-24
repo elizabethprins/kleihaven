@@ -1132,11 +1132,16 @@ viewPageCursussen model maybeCourseId =
                     [ text "Sorry, er is iets misgegaan bij het laden van de cursussen" ]
 
             Nothing ->
+                let
+                    visibleCourses : List Course
+                    visibleCourses =
+                        List.filter (.isHidden >> not) model.courses
+                in
                 Html.Keyed.node "div"
                     []
                     [ ( "courses"
                       , div [ class "courses-grid" ]
-                            (List.map (viewCourse model.loadedImages) model.courses)
+                            (List.map (viewCourse model.loadedImages) visibleCourses)
                       )
                     ]
     , viewCourseDetailModal model

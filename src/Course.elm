@@ -32,6 +32,7 @@ import Ui.Button
 type alias Course =
     { id : CourseId
     , title : String
+    , isHidden : Bool
     , subtitle : Maybe String
     , description : String
     , content : Maybe String
@@ -359,6 +360,7 @@ courseDecoder =
     Decode.succeed Course
         |> Pipeline.required "id" Id.fromJson
         |> Pipeline.required "title" Decode.string
+        |> Pipeline.optional "hidden" Decode.bool False
         |> Pipeline.optional "subtitle" (Decode.maybe Decode.string) Nothing
         |> Pipeline.required "description" Decode.string
         |> Pipeline.optional "content" (Decode.maybe Decode.string) Nothing
