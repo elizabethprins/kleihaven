@@ -28,8 +28,8 @@ assets:
 	@mkdir -p ${DIST_DIR}/assets/ && cp -R ./assets ${DIST_DIR}
 	@cp metatags.json ${DIST_DIR}
 	@cp metatags-updater.js ${DIST_DIR}
+	@cp _redirects ${DIST_DIR}
 	@cp -R netlify ${DIST_DIR}
-	@echo "/*    /index.html   200" > ${DIST_DIR}/_redirects
 
 build: deps elmoptimized styles minify assets generate_html
 
