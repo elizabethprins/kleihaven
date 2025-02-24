@@ -1,5 +1,5 @@
 # Add noindex, nofollow header to .netlify.app subdomain
 https://kleihaven.netlify.app/*  /index.html  200!  X-Robots-Tag=noindex,nofollow
 
-# Handle all other paths: add index header and enable SPA
-/*  /index.html  200!  X-Robots-Tag=index,follow
+# Handle all other paths: enable SPA
+/*  /index.html  200
