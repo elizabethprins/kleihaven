@@ -28,16 +28,21 @@ async function sendConfirmationEmail({ email, name, numberOfSpots, course, perio
     const period = course.data.periods.find(p => p.id === periodId);
     const siteUrl = process.env.URL || 'https://www.studio1931.nl';
     const ownerEmail = process.env.OWNER_EMAIL || 'hello@studio1931.nl';
-
-    // Format dates in the same style as the Elm app
     const startDate = formatDutchDate(period.startDate);
     const endDate = formatDutchDate(period.endDate);
-
-    // If dates are in same month, use shorter format for start date
     const sameMonth = new Date(period.startDate).getMonth() === new Date(period.endDate).getMonth();
-    const periodString = sameMonth
-        ? `${startDate.split(' ').slice(0, 2).join(' ')} t/m ${endDate}`
-        : `${startDate} t/m ${endDate}`;
+    let periodString;
+    if (!startDate && !endDate) {
+        periodString = "Datum nog niet bekend";
+    } else if (!startDate) {
+        periodString = endDate;
+    } else if (!endDate) {
+        periodString = startDate;
+    } else {
+        periodString = sameMonth
+            ? `${startDate.split(' ').slice(0, 2).join(' ')} t/m ${endDate}`
+            : `${startDate} t/m ${endDate}`;
+    }
 
     try {
         const emailParams = new EmailParams()
