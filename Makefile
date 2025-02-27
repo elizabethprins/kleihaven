@@ -30,6 +30,7 @@ assets:
 	@cp metatags-updater.js ${DIST_DIR}
 	@cp _redirects ${DIST_DIR}
 	@cp -R netlify ${DIST_DIR}
+	@cp sitemap.xml ${DIST_DIR}
 
 build: deps elmoptimized styles minify assets generate_html
 
